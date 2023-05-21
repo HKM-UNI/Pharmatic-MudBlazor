@@ -1,0 +1,25 @@
+﻿@font-face {
+    font-family: 'Inter-Black';
+    src: url('/Fonts/static/Inter-Black.ttf'); 
+}
+
+@font-face {
+    font-family: 'Inter-Bold';
+    src: url('/Fonts/static/Inter-Bold.ttf'); 
+}
+
+.txtbox {
+    color: black;
+    background-color: #ECF1FF;
+    font-family: 'Inter-Black';
+}
+
+.btn {
+    background-color: #17ACBE;
+    color: white;
+    font-family: 'Inter-Bold'
+}
+
+.mat-floating-label--float-above-outlined {
+    background-color: #ECF1FF !important;
+}

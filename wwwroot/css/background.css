@@ -1,0 +1,11 @@
+﻿body {
+    background-image: url(/background.svg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.pillbkg {
+    background-image: url('/loginbkg.jpg');
+    background-size: cover;
+    height: 100%;
+}
