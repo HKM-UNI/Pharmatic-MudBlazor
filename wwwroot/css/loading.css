@@ -1,8 +1,4 @@
-﻿body {
-    background-color: #ECF1FF;
-}
-
-.loader-container {
+﻿.loader-container {
     display: flex;
     justify-content: center;
     align-items: center;

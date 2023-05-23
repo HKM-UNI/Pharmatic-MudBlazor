@@ -1,6 +1,6 @@
 ﻿@page "/"
 @inject NavigationManager _navigationManager
-<link rel="stylesheet" href="/css/style.css" />
+<link rel="stylesheet" href="/css/style.css?version=5" />
 @layout LoginLayout
 
 <EditForm Model="@loginUser" OnValidSubmit="OnValidSubmit">
@@ -40,7 +40,7 @@
     
     <center>
         <MudButton Class="mt-5 btn rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Disabled="@disableButton">
+                   Disabled="@disableButton" Color="Color.Primary">
             Iniciar Sesión
         </MudButton>
     </center>
@@ -95,7 +95,7 @@
         {
             loading = true;
             await Task.Delay(2000);
-            _navigationManager.NavigateTo("/page/dashboard");
+            _navigationManager.NavigateTo("/dashboard");
         }   
         else
         {

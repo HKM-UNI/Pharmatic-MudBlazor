@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager _navigationManager
 @using static CustomIcons
-<link rel="stylesheet" href="/css/background.css?version=2" />
+<link rel="stylesheet" href="/css/background.css?version=5" />
 
 <MudThemeProvider Theme="selectedTheme" />
 <MudSnackbarProvider />
@@ -12,7 +12,7 @@
                 <MudPaper Class="d-flex flex-column flex-grow-1 gap-4" 
                         Elevation="0" 
                         Style="background-color: white;"
-                        Height="95vh">
+                        Height="96vh">
                     <MudImage Fluid="true" Src="/img/PharmaticLogo.png" Class="mt-3 mr-3 ml-3"/>
                     <center>
                     <hr style="height: 1px; border: none; background-color: rgba(82, 82, 92, 0.5); width: 80%;" />
@@ -52,19 +52,9 @@
                         <MudIconButton Icon="@CustomIcons.Down" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
                     </MudAppBar>
 
-                    @*<MudMainContent Style="background-color: background: red;">
-                    @Body
-                    </MudMainContent>*@
-
-                    <center>
-                    <MudPaper Width="80%" Height="164px" />
-                    </center>
-                    <center>
-                        <MudPaper Width="80%" Height="164px" />
-                    </center>
-                    <center>
-                        <MudPaper Width="80%" Height="164px" />
-                    </center>
+                    <MudMainContent Class="pa-0">
+                        @Body
+                    </MudMainContent>
                 </MudPaper>
 
                 

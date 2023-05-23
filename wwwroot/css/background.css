@@ -6,5 +6,6 @@
 
 .pillbkg {
     background-image: url('/img/pills.jpg');
-    background-size: contain;
+    background-size: cover;
+    height: 100%;
 }

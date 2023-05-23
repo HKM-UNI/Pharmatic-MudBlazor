@@ -10,16 +10,10 @@
 
 .txtbox {
     color: black;
-    background-color: #ECF1FF;
     font-family: 'Inter-Black';
 }
 
 .btn {
-    background-color: #17ACBE;
     color: white;
     font-family: 'Inter-Bold'
-}
-
-.mat-floating-label--float-above-outlined {
-    background-color: #ECF1FF !important;
 }
