@@ -40,6 +40,69 @@ namespace Pharmatic.Shared
                 return svgFile;
             }
         }
+        public static string Configuration
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.configuration.svg");
+                return svgFile;
+            }
+        }
+
+        public static string DashBoard
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.dashboard.svg");
+                return svgFile;
+            }
+        }
+
+        public static string DropBox
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.dropbox.svg");
+                return svgFile;
+            }
+        }
+
+        public static string EmptyWallet
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.emptywallet.svg");
+                return svgFile;
+            }
+        }
+
+        public static string Notepad
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.notepad.svg");
+                return svgFile;
+            }
+        }
+
+        public static string Client
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.client.svg");
+                return svgFile;
+            }
+        }
+
+        public static string Providers
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.providers.svg");
+                return svgFile;
+            }
+        }
+
 
         private static string GetEmbeddedResource(string resourceName)
         {

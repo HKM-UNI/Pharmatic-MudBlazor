@@ -7,16 +7,33 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Content Remove="wwwroot\icons\client.svg" />
+	  <Content Remove="wwwroot\icons\configuration.svg" />
+	  <Content Remove="wwwroot\icons\dashboard.svg" />
 	  <Content Remove="wwwroot\icons\down.svg" />
+	  <Content Remove="wwwroot\icons\dropbox.svg" />
+	  <Content Remove="wwwroot\icons\emptywallet.svg" />
 	  <Content Remove="wwwroot\icons\logout.svg" />
+	  <Content Remove="wwwroot\icons\notepad.svg" />
 	  <Content Remove="wwwroot\icons\notification.svg" />
+	  <Content Remove="wwwroot\icons\providers.svg" />
 	  <Content Remove="wwwroot\icons\search.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Include="wwwroot\icons\client.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="wwwroot\icons\configuration.svg" />
+	  <EmbeddedResource Include="wwwroot\icons\dashboard.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\down.svg" />
+	  <EmbeddedResource Include="wwwroot\icons\dropbox.svg" />
+	  <EmbeddedResource Include="wwwroot\icons\emptywallet.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\logout.svg" />
+	  <EmbeddedResource Include="wwwroot\icons\notepad.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\notification.svg" />
+	  <EmbeddedResource Include="wwwroot\icons\providers.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\search.svg" />
 	</ItemGroup>
 

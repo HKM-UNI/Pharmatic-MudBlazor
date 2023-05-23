@@ -8,36 +8,48 @@
 
     <DataAnnotationsValidator></DataAnnotationsValidator>
 
-    <MudText Typo="Typo.h4" GutterBottom="true" Align="Align.Left" >Login</MudText>
-
-    <MudTextField T="string"
-    @bind-Value="@loginUser.Email"
-                  Label="Correo"
-                  Variant="Variant.Outlined"
-                  Class="my-6 txtbox"
-                  For="@(() => loginUser.Email)">
-        </MudTextField>
-
-    <MudTextField @bind-Value="@loginUser.Password"
-                  Class="txtbox"    
-                  Label="Contraseña"
-                  Variant="Variant.Outlined"
-                  InputType="@PasswordInput"
-                  Adornment="Adornment.End"
-                  AdornmentIcon="@PasswordInputIcon"
-                  OnAdornmentClick="TogglePasswordVisibility"
-                      For="@(() => loginUser.Password)" />
-
-    <MudButton Class="mt-5 btn" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-               FullWidth="true"
-               Disabled="@disableButton">Iniciar Sesión
-           </MudButton>
+    <MudText Typo="Typo.h4" GutterBottom="true" Align="Align.Left" Class="ml-8">Login</MudText>
 
     <center>
-        <MudLink Href="#" Class="pa-4">¿Tienes problemas?</MudLink>
+        <MudItem xs="10">
+            <MudTextField T="string"
+            @bind-Value="@loginUser.Email"
+                          Label="Correo"
+                          Variant="Variant.Outlined"
+                          Class="my-6 txtbox"
+                          For="@(() => loginUser.Email)"
+                          Margin="Margin.Dense">
+
+            </MudTextField>
+            
+            <MudTextField @bind-Value="@loginUser.Password"
+                          Class="txtbox"
+                          Label="Contraseña"
+                          Variant="Variant.Outlined"
+                          InputType="@PasswordInput"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@PasswordInputIcon"
+                          OnAdornmentClick="TogglePasswordVisibility"
+                          For="@(() => loginUser.Password)"
+                          Margin="Margin.Dense" />
+
+            <MudCheckBox @bind-Checked="@checkvalue" Color="@Color.Primary" Label="Mantener Sesión" />
+             
+        </MudItem>
+    </center>
+    
+    <center>
+        <MudButton Class="mt-5 btn rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Disabled="@disableButton">
+            Iniciar Sesión
+        </MudButton>
     </center>
 
-    <MudProgressLinear Color="Color.Primary" Indeterminate="loading" Class="my-7" />
+    <center>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" Class="ma-4">¿Tienes problemas?</MudButton>
+    </center>
+
+    <MudProgressLinear Color="Color.Primary" Indeterminate="loading" Class="my-4" />
 </EditForm>
 
 <MudAlert Severity="Severity.Error" Class="@(myAlert + " mt-8 mud-width-full")" Style="max-width:500px;" Elevation="25">No se encontraron coincidencias</MudAlert>
@@ -48,6 +60,8 @@
     string myImageClass { get; set; } = "d-none";
     string myAlert { get; set; } = "d-none";
     bool disableButton { get; set; } = false;
+    public bool? checkvalue { get; set; } = false;
+
 
     bool loading = false;
 

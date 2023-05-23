@@ -1,5 +1,34 @@
-﻿<MudNavMenu>
-    <MudNavLink Href="/page/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">DashBoard</MudNavLink>
-    <MudNavLink Href="/page/dashboard2" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">DashBoard</MudNavLink>
-    <MudNavLink Href="/page/dashboard3" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">DashBoard</MudNavLink>
+﻿<MudNavMenu Color="Color.Primary" Rounded="true">
+    <MudNavLink Href="/page/dashboard" Match="NavLinkMatch.All" Icon="@CustomIcons.DashBoard">DashBoard</MudNavLink>
+    
+    <MudNavGroup Title="Ventas" Expanded="false" Icon="@CustomIcons.Notepad">
+        <MudNavLink Href="/page/dashboard">Users</MudNavLink>
+        <MudNavLink Href="/page/dashboard">Security</MudNavLink>
+    </MudNavGroup>
+
+    <MudNavGroup Title="Inventario" Expanded="false" Icon="@CustomIcons.DropBox">
+        <MudNavLink Href="/page/dashboard">Users</MudNavLink>
+        <MudNavLink Href="/page/dashboard">Security</MudNavLink>
+    </MudNavGroup>
+
+    <MudNavGroup Title="Finanzas" Expanded="false" Icon="@CustomIcons.EmptyWallet">
+        <MudNavLink Href="/page/dashboard">Users</MudNavLink>
+        <MudNavLink Href="/page/dashboard">Security</MudNavLink>
+    </MudNavGroup>
+
+    <MudNavGroup Title="Ajustes" Expanded="false" Icon="@CustomIcons.Configuration">
+        <MudNavLink Href="/page/dashboard">Users</MudNavLink>
+        <MudNavLink Href="/page/dashboard">Security</MudNavLink>
+    </MudNavGroup>
+
+    <MudNavGroup Title="Clientes" Expanded="false" Icon="@CustomIcons.Client">
+        <MudNavLink Href="/page/dashboard">Users</MudNavLink>
+        <MudNavLink Href="/page/dashboard">Security</MudNavLink>
+    </MudNavGroup>
+
+    <MudNavGroup Title="Proveedores" Expanded="false" Icon="@CustomIcons.Providers">
+        <MudNavLink Href="/page/dashboard">Users</MudNavLink>
+        <MudNavLink Href="/page/dashboard">Security</MudNavLink>
+    </MudNavGroup>
+
 </MudNavMenu>

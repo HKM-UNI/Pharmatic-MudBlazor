@@ -1,77 +1,89 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager _navigationManager
 @using static CustomIcons
-<link rel="stylesheet" href="/css/background.css" />
+<link rel="stylesheet" href="/css/background.css?version=2" />
 
 <MudThemeProvider Theme="selectedTheme" />
 <MudSnackbarProvider />
 
-<MudLayout>
-        <MudAppBar Elevation="0" >
-            <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-            <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
-                          AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="d-flex align-center mt-5">
+    <MudGrid >
+            <MudItem xs="2">
+                <MudPaper Class="d-flex flex-column flex-grow-1 gap-4" 
+                        Elevation="0" 
+                        Style="background-color: white;"
+                        Height="95vh">
+                    <MudImage Fluid="true" Src="/img/PharmaticLogo.png" Class="mt-3 mr-3 ml-3"/>
+                    <center>
+                    <hr style="height: 1px; border: none; background-color: rgba(82, 82, 92, 0.5); width: 80%;" />
+                    </center>
 
-            <MudIconButton Icon="@CustomIcons.Notification" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
+                    <NavMenu/>
 
-            <MudSpacer />
+                </MudPaper>
+            </MudItem>
 
-            <MudIconButton Icon="@CustomIcons.Logout" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
+            <MudItem xs="10" >
 
-            <MudCard Style="background: inherit;" Elevation="0">
+            <MudPaper Class="d-flex flex-column flex-grow-1 gap-4" Elevation="0" Style="background-color: rgba(231, 255, 255, 0.4);">
+                    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;">
+                        <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
+                                      AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />
 
-                <MudCardHeader>
-                    <CardHeaderAvatar>
-                        <MudAvatar Color="Color.Secondary" Size="Size.Large">R</MudAvatar>
-                    </CardHeaderAvatar>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.body1">Ricardo Montenegro</MudText>
-                        <MudText Typo="Typo.body2">Tonny.n1105@gmail.com</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-            </MudCard>
+                        <MudIconButton Icon="@CustomIcons.Notification" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
 
-            <MudIconButton Icon="@CustomIcons.Down" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
-        </MudAppBar>
+                        <MudSpacer />
 
-        <MudDrawer @bind-Open="_drawerOpen" Elevation="1" Variant="@DrawerVariant.Mini" ClipMode="DrawerClipMode.Always" Breakpoint="Breakpoint.Md">
-            <MudImage Width="@logo_w" Src="@logo" ObjectFit="ObjectFit.Contain" />
-            <NavMenu />
-        </MudDrawer>
+                        <MudIconButton Icon="@CustomIcons.Logout" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
 
-    <MudMainContent Style="background-color: background: red;">
-            @Body
-    </MudMainContent>
-</MudLayout>
+                        <MudCard Style="background: inherit;" Elevation="0">
+
+                            <MudCardHeader>
+                                <CardHeaderAvatar>
+                                    <MudAvatar Color="Color.Secondary" Size="Size.Large">R</MudAvatar>
+                                </CardHeaderAvatar>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.body1">Ricardo Montenegro</MudText>
+                                    <MudText Typo="Typo.body2">Tonny.n1105@gmail.com</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                        </MudCard>
+
+                        <MudIconButton Icon="@CustomIcons.Down" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
+                    </MudAppBar>
+
+                    @*<MudMainContent Style="background-color: background: red;">
+                    @Body
+                    </MudMainContent>*@
+
+                    <center>
+                    <MudPaper Width="80%" Height="164px" />
+                    </center>
+                    <center>
+                        <MudPaper Width="80%" Height="164px" />
+                    </center>
+                    <center>
+                        <MudPaper Width="80%" Height="164px" />
+                    </center>
+                </MudPaper>
+
+                
+            </MudItem>
+
+    </MudGrid>  
+</MudContainer>
     
 
 
 @code {
     private MudTheme selectedTheme = CustomThemes.PharmaticThemeRounded;
-    string logo = "/img/Pharmatic 2.png";
-    bool _drawerOpen = false;
-    bool loading = false;
     string search_text;
 
     int? logo_w = 56;
 
-    void DrawerToggle()
-    {
-        if (_drawerOpen) {
-            logo = "/img/Pharmatic 2.png";
-            logo_w = 56;
-        }
-        else {
-            logo = "/img/Pharmatic 1.png";
-            logo_w = 240;
-        }
-        _drawerOpen = !_drawerOpen;
-    }
-
     private void CerrarSesion()
     {
         _navigationManager.NavigateTo("/");
-
     }
 
 }

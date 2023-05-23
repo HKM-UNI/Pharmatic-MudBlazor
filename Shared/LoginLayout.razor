@@ -1,5 +1,5 @@
 ﻿@inherits LayoutComponentBase
-<link rel="stylesheet" href="/css/background.css" />
+<link rel="stylesheet" href="/css/background.css?version=2" />
 
 <MudThemeProvider Theme="selectedTheme"/>
 <MudSnackbarProvider />
@@ -7,13 +7,14 @@
 <MudContainer MaxWidth="MaxWidth.Large" Class="d-flex align-center" Style="height: 100vh;">
     <MudGrid Spacing="0" Justify="Justify.Center"
              Style="border: 10px solid rgba(231, 255, 255, 0.6); box-sizing: border-box; border-radius: 10px;">
-        <MudItem xs="7">
+        <MudItem xs="6" Style="height: 100%;">
             <MudCard Class="pillbkg">
             </MudCard>
+
         </MudItem>
-        <MudItem xs="5">
-            <MudPaper Class="pa-12" Width="100%" Height="100%">
-                <MudImage Fluid="false" Src="/img/Pharmatic.png" Width="320"/>
+        <MudItem xs="6">
+            <MudPaper Class="pa-6" Width="100%" Height="100%">
+                <MudImage Fluid="true" Src="/img/PharmaticLogo.png" />
                     @Body
             </MudPaper>
         </MudItem>
