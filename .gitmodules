@@ -1,0 +1,3 @@
+[submodule "Pharmatic-Core"]
+	path = Pharmatic-Core
+	url = https://github.com/HKM-UNI/Pharmatic-Core.git
