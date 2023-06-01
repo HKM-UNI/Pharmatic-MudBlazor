@@ -7,6 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Content Remove="wwwroot\icons\bag.svg" />
 	  <Content Remove="wwwroot\icons\client.svg" />
 	  <Content Remove="wwwroot\icons\configuration.svg" />
 	  <Content Remove="wwwroot\icons\dashboard.svg" />
@@ -18,9 +19,11 @@
 	  <Content Remove="wwwroot\icons\notification.svg" />
 	  <Content Remove="wwwroot\icons\providers.svg" />
 	  <Content Remove="wwwroot\icons\search.svg" />
+	  <Content Remove="wwwroot\icons\setting3.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Include="wwwroot\icons\bag.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\client.svg" />
 	</ItemGroup>
 
@@ -35,12 +38,17 @@
 	  <EmbeddedResource Include="wwwroot\icons\notification.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\providers.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\search.svg" />
+	  <EmbeddedResource Include="wwwroot\icons\setting3.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.7" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.7" PrivateAssets="all" />
-		<PackageReference Include="MudBlazor" Version="6.0.13" />
+		<PackageReference Include="MudBlazor" Version="6.3.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\PharmaticDTOs\PharmaticDTOs.csproj" />
 	</ItemGroup>
 	
 	
