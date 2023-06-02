@@ -25,37 +25,35 @@
 
             <MudItem xs="10" >
 
-            <MudPaper Class="d-flex flex-column flex-grow-1 gap-4" Elevation="0" Style="background-color: rgba(231, 255, 255, 0.4);">
-                    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;">
-                        <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
-                                      AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />
+                <MudPaper Class="d-flex flex-column flex-grow-1 gap-4" Elevation="0" Style="background-color: rgba(231, 255, 255, 0.4);" Height="96vh">
+                        <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;">
 
-                        <MudIconButton Icon="@CustomIcons.Notification" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
+                            <MudIconButton Icon="@CustomIcons.Notification" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
 
-                        <MudSpacer />
+                            <MudSpacer />
 
-                        <MudIconButton Icon="@CustomIcons.Logout" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
+                            <MudIconButton Icon="@CustomIcons.Logout" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
 
-                        <MudCard Style="background: inherit;" Elevation="0">
+                            <MudCard Style="background: inherit;" Elevation="0">
 
-                            <MudCardHeader>
-                                <CardHeaderAvatar>
-                                    <MudAvatar Color="Color.Secondary" Size="Size.Large">R</MudAvatar>
-                                </CardHeaderAvatar>
-                                <CardHeaderContent>
-                                    <MudText Typo="Typo.body1">Ricardo Montenegro</MudText>
-                                    <MudText Typo="Typo.body2">Tonny.n1105@gmail.com</MudText>
-                                </CardHeaderContent>
-                            </MudCardHeader>
-                        </MudCard>
+                                <MudCardHeader>
+                                    <CardHeaderAvatar>
+                                        <MudAvatar Color="Color.Secondary" Size="Size.Large">R</MudAvatar>
+                                    </CardHeaderAvatar>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.body1">Ricardo Montenegro</MudText>
+                                        <MudText Typo="Typo.body2">Tonny.n1105@gmail.com</MudText>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                            </MudCard>
 
-                        <MudIconButton Icon="@CustomIcons.Down" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
-                    </MudAppBar>
+                            <MudIconButton Icon="@CustomIcons.Down" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
+                        </MudAppBar>
 
-                    <MudMainContent Class="pa-0">
-                        @Body
-                    </MudMainContent>
-                </MudPaper>
+                        <MudMainContent Class="pa-0">
+                            @Body
+                        </MudMainContent>
+                    </MudPaper>
 
                 
             </MudItem>

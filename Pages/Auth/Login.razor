@@ -1,6 +1,5 @@
 ﻿@page "/"
 @inject NavigationManager _navigationManager
-<link rel="stylesheet" href="/css/style.css?version=5" />
 @layout LoginLayout
 
 <EditForm Model="@loginUser" OnValidSubmit="OnValidSubmit">
@@ -16,14 +15,13 @@
             @bind-Value="@loginUser.Email"
                           Label="Correo"
                           Variant="Variant.Outlined"
-                          Class="my-6 txtbox"
+                          Class="my-6"
                           For="@(() => loginUser.Email)"
                           Margin="Margin.Dense">
 
             </MudTextField>
             
             <MudTextField @bind-Value="@loginUser.Password"
-                          Class="txtbox"
                           Label="Contraseña"
                           Variant="Variant.Outlined"
                           InputType="@PasswordInput"

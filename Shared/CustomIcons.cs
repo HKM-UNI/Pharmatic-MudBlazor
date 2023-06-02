@@ -103,8 +103,26 @@ namespace Pharmatic.Shared
             }
         }
 
+		public static string Bag
+		{
+			get
+			{
+				var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.bag.svg");
+				return svgFile;
+			}
+		}
+		public static string Setting
+		{
+			get
+			{
+				var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.setting3.svg");
+				return svgFile;
+			}
+		}
 
-        private static string GetEmbeddedResource(string resourceName)
+
+
+		private static string GetEmbeddedResource(string resourceName)
         {
             var assembly = Assembly.GetExecutingAssembly();
             using (var stream = assembly.GetManifestResourceStream(resourceName))
