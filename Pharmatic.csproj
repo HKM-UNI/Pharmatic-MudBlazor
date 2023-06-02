@@ -46,10 +46,6 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.7" PrivateAssets="all" />
 		<PackageReference Include="MudBlazor" Version="6.3.1" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\PharmaticDTOs\PharmaticDTOs.csproj" />
-	</ItemGroup>
 	
 	
 </Project>
