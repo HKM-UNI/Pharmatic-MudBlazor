@@ -2,24 +2,101 @@
 @layout MainLayout
 @inject NavigationManager _navigationManager
 
-<MudPaper Class="ma-5">
+<MudPaper Style="height: 100%" Class="ma-0">
+    <MudGrid Class="" Justify="Justify.Center">
+        <MudItem xs="2">
+            <MudItem>
+                <MudCard Class="mb-5" Elevation="3" Style="background-color: #F5F5F5; height: 230px;">
+                    <MudCardHeader Class="pb-0 mb-0">
+                        <MudIconButton OnClick="NavToCat">
+                            <MudIcon Icon="@CustomIcons.HashtagDown" Style="width:100px; height:100px;" />
+                        </MudIconButton>
+                    </MudCardHeader>
+                    <MudCardContent Class="pt-0 mt-0">
+                        <MudText Typo="Typo.h6" Align="Align.Center" >Categorías</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
 
-    <MudGrid Class="pa-5">
-        <MudItem xs="6">
-
+            <MudItem>
+                <MudCard Class="" Elevation="3" Style="background-color: #F5F5F5; height: 230px;">
+                    <MudCardHeader Class="pb-0 mb-0">
+                        <MudIconButton OnClick="NavToSubCat">
+                            <MudIcon Icon="@CustomIcons.HashtagDown" Style="width:100px; height:100px;" />
+                        </MudIconButton>
+                    </MudCardHeader>
+                    <MudCardContent Class="pt-0 mt-0">
+                        <MudText Typo="Typo.h6" Align="Align.Center">Sub Categorías</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
         </MudItem>
 
-        <MudItem xs="6">
-            <MudCard Class="pa-5">
+        <MudItem xs="2">
+            <MudItem>
+                <MudCard Class="mb-5" Elevation="3" Style="background-color: #F5F5F5; height: 230px;">
+                    <MudCardHeader Class="pb-0 mb-0">
+                        <MudIconButton OnClick="NavToUMedidas">
+                            <MudIcon Icon="@CustomIcons.Filter" Style="width:100px; height:100px;" />
+                        </MudIconButton>
+                    </MudCardHeader>
+                    <MudCardContent Class="pt-0 mt-0">
+                        <MudText Typo="Typo.h6" Align="Align.Center">Unidades de medida</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
 
-            </MudCard>
+            <MudItem>
+                <MudCard Class="" Elevation="3" Style="background-color: #F5F5F5; height: 230px;">
+                    <MudCardHeader Class="pb-0 mb-0">
+                        <MudIconButton OnClick="NavToTags">
+                            <MudIcon Icon="@CustomIcons.Tag2" Style="width:100px; height:100px;" />
+                        </MudIconButton>
+                    </MudCardHeader>
+                    <MudCardContent Class="pt-0 mt-0">
+                        <MudText Typo="Typo.h6" Align="Align.Center">Tags</MudText>
+                    </MudCardContent>
+                    
+                </MudCard>
+            </MudItem>
         </MudItem>
 
+        <MudItem xs="2">
+            <MudItem>
+                <MudCard Class="mb-5" Elevation="3" Style="background-color: #F5F5F5; height: 230px;">
+                    <MudCardHeader Class="pb-0 mb-0">
+                        <MudIconButton OnClick="NavToVDAdministracion">
+                            <MudIcon Icon="@CustomIcons.Milk" Style="width:100px; height:100px;" />
+                        </MudIconButton>
+                    </MudCardHeader>
+                    <MudCardContent Class="pt-0 mt-0">
+                        <MudText Typo="Typo.h6" Align="Align.Center">Vía de administración</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem>
+                <MudCard Class="" Elevation="3" Style="background-color: #F5F5F5; height: 230px;">
+                    <MudCardHeader Class="pb-0 mb-0">
+                        <MudIconButton OnClick="NavToDosis">
+                            <MudIcon Icon="@CustomIcons.Edit" Style="width:100px; height:100px;" />
+                        </MudIconButton>
+                    </MudCardHeader>
+                    <MudCardContent Class="pt-0 mt-0">
+                        <MudText Typo="Typo.h6" Align="Align.Center">Tipo de dosis</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudItem>
     </MudGrid>
-
 </MudPaper>
 
-
 @code {
-
+    private void NavToCat() { _navigationManager.NavigateTo("/metadata/categorias"); }
+    private void NavToSubCat() { _navigationManager.NavigateTo("/metadata/subcategorias"); }
+    private void NavToUMedidas() { _navigationManager.NavigateTo("/metadata/umedidas"); }
+    private void NavToTags() { _navigationManager.NavigateTo("/metadata/tags"); }
+    private void NavToVDAdministracion() { _navigationManager.NavigateTo("/metadata/vdadministracion"); }
+    private void NavToDosis() { _navigationManager.NavigateTo("/metadata/dosis"); }
 }
+        

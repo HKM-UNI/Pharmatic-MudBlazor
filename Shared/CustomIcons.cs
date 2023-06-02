@@ -120,9 +120,52 @@ namespace Pharmatic.Shared
 			}
 		}
 
+        public static string HashtagDown
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.hashtagdown.svg");
+                return svgFile;
+            }
+        }
 
+        public static string Edit
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.edit.svg");
+                return svgFile;
+            }
+        }
 
-		private static string GetEmbeddedResource(string resourceName)
+        public static string Filter
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.filter.svg");
+                return svgFile;
+            }
+        }
+
+        public static string Milk
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.milk.svg");
+                return svgFile;
+            }
+        }
+
+        public static string Tag2
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.tag2.svg");
+                return svgFile;
+            }
+        }
+
+        private static string GetEmbeddedResource(string resourceName)
         {
             var assembly = Assembly.GetExecutingAssembly();
             using (var stream = assembly.GetManifestResourceStream(resourceName))

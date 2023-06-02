@@ -1,0 +1,57 @@
+﻿@page "/metadata/categorias"
+@using Pharmatic.DTOs;
+@using Pharmatic.Services;
+@layout MainLayout
+@inject CategoryService _categoryService
+@inject NavigationManager _navigationManager
+
+<MudPaper Class="ma-5">
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;">
+        <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
+                      AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />
+
+        <MudSpacer />
+
+        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Primary">
+            Agregar
+        </MudButton>
+    </MudAppBar>
+    <MudGrid Class="pa-5">
+        @foreach (var cat in cat_list)
+        {
+            <MudItem xs="4">
+                <MudCard Style="background-color: #F5F5F5">
+                   <MudCardContent>
+                        <MudText Typo="Typo.body1">@cat.Name</MudText>
+                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                                   Color="Color.Error">
+                            Eliminar
+                        </MudButton>
+                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                                   Color="Color.Primary">
+                            Editar
+                        </MudButton>
+                   </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+
+</MudPaper>
+
+@code {
+    private string search_text;
+    private List<CategoryDTO> cat_list = new List<CategoryDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ObtenerCategorias();
+    }
+
+    private async Task ObtenerCategorias()
+    {
+        var result = await _categoryService.CategoryList();
+        cat_list = (List<CategoryDTO>)result!;
+    }
+}

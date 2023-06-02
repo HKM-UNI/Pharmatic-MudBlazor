@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
@@ -13,13 +13,18 @@
 	  <Content Remove="wwwroot\icons\dashboard.svg" />
 	  <Content Remove="wwwroot\icons\down.svg" />
 	  <Content Remove="wwwroot\icons\dropbox.svg" />
+	  <Content Remove="wwwroot\icons\edit.svg" />
 	  <Content Remove="wwwroot\icons\emptywallet.svg" />
+	  <Content Remove="wwwroot\icons\filter.svg" />
+	  <Content Remove="wwwroot\icons\hashtagdown.svg" />
 	  <Content Remove="wwwroot\icons\logout.svg" />
+	  <Content Remove="wwwroot\icons\milk.svg" />
 	  <Content Remove="wwwroot\icons\notepad.svg" />
 	  <Content Remove="wwwroot\icons\notification.svg" />
 	  <Content Remove="wwwroot\icons\providers.svg" />
 	  <Content Remove="wwwroot\icons\search.svg" />
 	  <Content Remove="wwwroot\icons\setting3.svg" />
+	  <Content Remove="wwwroot\icons\tag2.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -32,13 +37,18 @@
 	  <EmbeddedResource Include="wwwroot\icons\dashboard.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\down.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\dropbox.svg" />
+	  <EmbeddedResource Include="wwwroot\icons\edit.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\emptywallet.svg" />
+	  <EmbeddedResource Include="wwwroot\icons\filter.svg" />
+	  <EmbeddedResource Include="wwwroot\icons\hashtagdown.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\logout.svg" />
+	  <EmbeddedResource Include="wwwroot\icons\milk.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\notepad.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\notification.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\providers.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\search.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\setting3.svg" />
+	  <EmbeddedResource Include="wwwroot\icons\tag2.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
