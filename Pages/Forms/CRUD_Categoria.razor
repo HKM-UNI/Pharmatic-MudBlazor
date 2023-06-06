@@ -44,7 +44,7 @@
 </MudPaper>
 
 @code {
-    private string search_text;
+    private string search_text = string.Empty;
     private List<CategoryDTO> cat_list = new List<CategoryDTO>();
 
     protected override async Task OnInitializedAsync()

@@ -2,6 +2,7 @@
 {
     public class TagDTO
     {
-        public string? TagName { get; set; }
+        public int TagNo { get; set; }
+        public string Name { get; set; } = default!;
     }
 }

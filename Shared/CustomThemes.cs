@@ -4,7 +4,7 @@ namespace Pharmatic.Shared
 {
     public class CustomThemes
     {
-        public static Palette PharmaticPalette { get; } = new Palette()
+        public static PaletteLight PharmaticPalette { get; } = new PaletteLight()
         {
             Primary = "#17ACBE",
             PrimaryDarken = "#17ACBE",
