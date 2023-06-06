@@ -5,8 +5,8 @@
 @inject CategoryService _categoryService
 @inject NavigationManager _navigationManager
 
-<MudPaper Class="ma-5">
-    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;">
+<MudPaper>
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
         <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
                       AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />
 
@@ -17,21 +17,19 @@
             Agregar
         </MudButton>
     </MudAppBar>
-    <MudGrid Class="pa-5">
+    <MudGrid Class="pa-3" Spacing="1">
         @foreach (var cat in cat_list)
         {
-            <MudItem xs="4">
+            <MudItem xs="3">
                 <MudCard Style="background-color: #F5F5F5">
-                   <MudCardContent>
+                    <MudCardContent Style="display: flex; justify-content: space-between; align-items: center;">
                         <MudText Typo="Typo.body1">@cat.Name</MudText>
-                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
                                    Color="Color.Error">
                             Eliminar
                         </MudButton>
 
-                        <MudDivider DividerType="DividerType.Middle"></MudDivider>
-
-                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
                                    Color="Color.Primary">
                             Editar
                         </MudButton>

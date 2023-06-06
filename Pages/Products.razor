@@ -5,8 +5,8 @@
 @inject ProductService _productService
 @inject NavigationManager _navigationManager
 
-<MudPaper Class="ma-5">
-    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;">
+<MudPaper>
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
         <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
                       AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />
 
@@ -24,7 +24,7 @@
             Agregar
         </MudButton>
     </MudAppBar>
-    <MudGrid Class="pa-5">
+    <MudGrid Class="pa-3">
         @foreach (var prod in product_list)
         {
             <MudItem xs="4">
@@ -49,9 +49,9 @@
                                 }
                             }
                             else
-                                {
+                            {
                                     <MudChip Color="Color.Error" Size="Size.Small">Sin etiquetas</MudChip>
-                                }
+                                
                             }
                         </CardHeaderContent>
 
