@@ -29,17 +29,17 @@
                 <MudCard Style="background-color: #F5F5F5">
                     <MudCardHeader>
                         <CardHeaderAvatar>
-                            <MudImage Src="@prod.ImgURL" Width="80" Height="80" Elevation="25" Class="rounded-lg ma-4" />
+                            <MudImage Src="@prod.ImageUrl" Width="80" Height="80" Elevation="25" Class="rounded-lg ma-4" />
                         </CardHeaderAvatar>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h5">@prod.Name</MudText>
-                            <MudText Typo="Typo.body1">@prod.Category - # de lotes @prod.LotCount</MudText>
+                            <MudText Typo="Typo.body1">@prod.Category?.Name - # de lotes @prod.LotCount</MudText>
                             <div>
-                                @if (prod.Tags.Count > 0)
+                                @if (prod.Tags?.Count > 0)
                                 {
                                     @foreach (var tag in prod.Tags)
                                     {
-                                        <MudChip Color="Color.Primary" Size="Size.Small">@tag.TagName</MudChip>
+                                        <MudChip Color="Color.Primary" Size="Size.Small">@tag.Name</MudChip>
                                     }
                                 }
                                 else
@@ -57,8 +57,8 @@
 </MudPaper>
 
 @code {
-    private string search_text;
-    private List<ProductDTO> product_list = new List<ProductDTO>();
+    private string search_text = string.Empty;
+    private List<ProductMinimalDTO> product_list = new List<ProductMinimalDTO>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,6 +73,6 @@
     private async Task ObtenerProductos()
     {
         var result = await _productService.ProductList();
-        product_list = (List<ProductDTO>)result!;
+        product_list = result!;
     }
 }
