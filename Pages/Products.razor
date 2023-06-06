@@ -28,44 +28,37 @@
         @foreach (var prod in product_list)
         {
             <MudItem xs="4">
+                
                 <MudCard Style="background-color: #F5F5F5">
+                    
                     <a href="/productos/detalle" style="display: block; text-decoration: none;">
-                        <MudCardHeader>
-                            <CardHeaderAvatar>
-                                <MudImage Src="@prod.ImgURL" Width="80" Height="80" Elevation="25" Class="rounded-lg ma-4" />
-                            </CardHeaderAvatar>
-                            <CardHeaderContent>
-                                <MudText Typo="Typo.h5">@prod.Name</MudText>
-                                <MudText Typo="Typo.body1">@prod.Category - # de lotes @prod.LotCount</MudText>
-                                <div>
-                                    @if (prod.Tags.Count > 0)
-                                    {
-                                        @foreach (var tag in prod.Tags)
-                                        {
-                                            <MudChip Color="Color.Primary" Size="Size.Small">@tag.TagName</MudChip>
-                                        }
+
                     <MudCardHeader>
+                        
                         <CardHeaderAvatar>
                             <MudImage Src="@prod.ImageUrl" Width="80" Height="80" Elevation="25" Class="rounded-lg ma-4" />
                         </CardHeaderAvatar>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h5">@prod.Name</MudText>
                             <MudText Typo="Typo.body1">@prod.Category?.Name - # de lotes @prod.LotCount</MudText>
-                            <div>
-                                @if (prod.Tags?.Count > 0)
+                            @if (prod.Tags?.Count > 0)
+                            {
+                                @foreach (var tag in prod.Tags)
                                 {
-                                    @foreach (var tag in prod.Tags)
-                                    {
-                                        <MudChip Color="Color.Primary" Size="Size.Small">@tag.Name</MudChip>
-                                    }
-                                    else
-                                    {
-                                        <MudChip Color="Color.Error" Size="Size.Small">Sin etiquetas</MudChip>
-                                    }
-                                </div>
-                            </CardHeaderContent>
-                        </MudCardHeader>
+                                    <MudChip Color="Color.Primary" Size="Size.Small">@tag.Name</MudChip>
+                                }
+                            }
+                            else
+                                {
+                                    <MudChip Color="Color.Error" Size="Size.Small">Sin etiquetas</MudChip>
+                                }
+                            }
+                        </CardHeaderContent>
+
+                    </MudCardHeader>
+                        
                     </a>
+
                 </MudCard>
 
             </MudItem>
