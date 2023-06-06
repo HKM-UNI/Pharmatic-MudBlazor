@@ -1,0 +1,85 @@
+﻿@page "/productos/detalle"
+@using Pharmatic.DTOs;
+@using Pharmatic.Services;
+@layout MainLayout
+@inject ProductService _productService
+@inject NavigationManager _navigationManager
+
+<MudPaper Class="ma-3">
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;">
+
+        <MudSpacer />
+
+        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Error">
+            Eliminar Producto
+        </MudButton>
+
+        <MudDivider DividerType="DividerType.Middle"></MudDivider>
+
+        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Primary">
+            Editar Producto
+        </MudButton>
+    </MudAppBar>
+    <MudGrid Class="pa-5">
+        <MudItem xs="4">
+            <MudImage Src="https://cnnespanol.cnn.com/wp-content/uploads/2022/07/220425113657-paxlovid-box-0222.jpeg?quality=100&strip=info" 
+                Style="width: 100%; height: auto;" ObjectFit="ObjectFit.Contain"/>
+        </MudItem>
+
+        <MudItem xs="8">
+            <MudCard>
+                <MudCardHeader>
+                    <MudText Typo="Typo.h5">{Nombre Producto}</MudText>
+                    <MudDivider DividerType="DividerType.Middle"></MudDivider>
+                    <MudText Typo="Typo.h6">{Categoria}-{Sub Categoria}</MudText>
+                </MudCardHeader>
+
+                <MudCardActions>
+                    <MudChip Color="Color.Primary" Size="Size.Small">Tag</MudChip>
+                    <MudChip Color="Color.Primary" Size="Size.Small">Tag</MudChip>
+                    <MudChip Color="Color.Primary" Size="Size.Small">Tag</MudChip>
+                </MudCardActions>
+                
+                <MudCardContent>
+                    
+                    <MudText Typo="Typo.body1">
+                        Descripcion Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
+                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown 
+                        printer took a galley of type and scrambled it to make a type specimen book. It has survived 
+                        not only five centuries, but also the leap into electronic typesetting, remaining essentially 
+                        unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem 
+                        Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including 
+                        versions of Lorem Ipsum.</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudText Typo="Typo.h6">Lotes: {N de lotes}</MudText>
+            <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                       Color="Color.Primary">
+                Agregar Lote
+            </MudButton>
+        </MudItem>
+        
+        <MudItem xs="12">
+            <MudCard Style="background-color: #F5F5F5">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1">{tipo de dosis} {via de administracion} {unidad de medida} {cantidad}</MudText>
+                        <MudText Typo="Typo.body1">Stock: {stock} Venta:{PrecioVenta} Compra: {PrecioCompra}</MudText>
+                        <MudText Typo="Typo.h6">{Proveedor} {Consigna} {Fecha de expiracion}</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+            </MudCard>
+        </MudItem>
+
+    </MudGrid>
+
+</MudPaper>
+
+@code {
+
+}
