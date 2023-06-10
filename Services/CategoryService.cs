@@ -13,7 +13,10 @@ namespace Pharmatic.Services
 
         public async Task<List<CategoryDTO>> CategoryList()
         {
-            var result = await _http.GetFromJsonAsync<List<CategoryDTO>>("https://localhost:7036/api/Category");
+            // var url = "https://localhost:7036/api/Category";
+            // ⚠️ Experimental flask API endpoint
+            // var url = "http://localhost:7035/api/categories";
+            var result = await _http.GetFromJsonAsync<List<CategoryDTO>>(url);
             return result!;
         }
     }
