@@ -1,0 +1,63 @@
+﻿@page "/metadata/umedidas"
+@using Pharmatic.DTOs;
+@using Pharmatic.Services;
+@layout MainLayout
+@inject MeasureService _measureService
+@inject NavigationManager _navigationManager
+
+<MudPaper>
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
+        <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
+                      AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />
+
+        <MudSpacer />
+
+        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Primary" OnClick="Devolver">
+            Agregar
+        </MudButton>
+    </MudAppBar>
+    <MudGrid Class="pa-3" Spacing="1">
+        @foreach (var ms in ms_list)
+        {
+            <MudItem xs="3">
+                <MudCard Style="background-color: #F5F5F5">
+                    <MudCardContent Style="display: flex; justify-content: space-between; align-items: center;">
+                        <MudText Typo="Typo.body1">@ms.Unit</MudText>
+                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                   Color="Color.Error" OnClick="Devolver">
+                            Eliminar
+                        </MudButton>
+
+                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                   Color="Color.Primary" OnClick="Devolver">
+                            Editar
+                        </MudButton>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+
+</MudPaper>
+
+@code {
+    private string search_text = string.Empty;
+    private List<MeasureDTO> ms_list = new List<MeasureDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetMeasures();
+    }
+
+    private void Devolver()
+    {
+        _navigationManager.NavigateTo("/metadata");
+    }
+
+    private async Task GetMeasures()
+    {
+        var result = await _measureService.MeasureList();
+        ms_list = (List<MeasureDTO>)result!;
+    }
+}

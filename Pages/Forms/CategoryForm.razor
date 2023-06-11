@@ -13,7 +13,7 @@
         <MudSpacer />
 
         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Primary">
+                   Color="Color.Primary" OnClick="Devolver">
             Agregar
         </MudButton>
     </MudAppBar>
@@ -25,12 +25,12 @@
                     <MudCardContent Style="display: flex; justify-content: space-between; align-items: center;">
                         <MudText Typo="Typo.body1">@cat.Name</MudText>
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error">
+                                   Color="Color.Error" OnClick="Devolver">
                             Eliminar
                         </MudButton>
 
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary">
+                                   Color="Color.Primary" OnClick="Devolver">
                             Editar
                         </MudButton>
                    </MudCardContent>
@@ -47,10 +47,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await ObtenerCategorias();
+        await GetCategories();
     }
 
-    private async Task ObtenerCategorias()
+    private void Devolver()
+    {
+        _navigationManager.NavigateTo("/metadata");
+    }
+
+    private async Task GetCategories()
     {
         var result = await _categoryService.CategoryList();
         cat_list = (List<CategoryDTO>)result!;

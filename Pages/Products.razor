@@ -73,7 +73,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await ObtenerProductos();
+        await GetProducts();
     }
 
     private void AgregarClicked()
@@ -81,7 +81,7 @@
         _navigationManager.NavigateTo("/productos/agregar");
     }
 
-    private async Task ObtenerProductos()
+    private async Task GetProducts()
     {
         var result = await _productService.ProductList();
         product_list = result!;
