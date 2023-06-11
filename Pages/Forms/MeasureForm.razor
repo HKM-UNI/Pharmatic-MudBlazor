@@ -4,6 +4,7 @@
 @layout MainLayout
 @inject MeasureService _measureService
 @inject NavigationManager _navigationManager
+@inject SharedData _data
 
 <MudPaper>
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
@@ -13,7 +14,7 @@
         <MudSpacer />
 
         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Primary" OnClick="Devolver">
+                   Color="Color.Primary" OnClick="OpenAddDialog">
             Agregar
         </MudButton>
     </MudAppBar>
@@ -22,15 +23,15 @@
         {
             <MudItem xs="3">
                 <MudCard Style="background-color: #F5F5F5">
-                    <MudCardContent Style="display: flex; justify-content: space-between; align-items: center;">
+                    <MudCardContent Style="display: flex; justify-content: space-evenly; align-items: center;">
                         <MudText Typo="Typo.body1">@ms.Unit</MudText>
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error" OnClick="Devolver">
+                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(ms.Unit)">
                             Eliminar
                         </MudButton>
 
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary" OnClick="Devolver">
+                                   Color="Color.Primary" OnClick="() => OpenEditDialog(ms.Unit)">
                             Editar
                         </MudButton>
                     </MudCardContent>
@@ -41,12 +42,90 @@
 
 </MudPaper>
 
+<MudDialog @bind-IsVisible="add_visible">
+    <TitleContent>
+        <MudText Typo="Typo.h4">
+            Creación de unidad de medida
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="measure_txt" Label="Nombre medida" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="AddSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddSubmit" Class="px-10">Crear</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @bind-IsVisible="edit_visible">
+    <TitleContent>
+        <MudText Typo="Typo.h4">
+            Edición de unidad de medida
+        </MudText>
+        <MudText Typo="Typo.body1">
+            Nombre actual de unidad de medida: @current_measure
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="measure_txt" Label="Nuevo nombre" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="EditSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditSubmit" Class="px-10">Crear</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @bind-IsVisible="delete_visible">
+    <TitleContent>
+        <MudText Typo="Typo.h4">
+            Desea eliminar @current_measure?
+        </MudText>
+        <MudText Typo="Typo.body1">
+            Estas completamente seguro, tambien eliminaras los registros que dependen de esta información.
+        </MudText>
+    </TitleContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" OnClick="DeleteSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteSubmit" Class="px-10">Eliminar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
 @code {
     private string search_text = string.Empty;
     private List<MeasureDTO> ms_list = new List<MeasureDTO>();
 
+    private bool add_visible;
+    private void OpenAddDialog() => add_visible = true;
+    void AddSubmit() => add_visible = false;
+
+    private bool edit_visible;
+    private void OpenEditDialog(string n)
+    {
+        edit_visible = true;
+        current_measure = n;
+    }
+    void EditSubmit() => edit_visible = false;
+
+    private bool delete_visible;
+    private void OpenDeleteDialog(string n)
+    {
+        delete_visible = true;
+        current_measure = n;
+    }
+    void DeleteSubmit() => delete_visible = false;
+
+    private string measure_txt;
+    private string current_measure;
+
     protected override async Task OnInitializedAsync()
     {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Metadata", href: "/metadata"),
+            new BreadcrumbItem("Unidades de medida", href: null, disabled: true)
+        };
         await GetMeasures();
     }
 

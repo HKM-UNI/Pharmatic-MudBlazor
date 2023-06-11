@@ -16,5 +16,9 @@ builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<SubCategoryService>();
 builder.Services.AddScoped<TagService>();
 builder.Services.AddScoped<MeasureService>();
+builder.Services.AddScoped<RouteOfAdministrationService>();
+builder.Services.AddScoped<TypeDoseService>();
+
+builder.Services.AddScoped<SharedData>();
 
 await builder.Build().RunAsync();

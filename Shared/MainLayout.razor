@@ -1,10 +1,18 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager _navigationManager
+@inject SharedData _data
 @using static CustomIcons
+@using System
+@using System.Timers
+@using Pharmatic.Services;
 <link rel="stylesheet" href="/css/background.css?version=5" />
 
 <MudThemeProvider Theme="selectedTheme" />
 <MudSnackbarProvider />
+<MudDialogProvider FullWidth="true"
+                   DisableBackdropClick="true"
+                   Position="DialogPosition.Center"
+                   CloseOnEscapeKey="true" />
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="d-flex align-center mt-5">
     <MudGrid >
@@ -20,6 +28,15 @@
 
                     <NavMenu/>
 
+                    <div style="flex-grow: 1;"/>
+
+                    <center>
+                        <hr style="height: 1px; border: none; background-color: rgba(82, 82, 92, 0.5); width: 80%;" />
+                        <MudText Typo="Typo.h3" Class="my-3">
+                        @currentTime
+                        </MudText>
+                    </center>
+
                 </MudPaper>
             </MudItem>
 
@@ -28,6 +45,8 @@
                 <MudPaper Class="d-flex flex-column flex-grow-1 gap-4" Elevation="0" Style="background-color: rgba(231, 255, 255, 0.4);" Height="96vh">
                         <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;">
 
+                            <MudBreadcrumbs Items="_data.Items" Separator=">"/>
+                            
                             <MudIconButton Icon="@CustomIcons.Notification" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
 
                             <MudSpacer />
@@ -66,10 +85,41 @@
 @code {
     private MudTheme selectedTheme = CustomThemes.PharmaticThemeRounded;
     string search_text = string.Empty;
+    private string currentTime;
+    private Timer timer;
+
+    protected override void OnInitialized()
+    {
+        timer = new Timer(1000);
+        timer.Elapsed += TimerElapsed;
+        timer.Start();
+        UpdateCurrentTime();
+
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home, disabled:true)
+        };
+    }
 
     private void CerrarSesion()
     {
         _navigationManager.NavigateTo("/");
+    }
+
+    private void TimerElapsed(object sender, ElapsedEventArgs e)
+    {
+        UpdateCurrentTime();
+        StateHasChanged();
+    }
+
+    private void UpdateCurrentTime()
+    {
+        currentTime = DateTime.Now.ToString("HH:mm tt");
+    }
+
+    public void Dispose()
+    {
+        timer.Dispose();
     }
 
 }

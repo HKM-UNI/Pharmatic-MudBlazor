@@ -1,11 +1,10 @@
-﻿@page "/metadata/categorias"
+﻿@page "/metadata/dosis"
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
-@layout MainLayout
-@inject CategoryService _categoryService
-@inject NavigationManager _navigationManager
 @inject SharedData _data
-
+@layout MainLayout
+@inject TypeDoseService _doseService
+@inject NavigationManager _navigationManager
 
 <MudPaper>
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
@@ -20,19 +19,19 @@
         </MudButton>
     </MudAppBar>
     <MudGrid Class="pa-3" Spacing="1">
-        @foreach (var cat in cat_list)
+        @foreach (var dose in dose_list)
         {
             <MudItem xs="3">
                 <MudCard Style="background-color: #F5F5F5">
-                    <MudCardContent Style="display: flex; justify-content: space-evenly; align-items: center;">
-                        <MudText Typo="Typo.body1">@cat.Name</MudText>
-                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(cat.Name)">
-                            Eliminar
-                        </MudButton>
+                    <MudCardContent Style="display: flex; justify-content:space-evenly; align-items: center;">
+                        <MudText Typo="Typo.body1">@dose.Name</MudText>
 
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary" OnClick="() => OpenEditDialog(cat.Name)">
+                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(dose.Name)">
+                            Eliminar
+                        </MudButton>
+                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                   Color="Color.Primary" OnClick="() => OpenEditDialog(dose.Name)">
                             Editar
                         </MudButton>
                    </MudCardContent>
@@ -46,11 +45,11 @@
 <MudDialog @bind-IsVisible="add_visible">
     <TitleContent>
         <MudText Typo="Typo.h4">
-            Creación de categoría
+            Creación de tipo de dosis
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="cat_txt" Label="Nombre categoría" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+        <MudTextField @bind-Value="dose_txt" Label="Tipo de dosis" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     </DialogContent>
     <DialogActions>
         <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="AddSubmit" Class="px-10">Cancelar</MudButton>
@@ -61,14 +60,14 @@
 <MudDialog @bind-IsVisible="edit_visible">
     <TitleContent>
         <MudText Typo="Typo.h4">
-            Edición de categoría
+            Edición de tipo de dosis
         </MudText>
         <MudText Typo="Typo.body1">
-            Nombre actual de categoría: @current_cat
+            Nombre actual de tipo de dosis: @current_dose
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="cat_txt" Label="Nuevo nombre" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+        <MudTextField @bind-Value="dose_txt" Label="Nuevo nombre" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     </DialogContent>
     <DialogActions>
         <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="EditSubmit" Class="px-10">Cancelar</MudButton>
@@ -79,7 +78,7 @@
 <MudDialog @bind-IsVisible="delete_visible">
     <TitleContent>
         <MudText Typo="Typo.h4">
-            Desea eliminar @current_cat?
+            Desea eliminar @current_dose?
         </MudText>
         <MudText Typo="Typo.body1">
             Estas completamente seguro, tambien eliminaras los registros que dependen de esta información.
@@ -93,14 +92,7 @@
 
 @code {
     private string search_text = string.Empty;
-    private List<CategoryDTO> cat_list = new List<CategoryDTO>();
-
-    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
-    {
-        new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
-        new BreadcrumbItem("Metadata", href: "/metadata"),
-        new BreadcrumbItem("Categorías", href: null, disabled: true)
-    };
+    private List<TypeDoseDTO> dose_list = new List<TypeDoseDTO>();
 
     private bool add_visible;
     private void OpenAddDialog() => add_visible = true;
@@ -110,7 +102,7 @@
     private void OpenEditDialog(string n)
     {
         edit_visible = true;
-        current_cat = n;
+        current_dose = n;
     }
     void EditSubmit() => edit_visible = false;
 
@@ -118,23 +110,22 @@
     private void OpenDeleteDialog(string n)
     {
         delete_visible = true;
-        current_cat = n;
+        current_dose = n;
     }
     void DeleteSubmit() => delete_visible = false;
 
-    private string cat_txt;
-    private string current_cat;
+    private string dose_txt;
+    private string current_dose;
 
     protected override async Task OnInitializedAsync()
     {
-        
         _data.Items = new List<BreadcrumbItem>
         {
             new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
             new BreadcrumbItem("Metadata", href: "/metadata"),
-            new BreadcrumbItem("Categorías", href: null, disabled: true)
+            new BreadcrumbItem("Tipo de dosis", href: null, disabled: true)
         };
-        await GetCategories();
+        await GetDoses();
     }
 
     private void Devolver()
@@ -142,9 +133,9 @@
         _navigationManager.NavigateTo("/metadata");
     }
 
-    private async Task GetCategories()
+    private async Task GetDoses()
     {
-        var result = await _categoryService.CategoryList();
-        cat_list = (List<CategoryDTO>)result!;
+        var result = await _doseService.TypeDoseList();
+        dose_list = (List<TypeDoseDTO>)result!;
     }
 }

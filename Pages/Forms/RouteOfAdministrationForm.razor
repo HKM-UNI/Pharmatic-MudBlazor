@@ -1,8 +1,8 @@
-﻿@page "/metadata/categorias"
+﻿@page "/metadata/vias"
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @layout MainLayout
-@inject CategoryService _categoryService
+@inject RouteOfAdministrationService _roaService
 @inject NavigationManager _navigationManager
 @inject SharedData _data
 
@@ -20,25 +20,7 @@
         </MudButton>
     </MudAppBar>
     <MudGrid Class="pa-3" Spacing="1">
-        @foreach (var cat in cat_list)
-        {
-            <MudItem xs="3">
-                <MudCard Style="background-color: #F5F5F5">
-                    <MudCardContent Style="display: flex; justify-content: space-evenly; align-items: center;">
-                        <MudText Typo="Typo.body1">@cat.Name</MudText>
-                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(cat.Name)">
-                            Eliminar
-                        </MudButton>
 
-                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary" OnClick="() => OpenEditDialog(cat.Name)">
-                            Editar
-                        </MudButton>
-                   </MudCardContent>
-                </MudCard>
-            </MudItem>
-        }
     </MudGrid>
 
 </MudPaper>
@@ -46,11 +28,11 @@
 <MudDialog @bind-IsVisible="add_visible">
     <TitleContent>
         <MudText Typo="Typo.h4">
-            Creación de categoría
+            Creación de vía de administración
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="cat_txt" Label="Nombre categoría" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+        <MudTextField @bind-Value="roa_txt" Label="Vía de administración" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     </DialogContent>
     <DialogActions>
         <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="AddSubmit" Class="px-10">Cancelar</MudButton>
@@ -61,14 +43,14 @@
 <MudDialog @bind-IsVisible="edit_visible">
     <TitleContent>
         <MudText Typo="Typo.h4">
-            Edición de categoría
+            Edición de vía de administración
         </MudText>
         <MudText Typo="Typo.body1">
-            Nombre actual de categoría: @current_cat
+            Nombre actual de vía de administración: @current_roa
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="cat_txt" Label="Nuevo nombre" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+        <MudTextField @bind-Value="roa_txt" Label="Nuevo nombre" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     </DialogContent>
     <DialogActions>
         <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="EditSubmit" Class="px-10">Cancelar</MudButton>
@@ -79,7 +61,7 @@
 <MudDialog @bind-IsVisible="delete_visible">
     <TitleContent>
         <MudText Typo="Typo.h4">
-            Desea eliminar @current_cat?
+            Desea eliminar @current_roa?
         </MudText>
         <MudText Typo="Typo.body1">
             Estas completamente seguro, tambien eliminaras los registros que dependen de esta información.
@@ -93,14 +75,7 @@
 
 @code {
     private string search_text = string.Empty;
-    private List<CategoryDTO> cat_list = new List<CategoryDTO>();
-
-    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
-    {
-        new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
-        new BreadcrumbItem("Metadata", href: "/metadata"),
-        new BreadcrumbItem("Categorías", href: null, disabled: true)
-    };
+    private List<RouteOfAdmDTO> roa_list = new List<RouteOfAdmDTO>();
 
     private bool add_visible;
     private void OpenAddDialog() => add_visible = true;
@@ -110,7 +85,7 @@
     private void OpenEditDialog(string n)
     {
         edit_visible = true;
-        current_cat = n;
+        current_roa = n;
     }
     void EditSubmit() => edit_visible = false;
 
@@ -118,23 +93,22 @@
     private void OpenDeleteDialog(string n)
     {
         delete_visible = true;
-        current_cat = n;
+        current_roa = n;
     }
     void DeleteSubmit() => delete_visible = false;
 
-    private string cat_txt;
-    private string current_cat;
+    private string roa_txt;
+    private string current_roa;
 
     protected override async Task OnInitializedAsync()
     {
-        
         _data.Items = new List<BreadcrumbItem>
         {
             new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
             new BreadcrumbItem("Metadata", href: "/metadata"),
-            new BreadcrumbItem("Categorías", href: null, disabled: true)
+            new BreadcrumbItem("Vías de administración", href: null, disabled: true)
         };
-        await GetCategories();
+        await GetROAs();
     }
 
     private void Devolver()
@@ -142,9 +116,9 @@
         _navigationManager.NavigateTo("/metadata");
     }
 
-    private async Task GetCategories()
+    private async Task GetROAs()
     {
-        var result = await _categoryService.CategoryList();
-        cat_list = (List<CategoryDTO>)result!;
+        var result = await _roaService.RoutesOfAdmList();
+        roa_list = (List<RouteOfAdmDTO>)result!;
     }
 }

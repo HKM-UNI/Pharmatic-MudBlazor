@@ -1,6 +1,8 @@
 ﻿@page "/metadata"
+@using Pharmatic.Services;
 @layout MainLayout
 @inject NavigationManager _navigationManager
+@inject SharedData _data
 
 <MudPaper Style="height: 100%" Class="ma-0 pa-5">
     <MudGrid Class="" Justify="Justify.Center">
@@ -96,7 +98,17 @@
     private void NavToSubCat() { _navigationManager.NavigateTo("/metadata/subcategorias"); }
     private void NavToUMedidas() { _navigationManager.NavigateTo("/metadata/umedidas"); }
     private void NavToTags() { _navigationManager.NavigateTo("/metadata/tags"); }
-    private void NavToVDAdministracion() { _navigationManager.NavigateTo("/metadata/vdadministracion"); }
+    private void NavToVDAdministracion() { _navigationManager.NavigateTo("/metadata/vias"); }
     private void NavToDosis() { _navigationManager.NavigateTo("/metadata/dosis"); }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Metadata", href: null, disabled: true)
+        };
+    }
 }
         

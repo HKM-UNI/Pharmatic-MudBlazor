@@ -4,6 +4,7 @@
 @layout MainLayout
 @inject SubCategoryService _subcategoryService
 @inject NavigationManager _navigationManager
+@inject SharedData _data
 
 <MudPaper>
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
@@ -13,24 +14,24 @@
         <MudSpacer />
 
         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Primary" OnClick="Devolver">
+                   Color="Color.Primary" OnClick="OpenAddDialog">
             Agregar
         </MudButton>
     </MudAppBar>
     <MudGrid Class="pa-3" Spacing="1">
-        @foreach (var cat in cat_list)
+        @foreach (var subcat in cat_list)
         {
             <MudItem xs="3">
                 <MudCard Style="background-color: #F5F5F5">
-                    <MudCardContent Style="display: flex; justify-content: space-between; align-items: center;">
-                        <MudText Typo="Typo.body1">@cat.Name</MudText>
+                    <MudCardContent Style="display: flex; justify-content: space-evenly; align-items: center;">
+                        <MudText Typo="Typo.body1">@subcat.Name</MudText>
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error" OnClick="Devolver">
+                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(subcat.Name)">
                             Eliminar
                         </MudButton>
 
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary" OnClick="Devolver">
+                                   Color="Color.Primary" OnClick="() => OpenEditDialog(subcat.Name)">
                             Editar
                         </MudButton>
                     </MudCardContent>
@@ -41,12 +42,89 @@
 
 </MudPaper>
 
+<MudDialog @bind-IsVisible="add_visible">
+    <TitleContent>
+        <MudText Typo="Typo.h4">
+            Creación de Sub Categoría
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="subcat_txt" Label="Nombre Sub Categoría" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="AddSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddSubmit" Class="px-10">Crear</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @bind-IsVisible="edit_visible">
+    <TitleContent>
+        <MudText Typo="Typo.h4">
+            Edición de sub categoría
+        </MudText>
+        <MudText Typo="Typo.body1">
+            Nombre actual de sub categoría: @current_subcat
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="subcat_txt" Label="Nuevo nombre" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="EditSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditSubmit" Class="px-10">Crear</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @bind-IsVisible="delete_visible">
+    <TitleContent>
+        <MudText Typo="Typo.h4">
+            Desea eliminar @current_subcat?
+        </MudText>
+        <MudText Typo="Typo.body1">
+            Estas completamente seguro, tambien eliminaras los registros que dependen de esta información.
+        </MudText>
+    </TitleContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" OnClick="DeleteSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteSubmit" Class="px-10">Eliminar</MudButton>
+    </DialogActions>
+</MudDialog>
+
 @code {
     private string search_text = string.Empty;
     private List<SubCategoryDTO> cat_list = new List<SubCategoryDTO>();
 
+    private bool add_visible;
+    private void OpenAddDialog() => add_visible = true;
+    void AddSubmit() => add_visible = false;
+
+    private bool edit_visible;
+    private void OpenEditDialog(string n)
+    {
+        edit_visible = true;
+        current_subcat = n;
+    }
+    void EditSubmit() => edit_visible = false;
+
+    private bool delete_visible;
+    private void OpenDeleteDialog(string n)
+    {
+        delete_visible = true;
+        current_subcat = n;
+    }
+    void DeleteSubmit() => delete_visible = false;
+
+    private string subcat_txt;
+    private string current_subcat;
+
     protected override async Task OnInitializedAsync()
     {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Metadata", href: "/metadata"),
+            new BreadcrumbItem("Sub categorías", href: null, disabled: true)
+        };
         await ObtenerCategorias();
     }
 
