@@ -1,0 +1,79 @@
+﻿@page "/proveedores/agregar"
+@page "/proveedores/editar/{id}"
+@using Pharmatic.DTOs;
+@using Pharmatic.Services;
+@layout MainLayout
+@inject NavigationManager _navigationManager
+@inject SharedData _data
+@inject ProviderService _providerService
+
+<MudPaper>
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
+
+        <MudSpacer />
+
+        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Error" OnClick="SaveClicked">
+            Cancelar
+        </MudButton>
+
+        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Primary" OnClick="SaveClicked">
+            @SubmitButtonLabel
+        </MudButton>
+    </MudAppBar>
+
+    <MudGrid Justify="Justify.Center" Class="pa-5">
+        <MudItem xs="8">
+            <EditForm Model="_provider">
+                <MudTextField @bind-Value="txtName" Label="Nombre" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
+                <MudTextField @bind-Value="txtEmail" Label="Email" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
+                <MudTextField @bind-Value="txtAddress" Label="Dirección" Variant="Variant.Outlined" Class="mb-5" Lines="3"></MudTextField>
+                <MudTextField @bind-Value="txtPhone" Label="Teléfono" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
+            </EditForm>
+        </MudItem>
+    </MudGrid>
+
+</MudPaper>
+@code {
+    [Parameter]
+    public ProviderDTO _provider { get; set; } = new ProviderDTO();
+
+    private string txtName;
+    private string txtEmail;
+    private string txtAddress;
+    private string txtPhone;
+
+    [Parameter]
+    public string Id { get; set; }
+    bool IsEditMode => !string.IsNullOrEmpty(Id);
+    string FormTitle => IsEditMode ? "Editar proveedor" : "Agregar proveedor";
+    string SubmitButtonLabel => IsEditMode ? "Actualizar" : "Guardar";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Proveedores", href: "/proveedores"),
+            new BreadcrumbItem(FormTitle, href: null, disabled: true)
+        };
+
+        if (IsEditMode)
+        {
+            var result = await _providerService.SearchProvider(Id);
+            _provider = result!;
+
+            txtName = _provider.Name;
+            txtEmail = _provider.Email;
+            txtAddress = _provider.Address;
+            txtPhone = Convert.ToString(_provider.Phone);
+        }
+
+    }
+
+    private void SaveClicked()
+    {
+        _navigationManager.NavigateTo("/proveedores/");
+    }
+}

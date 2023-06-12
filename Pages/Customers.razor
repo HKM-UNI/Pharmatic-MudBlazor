@@ -2,7 +2,7 @@
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @layout MainLayout
-@inject CustomerService _clientService
+@inject CustomerService _customerService
 @inject NavigationManager _navigationManager
 @inject SharedData _data
 
@@ -16,7 +16,7 @@
         <MudDivider DividerType="DividerType.Middle"></MudDivider>
 
         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Primary">
+                   Color="Color.Primary" OnClick="AddClicked">
             Agregar
         </MudButton>
     </MudAppBar>
@@ -54,12 +54,12 @@
 
                         <MudCardActions>
                             <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                       Color="Color.Error">
+                                   Color="Color.Error" FullWidth="true">
                                 Eliminar
                             </MudButton>
 
                             <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                       Color="Color.Primary">
+                                   Color="Color.Primary" FullWidth="true" OnClick="() => EditClicked(Convert.ToString(c.CustomerNo))">
                                 Editar
                             </MudButton>
                         </MudCardActions>
@@ -87,12 +87,17 @@
 
     private async Task GetCustomers()
     {
-        var result = await _clientService.CustomerList();
+        var result = await _customerService.CustomerList();
         customer_list = result!;
     }
 
-    private void AgregarClicked()
+    private void AddClicked()
     {
         _navigationManager.NavigateTo("/clientes/agregar");
+    }
+
+    private void EditClicked(string id)
+    {
+        _navigationManager.NavigateTo("/clientes/editar/" + id);
     }
 }

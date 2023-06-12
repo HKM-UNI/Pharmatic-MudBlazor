@@ -1,0 +1,85 @@
+﻿@page "/clientes/agregar"
+@page "/clientes/editar/{id}"
+@using Pharmatic.DTOs;
+@using Pharmatic.Services;
+@layout MainLayout
+@inject NavigationManager _navigationManager
+@inject SharedData _data
+@inject CustomerService _customerService
+
+<MudPaper>
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
+
+        <MudSpacer />
+
+        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Error" OnClick="SaveClicked">
+            Cancelar
+        </MudButton>
+
+        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Primary" OnClick="SaveClicked">
+            @SubmitButtonLabel
+        </MudButton>
+    </MudAppBar>
+
+    <MudGrid Justify="Justify.Center" Class="pa-5">
+        <MudItem xs="8">
+            <EditForm Model="_customer">
+                <MudTextField @bind-Value="txtName" Label="Nombre" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
+                <MudTextField @bind-Value="txtEmail" Label="Email" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
+                <MudTextField @bind-Value="txtPhone" Label="Telefono" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
+                <MudDatePicker Label="Fecha de nacimiento" Editable="true" @bind-Date="dpBirthDate" Placeholder="Selecciona Fecha" Class="mb-5" />
+                <MudSelect T="string" Label="Género" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @bind-Value="sGender">
+                    <MudSelectItem T="string" Value="@("Masculino")" />
+                    <MudSelectItem T="string" Value="@("Femenino")" />
+                </MudSelect>
+            </EditForm>
+        </MudItem>
+    </MudGrid>
+
+</MudPaper>
+@code {
+    [Parameter]
+    public CustomerDTO _customer { get; set; } = new CustomerDTO();
+
+    private string txtName;
+    private string txtEmail;
+    private string txtPhone;
+    private DateTime? dpBirthDate;
+    private string sGender;
+
+    [Parameter]
+    public string Id { get; set; }
+    bool IsEditMode => !string.IsNullOrEmpty(Id);
+    string FormTitle => IsEditMode ? "Editar cliente" : "Agregar cliente";
+    string SubmitButtonLabel => IsEditMode ? "Actualizar" : "Guardar";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Clientes", href: "/clientes"),
+            new BreadcrumbItem(FormTitle, href: null, disabled: true)
+        };
+
+        if (IsEditMode)
+        {
+            var result = await _customerService.SearchCustomer(Id);
+            _customer = result!;
+
+            txtName = _customer.Name;
+            txtEmail = _customer.Email;
+            txtPhone = Convert.ToString(_customer.Phone);
+            dpBirthDate = _customer.BirthDate;
+            sGender = (_customer.Gender == "M") ? "Masculino" : "Femenino";
+        }
+        
+    }
+
+    private void SaveClicked()
+    {
+        _navigationManager.NavigateTo("/clientes/");
+    }
+}

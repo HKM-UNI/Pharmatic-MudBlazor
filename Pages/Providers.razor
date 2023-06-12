@@ -16,7 +16,7 @@
         <MudDivider DividerType="DividerType.Middle"></MudDivider>
 
         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Primary">
+                   Color="Color.Primary" OnClick="AgregarClicked">
             Agregar
         </MudButton>
     </MudAppBar>
@@ -38,12 +38,12 @@
 
                     <MudCardActions>
                         <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error">
+                                   Color="Color.Error" FullWidth="true">
                             Eliminar
                         </MudButton>
 
                         <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary">
+                                   Color="Color.Primary" FullWidth="true" OnClick="() => EditClicked(Convert.ToString(p.ProviderNo))">
                             Editar
                         </MudButton>
                     </MudCardActions>
@@ -78,5 +78,10 @@
     private void AgregarClicked()
     {
         _navigationManager.NavigateTo("/proveedores/agregar");
+    }
+
+    private void EditClicked(string id)
+    {
+        _navigationManager.NavigateTo("/proveedores/editar/" + id);
     }
 }

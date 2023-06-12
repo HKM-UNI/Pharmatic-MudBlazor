@@ -17,5 +17,12 @@ namespace Pharmatic.Services
             var result = await _http.GetFromJsonAsync<List<ProviderDTO>>(url);
             return result!;
         }
+
+        public async Task<ProviderDTO> SearchProvider(string id)
+        {
+            var url = "https://localhost:7036/api/Provider/" + id;
+            var result = await _http.GetFromJsonAsync<ProviderDTO>(url);
+            return result!;
+        }
     }
 }

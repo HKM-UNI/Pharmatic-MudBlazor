@@ -165,6 +165,15 @@ namespace Pharmatic.Shared
             }
         }
 
+        public static string ChemicalGlass
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.chemicalglass.svg");
+                return svgFile;
+            }
+        }
+
         private static string GetEmbeddedResource(string resourceName)
         {
             var assembly = Assembly.GetExecutingAssembly();

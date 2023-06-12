@@ -20,6 +20,7 @@ builder.Services.AddScoped<RouteOfAdministrationService>();
 builder.Services.AddScoped<TypeDoseService>();
 builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<ProviderService>();
+builder.Services.AddScoped<ProductCompositionService>();
 
 builder.Services.AddScoped<SharedData>();
 
