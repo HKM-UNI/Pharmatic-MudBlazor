@@ -4,6 +4,7 @@
 @layout MainLayout
 @inject ProductService _productService
 @inject NavigationManager _navigationManager
+@inject SharedData _data
 
 <MudPaper Class="ma-3">
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;">
@@ -81,5 +82,13 @@
 </MudPaper>
 
 @code {
-
+    protected override async Task OnInitializedAsync()
+    {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Productos", href: null),
+            new BreadcrumbItem("Detalle producto", href: null, disabled: true)
+        };
+    }
 }

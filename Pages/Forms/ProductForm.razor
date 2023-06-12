@@ -1,7 +1,9 @@
 ﻿@page "/productos/agregar"
 @using Pharmatic.DTOs;
+@using Pharmatic.Services;
 @layout MainLayout
 @inject NavigationManager _navigationManager
+@inject SharedData _data
 
 <MudPaper Class="ma-5">
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;">
@@ -115,5 +117,15 @@
     {
         photo = null;
         photoUrl = string.Empty;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Producto", href: "/productos"),
+            new BreadcrumbItem("Nuevo producto", href: null, disabled:true),
+        };
     }
 }

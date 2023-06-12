@@ -1,5 +1,7 @@
 ﻿@page "/dashboard"
+@using Pharmatic.Services;
 @layout MainLayout
+@inject SharedData _data
 
 <MudGrid Class="px-8 pt-3">
     <MudItem xs="7">
@@ -102,6 +104,14 @@
             dataSize = dataSize - 1;
             RandomizeData();
         }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home, disabled:true),
+        };
     }
 
 }

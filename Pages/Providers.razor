@@ -1,0 +1,82 @@
+﻿@page "/proveedores"
+@using Pharmatic.DTOs;
+@using Pharmatic.Services;
+@layout MainLayout
+@inject ProviderService _providerService
+@inject NavigationManager _navigationManager
+@inject SharedData _data
+
+<MudPaper>
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
+        <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
+                      AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />
+
+        <MudSpacer />
+
+        <MudDivider DividerType="DividerType.Middle"></MudDivider>
+
+        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Primary">
+            Agregar
+        </MudButton>
+    </MudAppBar>
+    <MudGrid Class="pa-3" Spacing="5">
+        @foreach (var p in provider_list)
+        {
+            <MudItem xs="4">
+
+                <MudCard Style="background-color: #F5F5F5">
+
+                    <MudCardContent>
+
+                        <MudText Typo="Typo.h4">@p.Name</MudText>
+                        <MudText Typo="Typo.body1" Color="Color.Info"> <MudIcon Icon="@Icons.Material.Filled.Mail" Size="Size.Small" /> @p.Email</MudText>
+                        <MudText Typo="Typo.body1" Color="Color.Success"> <MudIcon Icon="@Icons.Material.Filled.Phone" Size="Size.Small" /> @p.Phone</MudText>
+                        <MudText Typo="Typo.body1"> <MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Small" /> @p.Address</MudText>
+
+                    </MudCardContent>
+
+                    <MudCardActions>
+                        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                   Color="Color.Error">
+                            Eliminar
+                        </MudButton>
+
+                        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                   Color="Color.Primary">
+                            Editar
+                        </MudButton>
+                    </MudCardActions>
+
+                </MudCard>
+
+            </MudItem>
+        }
+    </MudGrid>
+
+</MudPaper>
+@code {
+    private string search_text = string.Empty;
+    private List<ProviderDTO> provider_list = new List<ProviderDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Proveedores", href: null, disabled: true)
+        };
+        await GetProviders();
+    }
+
+    private async Task GetProviders()
+    {
+        var result = await _providerService.ProviderList();
+        provider_list = result!;
+    }
+
+    private void AgregarClicked()
+    {
+        _navigationManager.NavigateTo("/proveedores/agregar");
+    }
+}

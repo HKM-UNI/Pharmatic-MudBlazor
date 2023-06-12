@@ -1,0 +1,98 @@
+﻿@page "/clientes"
+@using Pharmatic.DTOs;
+@using Pharmatic.Services;
+@layout MainLayout
+@inject CustomerService _clientService
+@inject NavigationManager _navigationManager
+@inject SharedData _data
+
+<MudPaper>
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
+        <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
+                      AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />
+
+        <MudSpacer />
+
+        <MudDivider DividerType="DividerType.Middle"></MudDivider>
+
+        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Primary">
+            Agregar
+        </MudButton>
+    </MudAppBar>
+    <MudGrid Class="pa-3" Spacing="5">
+        @foreach (var c in customer_list)
+        {
+            <MudItem xs="4">
+
+                <MudCard Style="background-color: #F5F5F5">
+
+                        <MudCardContent>
+
+                            <MudText Typo="Typo.h4">@c.Name @c.Surname</MudText>
+                            <MudText Typo="Typo.body1" Color="Color.Info"> <MudIcon Icon="@Icons.Material.Filled.Mail" Size="Size.Small"/> @c.Email</MudText>
+                            <MudText Typo="Typo.body1" Color="Color.Success"> <MudIcon Icon="@Icons.Material.Filled.Phone" Size="Size.Small" /> @c.Phone</MudText>
+                            @if (c.BirthDate.HasValue)
+                            {
+                                <MudText Typo="Typo.body1"> <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Size="Size.Small" /> @c.BirthDate.Value.ToString("dd/MM/yyyy")</MudText>
+                            }
+
+                            @if (c.Gender == "M")
+                            {
+                                <MudText Typo="Typo.body1"> <MudIcon Icon="@Icons.Material.Filled.Male" Size="Size.Small" /> Hombre</MudText>
+                            }
+                            else if (c.Gender == "F")
+                            {
+                                <MudText Typo="Typo.body1"> <MudIcon Icon="@Icons.Material.Filled.Female" Size="Size.Small" /> Mujer</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body1">Género no especificado</MudText>
+                            }
+
+                        </MudCardContent>
+
+                        <MudCardActions>
+                            <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                       Color="Color.Error">
+                                Eliminar
+                            </MudButton>
+
+                            <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                       Color="Color.Primary">
+                                Editar
+                            </MudButton>
+                        </MudCardActions>
+
+                </MudCard>
+
+            </MudItem>
+        }
+    </MudGrid>
+
+</MudPaper>
+@code {
+    private string search_text = string.Empty;
+    private List<CustomerDTO> customer_list = new List<CustomerDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Clientes", href: null, disabled: true)
+        };
+        await GetCustomers();
+    }
+
+    private async Task GetCustomers()
+    {
+        var result = await _clientService.CustomerList();
+        customer_list = result!;
+    }
+
+    private void AgregarClicked()
+    {
+        _navigationManager.NavigateTo("/clientes/agregar");
+    }
+}
