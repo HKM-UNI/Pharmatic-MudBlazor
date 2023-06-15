@@ -23,21 +23,21 @@
     <MudGrid Class="pa-5">
         <MudItem xs="6">
             <EditForm Model="_producto">
-                <MudTextField T="string" @bind-Value="_producto.Name" Label="Nombre" Class="my-5"/>
-                <MudTextField T="string" @bind-Value="_producto.Description" Label="Filled" Text="@sampleText" Lines="5" Class="my-5"/>
-                <MudSelect T="string" Label="Categoría" AnchorOrigin="Origin.BottomCenter" Class="my-5">
+                <MudTextField T="string" @bind-Value="_producto.Name" Label="Nombre" Class="my-5" Variant="Variant.Outlined"/>
+                <MudTextField T="string" @bind-Value="_producto.Description" Label="Descripción" Text="@sampleText" Lines="5" Class="my-5" Variant="Variant.Outlined" />
+                <MudSelect T="string" Label="Categoría" AnchorOrigin="Origin.BottomCenter" Class="my-5" Variant="Variant.Outlined">
                     <MudSelectItem Value='new string("Cat1")' />
                     <MudSelectItem Value='new string("Cat2")' />
                     <MudSelectItem Value='new string("Cat3")' />
                     <MudSelectItem Value='new string("Cat4")' />
                 </MudSelect>
-                <MudSelect T="string" Label="SubCategoría" AnchorOrigin="Origin.BottomCenter" Class="my-5">
+                <MudSelect T="string" Label="SubCategoría" AnchorOrigin="Origin.BottomCenter" Class="my-5" Variant="Variant.Outlined">
                     <MudSelectItem Value='new string("Cat1")' />
                     <MudSelectItem Value='new string("Cat2")' />
                     <MudSelectItem Value='new string("Cat3")' />
                     <MudSelectItem Value='new string("Cat4")' />
                 </MudSelect>
-                <MudSelect T="string" Label="Tags" AnchorOrigin="Origin.BottomCenter" MultiSelection="true" Class="my-5">
+                <MudSelect T="string" Label="Tags" AnchorOrigin="Origin.BottomCenter" MultiSelection="true" Class="my-5" Variant="Variant.Outlined">
                     <MudSelectItem Value='new string("Cat1")' />
                     <MudSelectItem Value='new string("Cat2")' />
                     <MudSelectItem Value='new string("Cat3")' />
@@ -49,19 +49,20 @@
 
         <MudItem xs="6">
             <MudCard Class="pa-5">
-                <MudCardMedia Image="@photoUrl" Height="450" Style="background-size: contain;"/>
+                <MudCardMedia Image="@photoUrl" Height="450" Style="background-size: contain; background-color: gray;"/>
 
                 <MudFileUpload T="IBrowserFile" OnFilesChanged="OnInputFileChanged">
                     <ButtonTemplate>
                             <MudButton HtmlTag="label"
                                        Variant="Variant.Filled"
                                        Color="Color.Info"
+                                       Class="rounded-pill ma-2"
                                        for="@context">
                                 Subir Foto
                             </MudButton>
                     </ButtonTemplate>
                         <SelectedTemplate>
-                            <MudButton Class="rounded-pill" ButtonType="ButtonType.Submit" Size="Size.Large"
+                            <MudButton Class="rounded-pill ma-2" ButtonType="ButtonType.Submit" Size="Size.Large"
                                        Variant="Variant.Filled" Color="Color.Error" OnClick="ClearFile">
                                 Limpiar
                             </MudButton>

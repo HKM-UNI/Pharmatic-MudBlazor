@@ -1,0 +1,182 @@
+﻿@page "/ventas/facturacion"
+@using Pharmatic.DTOs;
+@using Pharmatic.Services;
+@layout MainLayout
+@inject NavigationManager _navigationManager
+@inject SharedData _data
+
+<MudPaper>
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
+
+        <MudAutocomplete Placeholder="Buscar productos" @bind-Value="search_product" Variant="Variant.Outlined" AdornmentIcon="@CustomIcons.Search"
+                         Adornment="Adornment.Start" Margin="Margin.Dense">
+            <NoItemsTemplate>
+                <MudText Align="Align.Center" Class="px-4 py-1">
+                    No items found
+                </MudText>
+            </NoItemsTemplate>
+        </MudAutocomplete>
+
+        <MudSpacer />
+
+        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Primary">
+            Realizar facturación
+        </MudButton>
+
+        <MudIconButton Icon="@CustomIcons.Bag" Color="Color.Primary" Size="Size.Large" Class="ml-10" />
+        <MudText Typo="Typo.h5" Color="Color.Dark">6</MudText>
+
+    </MudAppBar>
+    <MudGrid Class="px-10 pb-5 mt-5" Spacing="1" Style="height: 350px; overflow: auto;">
+
+        <MudItem xs="5" Class="bill-column grid-border" Style="border-left: 1px solid transparent; border-top: 1px solid transparent;">
+                <MudText Typo="Typo.h5">Detalles de producto</MudText>
+            </MudItem>
+
+        <MudItem xs="3" Class="bill-column grid-border" Style="border-top: 1px solid transparent;">
+                <MudText Typo="Typo.h5">Cantidad</MudText>
+            </MudItem>
+
+        <MudItem xs="2" Class="bill-column grid-border" Style="border-top: 1px solid transparent;">
+                <MudText Typo="Typo.h5">Precio</MudText >
+            </MudItem>
+
+        <MudItem xs="2" Class="bill-column grid-border" Style="border-top: 1px solid transparent;">
+                <MudText Typo="Typo.h5">Sub total</MudText>
+            </MudItem>
+
+        @foreach (var times in new[] { 1, 2, 3, 4, 5, 6, 7,8,9})
+        {
+            <MudItem xs="5" Class="grid-border pl-3" Style="border-left: 1px solid transparent;">
+                <MudText Typo="Typo.h5">{Nombre Producto}</MudText>
+                <MudText Typo="Typo.body1">{t. dosis} {via administracion} - {cantidad} {unidad med.} </MudText>
+                <MudText Typo="Typo.h6">
+                    <MudIcon Icon="@Icons.Material.Outlined.PersonOutline" Size="Size.Medium" /> {Proveedor}
+                    <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Medium" /> {Fecha de expiracion}
+                </MudText>
+            </MudItem>
+
+            <MudItem xs="3" Class="bill-item grid-border">
+                <MudButton Variant="Variant.Outlined" Size="Size.Large" Color="Color.Primary" Class="mx-3">+</MudButton>
+                <MudText Typo="Typo.h6" Inline="true">0</MudText>
+                <MudButton Variant="Variant.Outlined" Size="Size.Large" Color="Color.Error" Class="mx-3">-</MudButton>
+            </MudItem>
+
+            <MudItem xs="2" Class="bill-item grid-border">
+                <MudText Typo="Typo.body1">Precio $$$</MudText>
+            </MudItem>
+
+            <MudItem xs="2" Class="bill-item grid-border">
+                <MudText Typo="Typo.body1">Sub total $$$</MudText>
+            </MudItem>
+        }
+    </MudGrid>
+
+    <MudGrid Justify="Justify.SpaceAround" Class="px-5 mt-1 pb-5">
+
+        <MudItem xs="5" Class="mt-5">
+            <MudAutocomplete Placeholder="Cliente de factura" @bind-Value="search_customer" Variant="Variant.Outlined" AdornmentIcon="@CustomIcons.Search"
+                             Adornment="Adornment.Start" Margin="Margin.Dense">
+                <NoItemsTemplate>
+                    <MudText Align="Align.Center" Class="px-4 py-1">
+                        No items found
+                    </MudText>
+                </NoItemsTemplate>
+            </MudAutocomplete>
+        </MudItem>
+
+        <MudItem xs="4" Class="mt-5">
+            <MudGrid Class="px-5">
+                <MudItem xs="8" Class="bill-detail py-1">
+                        <MudText Typo="Typo.body1">Sub total</MudText>
+                </MudItem>
+
+                <MudItem xs="4" Class="py-1">
+                    <MudTextField @bind-Value="discount_amount" Margin="Margin.Dense" ReadOnly="true"
+                                  Adornment="Adornment.End" AdornmentText="C$" Variant="Variant.Outlined" />
+                </MudItem>
+
+                <MudItem xs="8" Class="bill-detail py-1">
+                        <MudSwitch @bind-Checked="@discount" Color="Color.Primary" />
+                        <MudText Typo="Typo.body1">Descuento</MudText>
+                </MudItem>
+
+                <MudItem xs="4" Class="py-1">
+                    <MudTextField @bind-Value="discount_amount" Margin="Margin.Dense"
+                                  Adornment="Adornment.End" AdornmentText="%" Variant="Variant.Outlined" />
+                </MudItem>
+
+                <MudItem xs="8" Class="bill-detail py-1">
+                        <MudText Typo="Typo.body1">Con descuento</MudText>
+                </MudItem>
+
+                <MudItem xs="4" Class="py-1">
+                    <MudTextField @bind-Value="discount_amount" Margin="Margin.Dense" ReadOnly="true"
+                                  Adornment="Adornment.End" AdornmentText="C$" Variant="Variant.Outlined" />
+                </MudItem>
+                
+                <MudItem xs="8" Class="bill-detail py-1">
+                        <MudSwitch @bind-Checked="@discount" Color="Color.Primary" />
+                        <MudText Typo="Typo.body1">IVA</MudText>
+                </MudItem>
+
+                <MudItem xs="4" Class="py-1">
+                    <MudTextField @bind-Value="discount_amount" Margin="Margin.Dense" ReadOnly="true"
+                                  Adornment="Adornment.End" AdornmentText="C$" Variant="Variant.Outlined"/>
+                </MudItem>            
+
+            </MudGrid>
+
+        </MudItem>
+
+    </MudGrid>
+
+</MudPaper>
+
+<style>
+    .bill-column {
+        position: sticky;
+        top: 0;
+        background-color: white;
+        z-index: 1;
+    }
+
+    .bill-item{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 0;
+    }
+
+    .grid-border{
+        border: 1px solid transparent;
+        border-left: 1px solid #000;
+        border-top: 1px solid #000;
+    }
+
+    .bill-detail{
+        display: flex; 
+        align-items:center;
+        justify-content: flex-end;
+    }
+</style>
+
+@code {
+    private string search_customer = string.Empty;
+    private string search_product = string.Empty;
+    private bool discount = false;
+    private float discount_amount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Carrito", href: "/ventas"),
+            new BreadcrumbItem("Facturación", href: null, disabled:true),
+        };
+
+    }
+}
+

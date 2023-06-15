@@ -1,0 +1,90 @@
+﻿@page "/ventas"
+@using Pharmatic.DTOs;
+@using Pharmatic.Services;
+@layout MainLayout
+@inject NavigationManager _navigationManager
+@inject SharedData _data
+
+<MudPaper>
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
+
+        <MudAutocomplete Placeholder="Buscar productos" @bind-Value="search_text" Variant="Variant.Outlined" AdornmentIcon="@CustomIcons.Search"
+                         Adornment="Adornment.Start" Margin="Margin.Dense">
+            <NoItemsTemplate>
+                <MudText Align="Align.Center" Class="px-4 py-1">
+                    No items found
+                </MudText>
+            </NoItemsTemplate>
+        </MudAutocomplete>
+
+        <MudSpacer />
+
+        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Error">
+            Limpiar productos
+        </MudButton>
+
+        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Primary" OnClick="Billing">
+            Procesar
+        </MudButton>
+
+        <MudIconButton Icon="@CustomIcons.Bag" Color="Color.Primary" Size="Size.Large" Class="ml-10"/>
+        <MudText Typo="Typo.h5" Color="Color.Dark">6</MudText>
+
+    </MudAppBar>
+    <MudGrid Class="pa-3" Spacing="1">
+        <MudItem xs="11">
+
+            <MudCard Style="background-color: #F5F5F5" >
+                <MudCardHeader Class="px-3 py-0">
+
+                    <CardHeaderAvatar>
+                        <MudImage Src="https://cnnespanol.cnn.com/wp-content/uploads/2022/07/220425113657-paxlovid-box-0222.jpeg?quality=100&strip=info" 
+                        Width="150" Height="150" Elevation="25" Class="rounded-lg ma-3" />
+                    </CardHeaderAvatar>
+                    <CardHeaderContent >
+                        <MudText Typo="Typo.h6" Align="Align.End">stock: {#}</MudText>
+                        <MudText Typo="Typo.h4" Inline="true">{Nombre Producto}</MudText>
+                        <MudText Typo="Typo.body1" Inline="true">: {t. dosis} {via administracion} - {cantidad} {unidad med.} </MudText>
+                        <MudText Typo="Typo.h5">
+                            <MudIcon Icon="@Icons.Material.Outlined.PersonOutline" Size="Size.Medium" /> {Proveedor} 
+                            <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Medium" /> {Fecha de expiracion}
+                        </MudText>
+                        <MudText Typo="Typo.h5" Inline="true">{Categorías}</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.End">Precio cliente: {precio}</MudText>
+                    </CardHeaderContent>
+
+                </MudCardHeader>
+
+            </MudCard>
+
+        </MudItem>
+        <MudItem xs="1" Style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <MudButton Variant="Variant.Outlined" Size="Size.Large" Color="Color.Primary" >+</MudButton>
+            <MudText Typo="Typo.h6">0</MudText>
+            <MudButton Variant="Variant.Outlined" Size="Size.Large" Color="Color.Error">-</MudButton>
+        </MudItem>
+    </MudGrid>
+
+</MudPaper>
+
+@code {
+    private string search_text = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Carrito", href: null, disabled:true),
+        };
+
+    }
+
+    private void Billing()
+    {
+        _navigationManager.NavigateTo("/ventas/facturacion");
+    }
+}
+
