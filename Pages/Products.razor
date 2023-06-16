@@ -32,7 +32,7 @@
                 
                 <MudCard Style="background-color: #F5F5F5">
                     
-                    <a href="/productos/detalle" style="display: block; text-decoration: none;">
+                    <a href="/productos/detalle/@prod.ProductNo" style="display: block; text-decoration: none;">
 
                     <MudCardHeader>
                         
@@ -70,7 +70,7 @@
 
 @code {
     private string search_text = string.Empty;
-    private List<ProductMinimalDTO> product_list = new List<ProductMinimalDTO>();
+    private List<ProductDTO> product_list = new List<ProductDTO>();
 
     protected override async Task OnInitializedAsync()
     {

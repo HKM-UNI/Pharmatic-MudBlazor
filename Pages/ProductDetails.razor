@@ -1,8 +1,9 @@
-﻿@page "/productos/detalle"
+﻿@page "/productos/detalle/{id}"
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @layout MainLayout
 @inject ProductService _productService
+@inject LotService _lotService
 @inject NavigationManager _navigationManager
 @inject SharedData _data
 
@@ -24,71 +25,87 @@
         </MudButton>
     </MudAppBar>
     <MudGrid Class="pa-5">
-        <MudItem xs="4">
-            <MudImage Src="https://cnnespanol.cnn.com/wp-content/uploads/2022/07/220425113657-paxlovid-box-0222.jpeg?quality=100&strip=info" 
-                Style="width: 100%; height: auto;" ObjectFit="ObjectFit.Contain"/>
+        <MudItem xs="3">
+            <MudImage Src="@product.ImageUrl" Elevation="3" 
+                Fluid="true"/>
         </MudItem>
 
-        <MudItem xs="8">
-            <MudCard>
-                <MudCardHeader>
-                    <MudText Typo="Typo.h5">{Nombre Producto}</MudText>
-                    <MudDivider DividerType="DividerType.Middle"></MudDivider>
-                    <MudText Typo="Typo.h6">{Categoria}-{Sub Categoria}</MudText>
-                </MudCardHeader>
+        <MudItem xs="9">
 
-                <MudCardActions>
-                    <MudChip Color="Color.Primary" Size="Size.Small">Tag</MudChip>
-                    <MudChip Color="Color.Primary" Size="Size.Small">Tag</MudChip>
-                    <MudChip Color="Color.Primary" Size="Size.Small">Tag</MudChip>
-                </MudCardActions>
+            <MudText Typo="Typo.h3">@product.Name</MudText>
+            <MudText Typo="Typo.h4">@product.Category?.Name - @product.SubCategory?.Name</MudText>
                 
-                <MudCardContent>
-                    
-                    <MudText Typo="Typo.body1">
-                        Descripcion Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
-                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown 
-                        printer took a galley of type and scrambled it to make a type specimen book. It has survived 
-                        not only five centuries, but also the leap into electronic typesetting, remaining essentially 
-                        unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem 
-                        Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including 
-                        versions of Lorem Ipsum.</MudText>
-                </MudCardContent>
-            </MudCard>
+            @if (product.Tags?.Count > 0)
+            {
+                @foreach (var tag in product.Tags)
+                {
+                    <MudChip Color="Color.Primary" Size="Size.Medium">@tag.Name</MudChip>
+                }
+            }
+            else
+            {
+                <MudChip Color="Color.Error" Size="Size.Medium">Sin etiquetas</MudChip>
+            }
+            <MudText Typo="Typo.body1">@product.Description</MudText>
         </MudItem>
 
         <MudItem xs="12">
-            <MudText Typo="Typo.h6">Lotes: {N de lotes}</MudText>
-            <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+            <MudText Typo="Typo.h6" Inline="true">Lotes: @product.LotCount</MudText>
+            <MudButton Class="rounded-pill mx-3" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
                        Color="Color.Primary">
                 Agregar Lote
             </MudButton>
         </MudItem>
-        
-        <MudItem xs="12">
-            <MudCard Style="background-color: #F5F5F5">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.body1">{tipo de dosis} {via de administracion} {unidad de medida} {cantidad}</MudText>
-                        <MudText Typo="Typo.body1">Stock: {stock} Venta:{PrecioVenta} Compra: {PrecioCompra}</MudText>
-                        <MudText Typo="Typo.h6">{Proveedor} {Consigna} {Fecha de expiracion}</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-            </MudCard>
-        </MudItem>
+
+        @foreach(var lot in lot_list)
+        {
+            <MudItem xs="6">
+                <MudCard Style="background-color: #F5F5F5">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Composicion: @lot.Composition?.Dose?.Name @lot.Composition?.Roa?.Description @lot.Composition?.Measure?.Unit @lot.Composition?.ContentSize</MudText>
+                            <MudText Typo="Typo.h6">Stock: @lot.Stock Venta: @lot.SellingPrice C$ Compra: @lot.PurchasePrice C$</MudText>
+                            <MudText Typo="Typo.h6" Color="Color.Warning" Inline="true"> 
+                                <MudIcon Icon="@Icons.Material.Outlined.PersonOutline" Size="Size.Small" /> @lot.Provider?.Name 
+                            </MudText>
+                            <MudText Typo="Typo.h6" Inline="true"> @lot.Consign </MudText>
+                            <MudText Typo="Typo.h6" Inline="true" Color="Color.Error">
+                                <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Small" /> @lot.ExpirationDate.ToString("dd/MM/yyyy")
+                            </MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                </MudCard>
+            </MudItem>
+        }
 
     </MudGrid>
 
 </MudPaper>
 
 @code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private List<LotDTO> lot_list = new List<LotDTO>();
+    private ProductDTO product = new ProductDTO();
+
     protected override async Task OnInitializedAsync()
     {
         _data.Items = new List<BreadcrumbItem>
         {
             new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
-            new BreadcrumbItem("Productos", href: null),
+            new BreadcrumbItem("Productos", href: "/productos"),
             new BreadcrumbItem("Detalle producto", href: null, disabled: true)
         };
+
+        await GetLots();
+        product = await _productService.SearchProduct(Id);
+    }
+
+    private async Task GetLots()
+    {
+        var result = await _lotService.LotList(Id);
+        lot_list = result!;
+
     }
 }

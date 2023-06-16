@@ -20,7 +20,25 @@
         </MudButton>
     </MudAppBar>
     <MudGrid Class="pa-3" Spacing="1">
+        @foreach (var roa in roa_list)
+        {
+            <MudItem xs="3">
+                <MudCard Style="background-color: #F5F5F5">
+                    <MudCardContent Style="display: flex; justify-content: space-evenly; align-items: center;">
+                        <MudText Typo="Typo.body1">@roa.Description</MudText>
+                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(roa.Description)">
+                            Eliminar
+                        </MudButton>
 
+                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                   Color="Color.Primary" OnClick="() => OpenEditDialog(roa.Description)">
+                            Editar
+                        </MudButton>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
     </MudGrid>
 
 </MudPaper>

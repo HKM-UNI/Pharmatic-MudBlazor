@@ -1,4 +1,5 @@
 ﻿using Pharmatic.DTOs;
+using Pharmatic.Pages;
 using System.Net.Http.Json;
 
 namespace Pharmatic.Services
@@ -11,12 +12,19 @@ namespace Pharmatic.Services
             _http = http;
         }
 
-        public async Task<List<ProductMinimalDTO>> ProductList()
+        public async Task<List<ProductDTO>> ProductList()
         {
-            var url = "https://localhost:7036/api/Product";
+            //var url = "https://localhost:7036/api/Product";
             // ⚠️ Experimental flask API endpoint
-            // var url = "http://localhost:7035/api/products";
-            var result = await _http.GetFromJsonAsync<List<ProductMinimalDTO>>(url);
+            var url = "http://localhost:7035/api/products";
+            var result = await _http.GetFromJsonAsync<List<ProductDTO>>(url);
+            return result!;
+        }
+
+        public async Task<ProductDTO> SearchProduct(string id)
+        {
+            var url = $"http://localhost:7035/api/products/" + id;
+            var result = await _http.GetFromJsonAsync<ProductDTO>(url);
             return result!;
         }
     }

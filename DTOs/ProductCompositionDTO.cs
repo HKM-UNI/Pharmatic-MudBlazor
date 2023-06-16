@@ -4,11 +4,11 @@
     {
         public int CompositionNo { get; set; }
 
-        public int? MeasureNo { get; set; }
+        public MeasureDTO? Measure { get; set; }
 
-        public int? AdminRouteNo { get; set; }
+        public RouteOfAdmDTO? Roa { get; set; }
 
-        public int? DosageFormNo { get; set; }
+        public TypeDoseDTO? Dose { get; set; }
 
         public ushort ContentSize { get; set; }
     }

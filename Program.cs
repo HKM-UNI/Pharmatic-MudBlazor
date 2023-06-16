@@ -21,6 +21,7 @@ builder.Services.AddScoped<TypeDoseService>();
 builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<ProviderService>();
 builder.Services.AddScoped<ProductCompositionService>();
+builder.Services.AddScoped<LotService>();
 
 builder.Services.AddScoped<SharedData>();
 

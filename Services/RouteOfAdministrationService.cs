@@ -13,7 +13,7 @@ namespace Pharmatic.Services
 
         public async Task<List<RouteOfAdmDTO>> RoutesOfAdmList()
         {
-            var url = "https://localhost:7036/api/?????";
+            var url = "https://localhost:7036/api/AdministrationRoute";
             var result = await _http.GetFromJsonAsync<List<RouteOfAdmDTO>>(url);
             return result!;
         }
