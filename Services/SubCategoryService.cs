@@ -13,7 +13,7 @@ namespace Pharmatic.Services
 
         public async Task<List<SubCategoryDTO>> SubCategoryList()
         {
-            var result = await _http.GetFromJsonAsync<List<SubCategoryDTO>>("https://localhost:7036/api/Subcategory");
+            var result = await _http.GetFromJsonAsync<List<SubCategoryDTO>>("http://localhost:7035/api/subcategories");
             return result!;
         }
     }

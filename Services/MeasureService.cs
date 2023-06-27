@@ -13,7 +13,7 @@ namespace Pharmatic.Services
 
         public async Task<List<MeasureDTO>> MeasureList()
         {
-            var url = "https://localhost:7036/api/Measure";
+            var url = "http://localhost:7035/api/measures";
             var result = await _http.GetFromJsonAsync<List<MeasureDTO>>(url);
             return result!;
         }

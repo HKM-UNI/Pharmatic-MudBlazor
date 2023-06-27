@@ -13,7 +13,7 @@ namespace Pharmatic.Services
 
         public async Task<List<TypeDoseDTO>> TypeDoseList()
         {
-            var url = "https://localhost:7036/api/DosageForm";
+            var url = "http://localhost:7035/api/dosage_forms";
             var result = await _http.GetFromJsonAsync<List<TypeDoseDTO>>(url);
             return result!;
         }

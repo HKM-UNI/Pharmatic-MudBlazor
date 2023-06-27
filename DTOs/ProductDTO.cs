@@ -10,5 +10,13 @@
         public List<TagDTO>? Tags { get; set; }
         public string? ImageUrl { get; set; }
         public int LotCount { get; set; }
+
+        public ProductDTO()
+        {
+            Category = new CategoryDTO();
+            Tags = new List<TagDTO>();
+            ImageUrl = default!;
+            SubCategory = new SubCategoryDTO();
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace Pharmatic.Services
 
         public async Task<List<TagDTO>> TagList()
         {
-            var result = await _http.GetFromJsonAsync<List<TagDTO>>("https://localhost:7036/api/Tag");
+            var result = await _http.GetFromJsonAsync<List<TagDTO>>("http://localhost:7035/api/tags");
             return result!;
         }
     }
