@@ -91,7 +91,6 @@
 
 @code {
     public ProductDTO _product { get; set; } = new ProductDTO();
-    public ProductPATCHDTO _productpatch { get; set; } = new ProductPATCHDTO();
     private IBrowserFile? photo;
     private string photoUrl = string.Empty;
     private string photoB64 = string.Empty;
@@ -207,13 +206,7 @@
 
         _product.Tags = selectedTags;
 
-        _productpatch.name = _product.Name;
-        _productpatch.description = _product.Description;
-        _productpatch.tags = _product.Tags;
-        _productpatch.subcategory = _product.SubCategory;
-        _productpatch.category = _product.Category;
-
-        var result = await _productService.EditProduct(int.Parse(Id), _productpatch);
+        var result = await _productService.EditProduct(int.Parse(Id), _product);
         return result;
     }
 

@@ -38,12 +38,9 @@ namespace Pharmatic.Services
             return response!;
         }
 
-        public async Task<ProductDTO> EditProduct(int id, ProductPATCHDTO product)
+        public async Task<ProductDTO> EditProduct(int id, ProductDTO product)
         {
-            var json = JsonSerializer.Serialize(product);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var result = await _http.PatchAsync($"http://localhost:7035/api/products/{id}", content);
+            var result = await _http.PatchAsJsonAsync($"http://localhost:7035/api/products/{id}", product);
             var response = await result.Content.ReadFromJsonAsync<ProductDTO>();
             return response!;
         }
