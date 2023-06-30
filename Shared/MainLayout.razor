@@ -5,7 +5,7 @@
 @using System
 @using System.Timers
 @using Pharmatic.Services;
-<link rel="stylesheet" href="/css/background.css?version=5" />
+<link rel="stylesheet" href="/css/background.css?version=6" />
 
 <MudThemeProvider Theme="selectedTheme" />
 <MudSnackbarProvider />
@@ -49,11 +49,11 @@
 
                     <MudBreadcrumbs Items="_data.Items" Separator=">"/>
                             
-                    <MudIconButton Icon="@CustomIcons.Notification" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
+                    
 
                     <MudSpacer />
 
-                    <MudIconButton Icon="@CustomIcons.Logout" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
+                    <MudIconButton Icon="@CustomIcons.Notification" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
 
                     <MudCard Style="background: inherit;" Elevation="0">
 
@@ -70,7 +70,11 @@
                         </MudCardHeader>
                     </MudCard>
 
-                    <MudIconButton Icon="@CustomIcons.Down" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
+                    <MudMenu Icon="@CustomIcons.Down" Color="Color.Primary" Size="Size.Large">
+                        <MudMenuItem>Profile</MudMenuItem>
+                        <MudMenuItem>My account</MudMenuItem>
+                        <MudMenuItem OnClick="CerrarSesion">Logout</MudMenuItem>
+                    </MudMenu>
                 </MudAppBar>
 
                 <MudMainContent Class="ma-5 pa-0 flex-grow-1" Style="border-radius: 15px; overflow-y:auto; overflow-x:hidden">

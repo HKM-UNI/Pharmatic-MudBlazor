@@ -17,8 +17,6 @@ namespace Pharmatic.Services
 
         public async Task<List<ProductDTO>> ProductList()
         {
-            //var url = "https://localhost:7036/api/Product";
-            // ⚠️ Experimental flask API endpoint
             var url = "http://localhost:7035/api/products";
             var result = await _http.GetFromJsonAsync<List<ProductDTO>>(url);
             return result!;

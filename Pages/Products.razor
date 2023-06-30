@@ -14,13 +14,6 @@
         <MudSpacer />
 
         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Error">
-            Eliminar
-        </MudButton>
-
-        <MudDivider DividerType="DividerType.Middle"></MudDivider>
-
-        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
                    Color="Color.Primary" OnClick="AgregarClicked">
             Agregar
         </MudButton>
@@ -29,9 +22,9 @@
         @foreach (var prod in product_list)
         {
             <MudItem xs="4">
-                
-                <MudCard Style="background-color: #F5F5F5">
-                    
+
+                <MudCard Style="background-color: #F5F5F5" Class="hover-card" Outlined="true">
+
                     <a href="/productos/detalle/@prod.ProductNo" style="display: block; text-decoration: none;">
 
                     <MudCardHeader>
