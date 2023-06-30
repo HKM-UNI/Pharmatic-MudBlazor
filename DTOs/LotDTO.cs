@@ -11,8 +11,8 @@ namespace Pharmatic.DTOs
         public int LotNo { get; set; }
         public ProductDTO? Product { get; set; }
         public ProviderDTO? Provider { get; set; }
-        public string? PurchasePrice { get; set; }
-        public string? SellingPrice { get; set; }
+        public double? PurchasePrice { get; set; }
+        public double? SellingPrice { get; set; }
         public int Stock { get; set; }
     }
 }

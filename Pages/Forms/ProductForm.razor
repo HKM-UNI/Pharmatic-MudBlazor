@@ -252,5 +252,7 @@
             if (_product.SubCategory == null) _product.SubCategory = new SubCategoryDTO();
             if(_product.Tags != null) selected_tags = _product.Tags.Select(tag => tag.Name);
         }
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
     }
 }

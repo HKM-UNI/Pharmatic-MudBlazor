@@ -1,4 +1,5 @@
 ﻿using MudBlazor;
+using Pharmatic.DTOs;
 
 namespace Pharmatic.Services
 {
@@ -10,5 +11,7 @@ namespace Pharmatic.Services
             new BreadcrumbItem("Metadata", href: "/metadata"),
             new BreadcrumbItem("Tags", href: null, disabled: true)
         };
+
+        public Dictionary<LotDTO, int> product_cart = new Dictionary<LotDTO, int>();
     }
 }

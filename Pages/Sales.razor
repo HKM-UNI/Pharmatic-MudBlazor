@@ -6,6 +6,7 @@
 @inject SharedData _data
 @inject ProductService _productService
 @inject LotService _lotService
+@inject ISnackbar Snackbar
 
 <MudPaper>
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
@@ -29,9 +30,14 @@
 
         <MudSpacer />
 
+        @if (clean_mode)
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.Cancel" aria-label="cancel" Size="Size.Medium" OnClick="CancelCleanMode"/>
+        }
+
         <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Error">
-            Limpiar productos
+                   Color="Color.Error" OnClick="ClearCart">
+            @btnCleanText
         </MudButton>
 
         <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
@@ -40,12 +46,12 @@
         </MudButton>
 
         <MudIconButton Icon="@CustomIcons.Bag" Color="Color.Primary" Size="Size.Large" Class="ml-10"/>
-        <MudText Typo="Typo.h5" Color="Color.Dark">6</MudText>
+        <MudText Typo="Typo.h5" Color="Color.Dark">@_data.product_cart.Sum(pair => pair.Value)</MudText>
 
     </MudAppBar>
     <MudGrid Class="pa-3" Spacing="1">
 
-        @foreach(var p in product_cart)
+        @foreach(var p in _data.product_cart)
         {
             <MudItem xs="11">
 
@@ -57,7 +63,7 @@
                                       Width="150" Height="150" Elevation="25" Class="rounded-lg ma-3" />
                         </CardHeaderAvatar>
                         <CardHeaderContent>
-                            <MudText Typo="Typo.h6" Align="Align.End">stock: @p.Key.Stock</MudText>
+                            <MudText Typo="Typo.h6" Align="Align.End">Stock: @p.Key.Stock</MudText>
                             <MudText Typo="Typo.h4" Inline="true">@p.Key.Product?.Name</MudText>
                             <MudText Typo="Typo.body1" Inline="true">
                                 : @p.Key.Composition?.Dose?.Name @p.Key.Composition?.Roa?.Description - @p.Key.Composition?.ContentSize 
@@ -65,10 +71,10 @@
                             </MudText>
                             <MudText Typo="Typo.h5">
                                 <MudIcon Icon="@Icons.Material.Outlined.PersonOutline" Size="Size.Medium" /> @p.Key.Provider?.Name
-                                <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Medium" /> @p.Key.ExpirationDate
+                                <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Medium" /> @p.Key.ExpirationDate.ToString("dd/MM/yyyy")
                             </MudText>
                             <MudText Typo="Typo.h5" Inline="true">@p.Key.Product?.Category?.Name</MudText>
-                            <MudText Typo="Typo.body1" Align="Align.End">Precio cliente: @p.Key.SellingPrice</MudText>
+                            <MudText Typo="Typo.h6" Align="Align.End">Precio cliente: C$ @p.Key.SellingPrice</MudText>
                         </CardHeaderContent>
 
                     </MudCardHeader>
@@ -77,9 +83,9 @@
 
             </MudItem>
             <MudItem xs="1" Style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                <MudButton Variant="Variant.Outlined" Size="Size.Large" Color="Color.Primary">+</MudButton>
+                <MudButton Variant="Variant.Outlined" Size="Size.Large" Color="Color.Primary" OnClick="() => Increase(p.Key)">+</MudButton>
                 <MudText Typo="Typo.h6">@p.Value</MudText>
-                <MudButton Variant="Variant.Outlined" Size="Size.Large" Color="Color.Error">-</MudButton>
+                <MudButton Variant="@btnCleanVariant" Size="Size.Large" Color="Color.Error" OnClick="() => Decrease(p.Key)">@btnDecreaseText</MudButton>
             </MudItem>
         }
         
@@ -87,10 +93,99 @@
 
 </MudPaper>
 
+<MudDialog @bind-IsVisible="remove_visible">
+    <TitleContent>
+        <MudText Typo="Typo.h4">
+            ¿Remover producto del carrito?
+        </MudText>
+    </TitleContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Default" OnClick="CancelDelete" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteSubmit" Class="px-10">Remover</MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @bind-IsVisible="clean_visible">
+    <TitleContent>
+        <MudText Typo="Typo.h4">
+            ¿Limpiar el carrito?
+        </MudText>
+    </TitleContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Default" OnClick="CancelCleanDialog" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="ClearCart" Class="px-10">Limpiar</MudButton>
+    </DialogActions>
+</MudDialog>
+
 @code {
     private string txtProduct = string.Empty;
     private List<ProductDTO> product_list = new List<ProductDTO>();
-    private Dictionary<LotDTO, int> product_cart = new Dictionary<LotDTO, int>();
+    private LotDTO current_lot = new LotDTO();
+    private TaskCompletionSource<bool> productsLoadedTask = new TaskCompletionSource<bool>();
+
+    private bool remove_visible = false;
+    private void OpenRemoveDialog(LotDTO lot)
+    {
+        remove_visible = true;
+        current_lot = lot;
+    }
+
+    void CancelDelete() => remove_visible = false;
+    void DeleteSubmit()
+    {
+        _data.product_cart.Remove(current_lot);
+        remove_visible = false;
+        Snackbar.Add("Producto removido", Severity.Info);
+        if (_data.product_cart.Count < 1) CancelCleanMode();
+    }
+
+    private void Increase(LotDTO lot) { _data.product_cart[lot]++; }
+    private void Decrease(LotDTO lot)
+    {
+        if (!clean_mode)
+        {
+            if (_data.product_cart[lot] <= 1)
+                OpenRemoveDialog(lot);
+            else _data.product_cart[lot]--;
+        }
+        else OpenRemoveDialog(lot);
+    }
+
+    private bool clean_mode = false;
+    private Variant btnCleanVariant = Variant.Outlined;
+    private char btnDecreaseText = '-';
+    private string btnCleanText = "Limpar productos";
+
+    private bool clean_visible = false;
+    private void OpenCleanDialog() => clean_visible = true; 
+    void CancelCleanDialog() => clean_visible = false;
+
+    private void CancelCleanMode()
+    {
+        clean_mode = false;
+        btnCleanVariant = Variant.Outlined;
+        btnDecreaseText = '-';
+        btnCleanText = "Limpiar productos";
+    }
+
+    private void ClearCart() 
+    {
+
+        if (!clean_mode && _data.product_cart.Count > 0)
+        {
+            clean_mode = true;
+            btnCleanVariant = Variant.Filled;
+            btnDecreaseText = 'x';
+            btnCleanText = "Limpiar todo";
+        }
+        else if (clean_mode && clean_visible)
+        {
+            _data.product_cart = new Dictionary<LotDTO, int>();
+            clean_visible = false;
+            CancelCleanMode();
+        }
+        else if (clean_mode && !clean_visible) OpenCleanDialog();
+    }
 
 
     protected override async Task OnInitializedAsync()
@@ -102,6 +197,9 @@
         };
 
         await GetProducts();
+        productsLoadedTask.SetResult(true);
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
     }
 
     private void Billing()
@@ -114,29 +212,32 @@
         var result = await _lotService.LotList(Convert.ToString(GetProductId()));
         var lotsToAdd = new List<LotDTO>();
 
-        foreach (var lot in result)
+        if(result.Count > 0)
         {
-            bool isLotAlreadyAdded = false;
-
-            foreach (var kvp in product_cart)
+            foreach (var lot in result)
             {
-                if (kvp.Key.LotNo == lot.LotNo)
+                bool isLotAlreadyAdded = false;
+
+                foreach (var kvp in _data.product_cart)
                 {
-                    isLotAlreadyAdded = true;
-                    break;
+                    if (kvp.Key.LotNo == lot.LotNo)
+                    {
+                        isLotAlreadyAdded = true;
+                        break;
+                    }
                 }
+
+                if (!isLotAlreadyAdded)
+                    lotsToAdd.Add(lot);
+
             }
 
-            if (!isLotAlreadyAdded)
-            {
-                lotsToAdd.Add(lot);
-            }
+            foreach (var lotToAdd in lotsToAdd)
+                _data.product_cart.Add(lotToAdd, 1);
         }
+        else Snackbar.Add("Producto sin existencias", Severity.Error);
 
-        foreach (var lotToAdd in lotsToAdd)
-        {
-            product_cart.Add(lotToAdd, 1);
-        }
+        txtProduct = string.Empty;
     }
 
 
@@ -154,7 +255,7 @@
 
     private async Task<IEnumerable<string>> SearchProducts(string value)
     {
-        await Task.Delay(1000);
+        await productsLoadedTask.Task;
 
         if (!string.IsNullOrEmpty(value))
             return product_list

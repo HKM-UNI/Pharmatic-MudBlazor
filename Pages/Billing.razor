@@ -31,44 +31,44 @@
     <MudGrid Class="px-10 pb-5 mt-5" Spacing="1" Style="height: 350px; overflow: auto;">
 
         <MudItem xs="5" Class="bill-column grid-border" Style="border-left: 1px solid transparent; border-top: 1px solid transparent;">
-                <MudText Typo="Typo.h5">Detalles de producto</MudText>
+                <MudText Typo="Typo.h4">Detalles de producto</MudText>
             </MudItem>
 
         <MudItem xs="3" Class="bill-column grid-border" Style="border-top: 1px solid transparent;">
-                <MudText Typo="Typo.h5">Cantidad</MudText>
+                <MudText Typo="Typo.h4">Cantidad</MudText>
             </MudItem>
 
         <MudItem xs="2" Class="bill-column grid-border" Style="border-top: 1px solid transparent;">
-                <MudText Typo="Typo.h5">Precio</MudText >
+                <MudText Typo="Typo.h4">Precio</MudText >
             </MudItem>
 
         <MudItem xs="2" Class="bill-column grid-border" Style="border-top: 1px solid transparent;">
-                <MudText Typo="Typo.h5">Sub total</MudText>
+                <MudText Typo="Typo.h4">Sub total</MudText>
             </MudItem>
 
-        @foreach (var times in new[] { 1, 2, 3, 4, 5, 6, 7,8,9})
+        @foreach (var p in _data.product_cart)
         {
             <MudItem xs="5" Class="grid-border pl-3" Style="border-left: 1px solid transparent;">
-                <MudText Typo="Typo.h5">{Nombre Producto}</MudText>
-                <MudText Typo="Typo.body1">{t. dosis} {via administracion} - {cantidad} {unidad med.} </MudText>
+                <MudText Typo="Typo.h5" Inline="true">@p.Key.Product?.Name</MudText>
+                <MudText Typo="Typo.body1" Inline="true"> @p.Key.Composition?.Dose?.Name @p.Key.Composition?.Roa?.Description - @p.Key.Composition?.ContentSize @p.Key.Composition?.Measure?.Unit </MudText>
                 <MudText Typo="Typo.h6">
-                    <MudIcon Icon="@Icons.Material.Outlined.PersonOutline" Size="Size.Medium" /> {Proveedor}
-                    <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Medium" /> {Fecha de expiracion}
+                    <MudIcon Icon="@Icons.Material.Outlined.PersonOutline" Size="Size.Medium" /> @p.Key.Provider?.Name
+                    <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Medium" /> @p.Key.ExpirationDate.ToString("dd/MM/yyyy")
                 </MudText>
             </MudItem>
 
             <MudItem xs="3" Class="bill-item grid-border">
                 <MudButton Variant="Variant.Outlined" Size="Size.Large" Color="Color.Primary" Class="mx-3">+</MudButton>
-                <MudText Typo="Typo.h6" Inline="true">0</MudText>
+                <MudText Typo="Typo.h6" Inline="true">@p.Value</MudText>
                 <MudButton Variant="Variant.Outlined" Size="Size.Large" Color="Color.Error" Class="mx-3">-</MudButton>
             </MudItem>
 
             <MudItem xs="2" Class="bill-item grid-border">
-                <MudText Typo="Typo.body1">Precio $$$</MudText>
+                <MudText Typo="Typo.body1">C$ @p.Key.SellingPrice</MudText>
             </MudItem>
 
             <MudItem xs="2" Class="bill-item grid-border">
-                <MudText Typo="Typo.body1">Sub total $$$</MudText>
+                <MudText Typo="Typo.body1">C$ @(p.Key.SellingPrice*p.Value)</MudText>
             </MudItem>
         }
     </MudGrid>
