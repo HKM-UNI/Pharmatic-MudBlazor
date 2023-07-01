@@ -1,17 +1,15 @@
 ﻿<MudNavMenu Color="Color.Primary" Rounded="true">
     <MudNavLink Href="/dashboard" Match="NavLinkMatch.All" Icon="@CustomIcons.DashBoard">DashBoard</MudNavLink>
     
-    <MudNavLink Href="/ventas" Match="NavLinkMatch.All" Icon="@CustomIcons.Notepad">Ventas</MudNavLink>
+    <MudNavGroup Title="Ventas" Expanded="false" Icon="@CustomIcons.EmptyWallet">
+        <MudNavLink Href="/ventas/carrito" Icon="@CustomIcons.Notepad">Nueva venta</MudNavLink>
+        <MudNavLink Href="/ventas/historial" Icon="@CustomIcons.Archive">Historial de venta</MudNavLink>
+    </MudNavGroup>
 
     <MudNavGroup Title="Inventario" Expanded="false" Icon="@CustomIcons.DropBox">
         <MudNavLink Href="/productos" Icon="@CustomIcons.Bag">Productos</MudNavLink>
         <MudNavLink Href="/metadata" Icon="@CustomIcons.Setting">Metadata</MudNavLink>
         <MudNavLink Href="/composiciones" Icon="@CustomIcons.ChemicalGlass">Composiciones</MudNavLink>
-    </MudNavGroup>
-
-    <MudNavGroup Title="Finanzas" Expanded="false" Icon="@CustomIcons.EmptyWallet">
-        <MudNavLink Href="/page/dashboard">Users</MudNavLink>
-        <MudNavLink Href="/page/dashboard">Security</MudNavLink>
     </MudNavGroup>
 
     <MudNavGroup Title="Ajustes" Expanded="false" Icon="@CustomIcons.Configuration">

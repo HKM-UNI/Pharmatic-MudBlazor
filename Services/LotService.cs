@@ -19,5 +19,21 @@ namespace Pharmatic.Services
 
             return result!;
         }
+
+        public async Task<List<LotDTO>> LotList()
+        {
+            var url = "http://localhost:7035/api/lots";
+            var result = await _http.GetFromJsonAsync<List<LotDTO>>(url);
+
+            return result!;
+        }
+
+        public async Task<LotDTO> SearchLot(string lotNo)
+        {
+            var url = "http://localhost:7035/api/lots/" + lotNo;
+            var result = await _http.GetFromJsonAsync<LotDTO>(url);
+
+            return result!;
+        }
     }
 }

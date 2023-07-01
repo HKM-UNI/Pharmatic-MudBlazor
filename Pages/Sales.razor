@@ -1,4 +1,4 @@
-﻿@page "/ventas"
+﻿@page "/ventas/carrito"
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @layout MainLayout
@@ -196,10 +196,10 @@
             new BreadcrumbItem("Carrito", href: null, disabled:true),
         };
 
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+
         await GetProducts();
         productsLoadedTask.SetResult(true);
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
     }
 
     private void Billing()
@@ -209,35 +209,41 @@
 
     private async Task CheckProduct()
     {
-        var result = await _lotService.LotList(Convert.ToString(GetProductId()));
-        var lotsToAdd = new List<LotDTO>();
+        int id = GetProductId();
 
-        if(result.Count > 0)
+        if (id != -1)
         {
-            foreach (var lot in result)
-            {
-                bool isLotAlreadyAdded = false;
+            var result = await _lotService.LotList(Convert.ToString(id));
+            var lotsToAdd = new List<LotDTO>();
 
-                foreach (var kvp in _data.product_cart)
+            if (result.Count > 0)
+            {
+                foreach (var lot in result)
                 {
-                    if (kvp.Key.LotNo == lot.LotNo)
+                    bool isLotAlreadyAdded = false;
+
+                    foreach (var kvp in _data.product_cart)
                     {
-                        isLotAlreadyAdded = true;
-                        break;
+                        if (kvp.Key.LotNo == lot.LotNo)
+                        {
+                            isLotAlreadyAdded = true;
+                            break;
+                        }
                     }
+
+                    if (!isLotAlreadyAdded)
+                        lotsToAdd.Add(lot);
+
                 }
 
-                if (!isLotAlreadyAdded)
-                    lotsToAdd.Add(lot);
-
+                foreach (var lotToAdd in lotsToAdd)
+                    _data.product_cart.Add(lotToAdd, 1);
             }
+            else Snackbar.Add("Producto sin existencias", Severity.Error);
 
-            foreach (var lotToAdd in lotsToAdd)
-                _data.product_cart.Add(lotToAdd, 1);
+            txtProduct = string.Empty;
         }
-        else Snackbar.Add("Producto sin existencias", Severity.Error);
-
-        txtProduct = string.Empty;
+        else Snackbar.Add("Selecciona un producto válido", Severity.Warning);
     }
 
 
@@ -250,7 +256,11 @@
 
     private int GetProductId()
     {
-        return product_list.Find(product => product.Name.Equals(txtProduct, StringComparison.InvariantCultureIgnoreCase)).ProductNo;
+        var prod = product_list.Find(product => product.Name.Equals(txtProduct, StringComparison.InvariantCultureIgnoreCase));
+
+        if (prod != null) return prod.ProductNo;
+        
+        return -1;
     }
 
     private async Task<IEnumerable<string>> SearchProducts(string value)

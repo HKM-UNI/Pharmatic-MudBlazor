@@ -167,7 +167,7 @@
                 Snackbar.Add("Producto actualizado correctamente", Severity.Success);
                 _navigationManager.NavigateTo($"/productos/detalle/{prod.ProductNo}");
             }
-            else Snackbar.Add("Error al editar producto", Severity.Warning);
+            else Snackbar.Add("Error al editar producto", Severity.Error);
         }
 
     }

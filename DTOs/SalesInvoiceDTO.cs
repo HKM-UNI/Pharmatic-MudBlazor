@@ -19,6 +19,17 @@ namespace Pharmatic.DTOs
         public double Total { get; set; }
 
         public List<SalesDetailsDTO>? Details { get; set; }
+
+        public SalesInvoiceDTO()
+        {
+            InvoiceNo = 0;
+            Details = new List<SalesDetailsDTO>();
+            Discount = 0;
+            SalesDate = DateTime.Now;
+            SubTotal = 0;
+            Tax = 0;
+            Total = 0;
+        }
         
     }
 }

@@ -9,7 +9,7 @@ namespace Pharmatic.DTOs
         public int Discount { get; set; }
         public DateTime ExpirationDate { get; set; }
         public int LotNo { get; set; }
-        public ProductDTO? Product { get; set; }
+        public ProductDTO Product { get; set; } = new ProductDTO();
         public ProviderDTO? Provider { get; set; }
         public double? PurchasePrice { get; set; }
         public double? SellingPrice { get; set; }

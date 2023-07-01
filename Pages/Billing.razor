@@ -3,7 +3,10 @@
 @using Pharmatic.Services;
 @layout MainLayout
 @inject NavigationManager _navigationManager
+@inject CustomerService _customerService
+@inject SalesService _salesService
 @inject SharedData _data
+@inject ISnackbar Snackbar
 
 <MudPaper>
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
@@ -20,12 +23,12 @@
         <MudSpacer />
 
         <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Primary">
+                   Color="Color.Primary" OnClick="CheckOut">
             Realizar facturación
         </MudButton>
 
         <MudIconButton Icon="@CustomIcons.Bag" Color="Color.Primary" Size="Size.Large" Class="ml-10" />
-        <MudText Typo="Typo.h5" Color="Color.Dark">6</MudText>
+        <MudText Typo="Typo.h5" Color="Color.Dark">@_data.product_cart.Sum(pair => pair.Value)</MudText>
 
     </MudAppBar>
     <MudGrid Class="px-10 pb-5 mt-5" Spacing="1" Style="height: 350px; overflow: auto;">
@@ -58,9 +61,9 @@
             </MudItem>
 
             <MudItem xs="3" Class="bill-item grid-border">
-                <MudButton Variant="Variant.Outlined" Size="Size.Large" Color="Color.Primary" Class="mx-3">+</MudButton>
+                <MudButton Variant="Variant.Outlined" Size="Size.Large" Color="Color.Primary" Class="mx-3" OnClick="() => Increase(p.Key)">+</MudButton>
                 <MudText Typo="Typo.h6" Inline="true">@p.Value</MudText>
-                <MudButton Variant="Variant.Outlined" Size="Size.Large" Color="Color.Error" Class="mx-3">-</MudButton>
+                <MudButton Variant="Variant.Outlined" Size="Size.Large" Color="Color.Error" Class="mx-3" OnClick="() => Decrease(p.Key)">-</MudButton>
             </MudItem>
 
             <MudItem xs="2" Class="bill-item grid-border">
@@ -76,11 +79,12 @@
     <MudGrid Justify="Justify.SpaceAround" Class="px-5 mt-1 pb-5">
 
         <MudItem xs="5" Class="mt-5">
-            <MudAutocomplete Placeholder="Cliente de factura" @bind-Value="search_customer" Variant="Variant.Outlined" AdornmentIcon="@CustomIcons.Search"
-                             Adornment="Adornment.Start" Margin="Margin.Dense">
+            <MudAutocomplete Placeholder="Cliente de factura" @bind-Value="txtCustomer" Variant="Variant.Outlined" AdornmentIcon="@CustomIcons.Search"
+                             Adornment="Adornment.Start" Margin="Margin.Dense" SearchFunc="SearchCustomers" T="string" ShowProgressIndicator="true"
+                             ProgressIndicatorColor="@Color.Primary">
                 <NoItemsTemplate>
                     <MudText Align="Align.Center" Class="px-4 py-1">
-                        No items found
+                        No se encontró
                     </MudText>
                 </NoItemsTemplate>
             </MudAutocomplete>
@@ -88,17 +92,9 @@
 
         <MudItem xs="4" Class="mt-5">
             <MudGrid Class="px-5">
-                <MudItem xs="8" Class="bill-detail py-1">
-                        <MudText Typo="Typo.body1">Sub total</MudText>
-                </MudItem>
-
-                <MudItem xs="4" Class="py-1">
-                    <MudTextField @bind-Value="discount_amount" Margin="Margin.Dense" ReadOnly="true" Disabled="true"
-                                  Adornment="Adornment.End" AdornmentText="C$" Variant="Variant.Outlined" />
-                </MudItem>
 
                 <MudItem xs="8" Class="bill-detail py-1">
-                        <MudSwitch @bind-Checked="@discount" Color="Color.Primary" />
+                        <MudSwitch @bind-Checked="@discount_enabled" Color="Color.Primary" />
                         <MudText Typo="Typo.body1">Descuento</MudText>
                 </MudItem>
 
@@ -108,23 +104,32 @@
                 </MudItem>
 
                 <MudItem xs="8" Class="bill-detail py-1">
-                        <MudText Typo="Typo.body1">Con descuento</MudText>
+                    <MudText Typo="Typo.body1">Sub total</MudText>
                 </MudItem>
 
                 <MudItem xs="4" Class="py-1">
-                    <MudTextField @bind-Value="discount_amount" Margin="Margin.Dense" ReadOnly="true" Disabled="true"
+                    <MudTextField Value="@SubTotal()" Margin="Margin.Dense" ReadOnly="true" Disabled="true"
                                   Adornment="Adornment.End" AdornmentText="C$" Variant="Variant.Outlined" />
                 </MudItem>
                 
                 <MudItem xs="8" Class="bill-detail py-1">
-                        <MudSwitch @bind-Checked="@discount" Color="Color.Primary" />
+                        <MudSwitch @bind-Checked="@iva_enabled" Color="Color.Primary" />
                         <MudText Typo="Typo.body1">IVA</MudText>
                 </MudItem>
 
                 <MudItem xs="4" Class="py-1">
-                    <MudTextField @bind-Value="discount_amount" Margin="Margin.Dense" ReadOnly="true" Disabled="true"
+                    <MudTextField Value="@IVA(SubTotal())" Margin="Margin.Dense" ReadOnly="true" Disabled="true"
                                   Adornment="Adornment.End" AdornmentText="C$" Variant="Variant.Outlined"/>
-                </MudItem>            
+                </MudItem>
+                
+                <MudItem xs="8" Class="bill-detail py-1">
+                    <MudText Typo="Typo.body1">Total</MudText>
+                </MudItem>
+
+                <MudItem xs="4" Class="py-1">
+                    <MudTextField Value="@Total()" Margin="Margin.Dense" ReadOnly="true" Disabled="true"
+                                  Adornment="Adornment.End" AdornmentText="C$" Variant="Variant.Outlined" />
+                </MudItem>
 
             </MudGrid>
 
@@ -133,6 +138,18 @@
     </MudGrid>
 
 </MudPaper>
+
+<MudDialog @bind-IsVisible="remove_visible">
+    <TitleContent>
+        <MudText Typo="Typo.h4">
+            ¿Remover producto del carrito?
+        </MudText>
+    </TitleContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Default" OnClick="CancelDelete" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteSubmit" Class="px-10">Remover</MudButton>
+    </DialogActions>
+</MudDialog>
 
 <style>
     .bill-column {
@@ -163,20 +180,146 @@
 </style>
 
 @code {
-    private string search_customer = string.Empty;
+    private SalesInvoiceDTO invoice = new SalesInvoiceDTO();
+    private List<SalesDetailsDTO> invoice_details = new List<SalesDetailsDTO>();
+
+    private string txtCustomer = string.Empty;
     private string search_product = string.Empty;
-    private bool discount = false;
-    private float discount_amount = 0;
+    private bool discount_enabled = false;
+    private bool iva_enabled = true;
+
+    private int discount_amount = 0;
+    private const float iva = 0.15f;
+
+    private double SubTotal()
+    {
+        double subTotal = _data.product_cart.Sum(kvp => kvp.Key.SellingPrice * kvp.Value) ?? 0;
+
+        if (discount_enabled) subTotal -= subTotal * discount_amount / 100;
+
+        return subTotal;
+    }
+
+    private double IVA(double amount) => amount * iva;
+    private double Total() => iva_enabled ? SubTotal() + IVA(SubTotal()) : SubTotal();
+
+    private List<CustomerDTO> customer_list = new List<CustomerDTO>();
+    private TaskCompletionSource<bool> customersLoadedTask = new TaskCompletionSource<bool>();
+    private LotDTO current_lot = new LotDTO();
+
+    private bool remove_visible = false;
+    private void OpenRemoveDialog(LotDTO lot)
+    {
+        remove_visible = true;
+        current_lot = lot;
+    }
+
+    void CancelDelete() => remove_visible = false;
+    void DeleteSubmit()
+    {
+        _data.product_cart.Remove(current_lot);
+        remove_visible = false;
+        Snackbar.Add("Producto removido", Severity.Info);
+    }
+
+    private void Increase(LotDTO lot) { _data.product_cart[lot]++; }
+    private void Decrease(LotDTO lot)
+    {
+        if (_data.product_cart[lot] <= 1)
+            OpenRemoveDialog(lot);
+        else _data.product_cart[lot]--;
+    }
 
     protected override async Task OnInitializedAsync()
     {
         _data.Items = new List<BreadcrumbItem>
         {
             new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
-            new BreadcrumbItem("Carrito", href: "/ventas"),
+            new BreadcrumbItem("Carrito", href: "/ventas/carrito"),
             new BreadcrumbItem("Facturación", href: null, disabled:true),
         };
 
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+
+        await GetCustomers();
+        customersLoadedTask.SetResult(true);
+
+    }
+
+    private async Task GetCustomers()
+    {
+        var result = await _customerService.CustomerList();
+        customer_list = result!;
+    }
+
+    private async Task<IEnumerable<string>> SearchCustomers(string value)
+    {
+        await customersLoadedTask.Task;
+
+        if (!string.IsNullOrEmpty(value))
+            return customer_list
+                .Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+                .Select(x => x.Name);
+
+        else return customer_list.Select(x => x.Name);
+    }
+
+    private int GetCustomerId()
+    {
+        var c = customer_list.Find(customer => customer.Name.Equals(txtCustomer, StringComparison.InvariantCultureIgnoreCase));
+
+        if (c != null) return c.CustomerNo;
+
+        return -1;
+    }
+
+    private async Task CheckOut()
+    {
+        if (_data.product_cart.Count > 0)
+        {
+            int customer_id = GetCustomerId();
+            if (customer_id >= 0) invoice.CustomerNo = customer_id;
+
+            invoice.Discount = discount_amount;
+            invoice.SalesDate = DateTime.Now;
+
+            var first_result = await _salesService.CreateInvoice(invoice);
+
+            if (first_result != null)
+            {
+                invoice = first_result;
+
+                foreach (var prod in _data.product_cart)
+                {
+                    SalesDetailsDTO temp = new SalesDetailsDTO();
+
+                    temp.InvoiceNo = invoice.InvoiceNo;
+                    temp.LotNo = prod.Key.LotNo;
+                    temp.Quantity = prod.Value;
+
+                    invoice_details.Add(temp);
+                }
+
+
+                invoice.Details = invoice_details;
+
+                var end_result = await _salesService.EditInvoice(invoice.InvoiceNo, invoice);
+
+                if (end_result != null)
+                {
+                    Snackbar.Add("Venta realizada correctamente", Severity.Success);
+                    _data.product_cart = new Dictionary<LotDTO, int>();
+                    _navigationManager.NavigateTo($"/ventas/carrito/");
+                }
+                else Snackbar.Add("Error al generar factura", Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add("Error al crear factura", Severity.Error);
+            }
+
+        }
+        else Snackbar.Add("No hay productos en el carrito", Severity.Warning);
     }
 }
 

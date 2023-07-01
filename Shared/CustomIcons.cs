@@ -174,6 +174,15 @@ namespace Pharmatic.Shared
             }
         }
 
+        public static string Archive
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.archive-2.svg");
+                return svgFile;
+            }
+        }
+
         private static string GetEmbeddedResource(string resourceName)
         {
             var assembly = Assembly.GetExecutingAssembly();

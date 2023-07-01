@@ -1,0 +1,114 @@
+﻿@page "/ventas/historial"
+@using Pharmatic.DTOs;
+@using Pharmatic.Services;
+@layout MainLayout
+@inject NavigationManager _navigationManager
+@inject SharedData _data
+@inject SalesService _salesService
+@inject LotService _lotService
+@inject ProductService _productService
+@inject CustomerService _customerService
+
+<MudPaper>
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
+        <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
+                      AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />
+
+        <MudSpacer />
+    </MudAppBar>
+
+    @if (loading)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7 px-7" Size="Size.Large" Rounded="true"/>
+    }
+    
+    <MudGrid Class="pa-3">
+        @foreach (var sale in sales_list)
+        {
+            <MudItem xs="4">
+
+                <MudCard Style="background-color: #F5F5F5;" Class="hover-card" Outlined="true">
+
+                        <MudCardContent>
+
+                            <MudText Typo="Typo.body1" Align="Align.End"><b>Número de productos: @sale.Details?.Sum(detail => detail.Quantity)</b></MudText>
+                            <MudText Typo="Typo.h6" Inline="true">Total venta: </MudText>
+                            <MudText Typo="Typo.h6" Color="Color.Success" Inline="true"> C$ @sale.Total</MudText>
+                            <MudText Typo="Typo.body1">
+                                Venta realizada el <b>@sale.SalesDate.ToString("dd/MM/yyyy")</b> a las <b>@sale.SalesDate.ToString("hh:mm tt")</b>
+                            </MudText>
+
+                        <MudContainer Class="my-2 rounded py-2" Style="height: 100px; overflow: auto; background-color: white;">
+                            @foreach (var detail in sale.Details)
+                            {
+                                <MudText Typo="Typo.body2"> @GetLotDetails(detail.LotNo) : @detail.Quantity</MudText>
+                            }
+                        </MudContainer>
+
+                            <MudText Typo="Typo.body1" Align="Align.End"><b>Cliente: @GetCustomerName(sale.CustomerNo ?? -1)</b></MudText>
+                            
+                        </MudCardContent>
+
+                </MudCard>
+
+            </MudItem>
+        }
+    </MudGrid>
+
+</MudPaper>
+
+@code {
+    private List<SalesInvoiceDTO> sales_list = new List<SalesInvoiceDTO>();
+    private List<LotDTO> lot_list = new List<LotDTO>();
+    private List<CustomerDTO> customer_list = new List<CustomerDTO>();
+    private string search_text = string.Empty;
+    private bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Historial de ventas", href: null, disabled: true)
+        };
+
+        await GetSales();
+        await GetCustomers();
+        await GetLots();
+
+        loading = false;
+    }
+
+    private string GetLotDetails(int lot_no)
+    {
+        var lot = lot_list.FirstOrDefault(l => l.LotNo == lot_no);
+
+        return $"{lot?.Product.Name} ({lot?.Composition?.Composition()})";
+    }
+
+    private string GetCustomerName(int customer_no)
+    {
+        if (customer_no == -1) return string.Empty;
+        var customer = customer_list.FirstOrDefault(c => c.CustomerNo == customer_no);
+
+        return customer?.Name ?? string.Empty;
+    }
+
+    private async Task GetSales()
+    {
+        var result = await _salesService.SalesList();
+        sales_list = result!;
+    }
+
+    private async Task GetLots()
+    {
+        var result = await _lotService.LotList();
+        lot_list = result!;
+    }
+
+    private async Task GetCustomers()
+    {
+        var result = await _customerService.CustomerList();
+        customer_list = result!;
+    }
+}

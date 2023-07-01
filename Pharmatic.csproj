@@ -7,6 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Content Remove="wwwroot\icons\archive-2.svg" />
 	  <Content Remove="wwwroot\icons\bag.svg" />
 	  <Content Remove="wwwroot\icons\chemicalglass.svg" />
 	  <Content Remove="wwwroot\icons\client.svg" />
@@ -29,6 +30,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Include="wwwroot\icons\archive-2.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\bag.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\chemicalglass.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\client.svg" />
