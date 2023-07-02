@@ -29,15 +29,15 @@
     </MudAppBar>
     <MudGrid Class="pa-5">
         <MudItem xs="6">
-                <MudTextField T="string" @bind-Value="_product.Name" Label="Nombre" Class="my-5" Variant="Variant.Outlined"/>
-                <MudTextField T="string" @bind-Value="_product.Description" Label="Descripción" Lines="5" Class="my-5" Variant="Variant.Outlined" />
-                <MudSelect T="string" @bind-Value="_product.Category.Name" Label="Categoría" AnchorOrigin="Origin.BottomCenter" Class="my-5" Variant="Variant.Outlined">
+                <MudTextField T="string" @bind-Value="prod_name" Label="Nombre" Class="my-5" Variant="Variant.Outlined"/>
+                <MudTextField T="string" @bind-Value="prod_desc" Label="Descripción" Lines="5" Class="my-5" Variant="Variant.Outlined" />
+                <MudSelect T="string" @bind-Value="category" Label="Categoría" AnchorOrigin="Origin.BottomCenter" Class="my-5" Variant="Variant.Outlined">
                     @foreach (var cat in cat_list)
                     {
                         <MudSelectItem Value="@cat.Name"/>
                     }
                 </MudSelect>
-                <MudSelect T="string" @bind-Value="_product.SubCategory.Name" Label="SubCategoría" AnchorOrigin="Origin.BottomCenter" Class="my-5" Variant="Variant.Outlined">
+                <MudSelect T="string" @bind-Value="sub_cat" Label="SubCategoría" AnchorOrigin="Origin.BottomCenter" Class="my-5" Variant="Variant.Outlined">
                     @foreach (var subcat in subcat_list)
                     {
                         <MudSelectItem Value="@subcat.Name"/>
@@ -90,7 +90,12 @@
 </MudPaper>
 
 @code {
-    public ProductDTO _product { get; set; } = new ProductDTO();
+    private string prod_name = string.Empty;
+    private string prod_desc = string.Empty;
+    private string sub_cat = string.Empty;
+    private string category = string.Empty;
+    private IEnumerable<string> selected_tags { get; set; } = new HashSet<string>();
+
     private IBrowserFile? photo;
     private string photoUrl = string.Empty;
     private string photoB64 = string.Empty;
@@ -106,7 +111,41 @@
     private List<SubCategoryDTO> subcat_list = new List<SubCategoryDTO>();
     private List<TagDTO> tag_list = new List<TagDTO>();
 
-    private IEnumerable<string> selected_tags { get; set; } = new HashSet<string>();
+    private async Task GetSelectData()
+    {
+        var cat_result = await _catService.CategoryList();
+        cat_list = cat_result!;
+
+        var subcat_result = await _subcatService.SubCategoryList();
+        subcat_list = subcat_result!;
+
+        var tag_result = await _tagService.TagList();
+        tag_list = tag_result!;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Producto", href: "/productos"),
+            new BreadcrumbItem(SubmitBreadCrumbLabel, href: null, disabled:true),
+        };
+
+        await GetSelectData();
+
+        if (IsEditMode)
+        {
+            ProductDTO product_data = await _productService.SearchProduct(Id);
+            prod_name = product_data.Name;
+            prod_desc = product_data.Description;
+            if (product_data.Category != null) category = product_data.Category.Name;
+            if (product_data.SubCategory != null) sub_cat = product_data.SubCategory.Name;
+            if (product_data.Tags != null) selected_tags = product_data.Tags.Select(tag => tag.Name);
+        }
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+    }
 
     private async Task OnInputFileChanged(InputFileChangeEventArgs e)
     {
@@ -130,9 +169,71 @@
         return Convert.ToBase64String(memoryStream.ToArray());
     }
 
+    private async Task<ProductDTO> AddProduct()
+    {
+        ProductDTO new_product = new ProductDTO();
+
+        new_product.Name = prod_name;
+        new_product.Description = prod_desc;
+
+        var selectedCategory = cat_list.FirstOrDefault(cat => cat.Name == category);
+        new_product.Category = selectedCategory;
+
+        var selectedSubCategory = subcat_list.FirstOrDefault(subcat => subcat.Name == sub_cat);
+        new_product.SubCategory = selectedSubCategory;
+
+        var selectedTags = tag_list
+            .Where(tag => selected_tags.Contains(tag.Name))
+            .Select(tag => new TagDTO { TagNo = tag.TagNo, Name = tag.Name })
+            .ToList();
+
+        new_product.Tags = selectedTags;
+
+        var result = await _productService.CreateProduct(new_product);
+        return result;
+    }
+
+    private async Task<ProductDTO> EditProduct()
+    {
+        ProductDTO updated_product = new ProductDTO();
+
+        updated_product.Name = prod_name;
+        updated_product.Description = prod_desc;
+
+        var selectedCategory = cat_list.FirstOrDefault(cat => cat.Name == category);
+        updated_product.Category = selectedCategory;
+
+        var selectedSubCategory = subcat_list.FirstOrDefault(subcat => subcat.Name == sub_cat);
+        updated_product.SubCategory = selectedSubCategory;
+
+        var selectedTags = tag_list
+            .Where(tag => selected_tags.Contains(tag.Name))
+            .Select(tag => new TagDTO { TagNo = tag.TagNo, Name = tag.Name })
+            .ToList();
+
+        updated_product.Tags = selectedTags;
+
+        var result = await _productService.EditProduct(int.Parse(Id), updated_product);
+        return result;
+    }
+
+    private async Task<bool> AddPhoto(string id, string photo64)
+    {
+        var result = await _productService.AddPhoto(id, photo.Name, photo.ContentType, photoB64);
+        return result;
+    }
+
+    private void ClearFile()
+    {
+        photo = null;
+        photoB64 = string.Empty;
+        photoUrl = string.Empty;
+    }
+
     private void OnCancelClicked()
     {
-        _navigationManager.NavigateTo("/productos");
+        if (IsEditMode) _navigationManager.NavigateTo($"/productos/detalle/{Id}");
+        else _navigationManager.NavigateTo("/productos");
     }
 
     private async Task OnSubmitClicked()
@@ -160,7 +261,7 @@
                 photo_update = await AddPhoto(Id, photoB64);
             }
 
-            if(photo_update) Snackbar.Add("Foto actualizada correctamente", Severity.Success);
+            if (photo_update) Snackbar.Add("Foto actualizada correctamente", Severity.Success);
 
             if (prod != null)
             {
@@ -170,89 +271,5 @@
             else Snackbar.Add("Error al editar producto", Severity.Error);
         }
 
-    }
-
-    private async Task<ProductDTO> AddProduct()
-    {
-        var selectedCategory = cat_list.FirstOrDefault(cat => cat.Name == _product.Category?.Name);
-        _product.Category.CategoryNo = selectedCategory.CategoryNo;
-
-        var selectedSubCategory = subcat_list.FirstOrDefault(subcat => subcat.Name == _product.SubCategory?.Name);
-        _product.SubCategory.SubcategoryNo = selectedSubCategory.SubcategoryNo;
-
-        var selectedTags = tag_list
-            .Where(tag => selected_tags.Contains(tag.Name))
-            .Select(tag => new TagDTO { TagNo = tag.TagNo, Name = tag.Name })
-            .ToList();
-
-        _product.Tags = selectedTags;
-
-        var result = await _productService.CreateProduct(_product);
-        return result;
-    }
-
-    private async Task<ProductDTO> EditProduct()
-    {
-        var selectedCategory = cat_list.FirstOrDefault(cat => cat.Name == _product.Category?.Name);
-        _product.Category.CategoryNo = selectedCategory.CategoryNo;
-
-        var selectedSubCategory = subcat_list.FirstOrDefault(subcat => subcat.Name == _product.SubCategory?.Name);
-        _product.SubCategory.SubcategoryNo = selectedSubCategory.SubcategoryNo;
-
-        var selectedTags = tag_list
-            .Where(tag => selected_tags.Contains(tag.Name))
-            .Select(tag => new TagDTO { TagNo = tag.TagNo, Name = tag.Name })
-            .ToList();
-
-        _product.Tags = selectedTags;
-
-        var result = await _productService.EditProduct(int.Parse(Id), _product);
-        return result;
-    }
-
-    private async Task<bool> AddPhoto(string id, string photo64)
-    {
-        var result = await _productService.AddPhoto(id, photo.Name, photo.ContentType, photoB64);
-        return result;
-    }
-
-    private void ClearFile()
-    {
-        photo = null;
-        photoUrl = string.Empty;
-    }
-
-    private async Task GetSelectData()
-    {
-        var cat_result = await _catService.CategoryList();
-        cat_list = cat_result!;
-
-        var subcat_result = await _subcatService.SubCategoryList();
-        subcat_list = subcat_result!;
-
-        var tag_result = await _tagService.TagList();
-        tag_list = tag_result!;
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        _data.Items = new List<BreadcrumbItem>
-        {
-            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
-            new BreadcrumbItem("Producto", href: "/productos"),
-            new BreadcrumbItem(SubmitBreadCrumbLabel, href: null, disabled:true),
-        };
-
-        await GetSelectData();
-
-        if (IsEditMode)
-        {
-            _product = await _productService.SearchProduct(Id);
-            if (_product.Category == null) _product.Category = new CategoryDTO();
-            if (_product.SubCategory == null) _product.SubCategory = new SubCategoryDTO();
-            if(_product.Tags != null) selected_tags = _product.Tags.Select(tag => tag.Name);
-        }
-
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
     }
 }

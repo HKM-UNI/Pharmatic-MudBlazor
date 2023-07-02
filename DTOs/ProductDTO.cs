@@ -4,7 +4,7 @@
     {
         public int ProductNo { get; set; }
         public string Name { get; set; } = default!;
-        public string? Description { get; set; }
+        public string Description { get; set; } = default!;
         public CategoryDTO? Category { get; set; }
         public SubCategoryDTO? SubCategory { get; set; }
         public List<TagDTO>? Tags { get; set; }
@@ -14,9 +14,9 @@
         public ProductDTO()
         {
             Category = new CategoryDTO();
+            SubCategory = new SubCategoryDTO();
             Tags = new List<TagDTO>();
             ImageUrl = default!;
-            SubCategory = new SubCategoryDTO();
         }
     }
 }
