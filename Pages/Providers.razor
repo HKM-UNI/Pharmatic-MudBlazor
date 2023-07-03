@@ -5,6 +5,7 @@
 @inject ProviderService _providerService
 @inject NavigationManager _navigationManager
 @inject SharedData _data
+@inject ISnackbar Snackbar
 
 <MudPaper>
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
@@ -38,7 +39,7 @@
 
                     <MudCardActions>
                         <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error" FullWidth="true">
+                                   Color="Color.Error" FullWidth="true" OnClick="() => OpenDeleteDialog(p.name, p.providerNo)">
                             Eliminar
                         </MudButton>
 
@@ -55,9 +56,48 @@
     </MudGrid>
 
 </MudPaper>
+
+<MudDialog @bind-IsVisible="delete_visible">
+    <TitleContent>
+        <MudText Typo="Typo.h4">
+            Desea eliminar al proveedor @(current_provider)?
+        </MudText>
+        <MudText Typo="Typo.body1">
+            Estas completamente seguro, tambien eliminaras los registros que dependen de esta información.
+        </MudText>
+    </TitleContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" OnClick="CancelDelete" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteSubmit" Class="px-10">Eliminar</MudButton>
+    </DialogActions>
+</MudDialog>
+
 @code {
     private string search_text = string.Empty;
     private List<ProviderDTO> provider_list = new List<ProviderDTO>();
+    private bool delete_visible = false;
+    private string current_provider = string.Empty;
+    private int id_provider_delete = -1;
+
+    private void OpenDeleteDialog(string n, int id)
+    {
+        delete_visible = true;
+        current_provider = n;
+        id_provider_delete = id;
+    }
+
+    private void CancelDelete() => delete_visible = false;
+
+    private async Task DeleteSubmit()
+    {
+        var response = await _providerService.DeleteProvider(id_provider_delete);
+        delete_visible = false;
+
+        await GetProviders();
+
+        if (response) Snackbar.Add("Proveedor eliminado", Severity.Info);
+        else Snackbar.Add("No se pudo eliminar al proveedor", Severity.Warning);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -66,7 +106,10 @@
             new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
             new BreadcrumbItem("Proveedores", href: null, disabled: true)
         };
+
         await GetProviders();
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
     }
 
     private async Task GetProviders()
@@ -75,13 +118,9 @@
         provider_list = result!;
     }
 
-    private void AgregarClicked()
-    {
-        _navigationManager.NavigateTo("/proveedores/agregar");
-    }
+    private void AgregarClicked() => _navigationManager.NavigateTo("/proveedores/agregar");
+    
 
-    private void EditClicked(string id)
-    {
-        _navigationManager.NavigateTo("/proveedores/editar/" + id);
-    }
+    private void EditClicked(string id) => _navigationManager.NavigateTo("/proveedores/editar/" + id);
+    
 }

@@ -28,9 +28,6 @@ namespace Pharmatic.Services
 
         public async Task<ProviderDTO> CreateProvider(ProviderDTO new_provider)
         {
-            string json = JsonSerializer.Serialize(new_provider);
-            Console.WriteLine(json);
-
             var result = await _http.PostAsJsonAsync("http://localhost:7035/api/providers/create", new_provider);
             var response = await result.Content.ReadFromJsonAsync<ProviderDTO>();
             return response!;
@@ -38,12 +35,16 @@ namespace Pharmatic.Services
 
         public async Task<ProviderDTO> EditProvider(int id, ProviderDTO provider)
         {
-            string json = JsonSerializer.Serialize(provider);
-            Console.WriteLine(json);
-
             var result = await _http.PatchAsJsonAsync($"http://localhost:7035/api/providers/{id}", provider);
             var response = await result.Content.ReadFromJsonAsync<ProviderDTO>();
             return response!;
+        }
+
+        public async Task<bool> DeleteProvider(int id)
+        {
+            var url = $"http://localhost:7035/api/providers/{id}";
+            var response = await _http.DeleteAsync(url);
+            return response.IsSuccessStatusCode;
         }
     }
 }

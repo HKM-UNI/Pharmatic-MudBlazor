@@ -55,9 +55,8 @@ namespace Pharmatic.Services
                 content.Add(fileContent, "image", fileName);
 
                 var result = await _http.PutAsync($"http://localhost:7035/api/products/{id}/image", content);
-                result.EnsureSuccessStatusCode();
 
-                return true;
+                return result.IsSuccessStatusCode;
             }
         }
 

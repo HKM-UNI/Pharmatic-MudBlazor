@@ -28,10 +28,6 @@ namespace Pharmatic.Services
 
         public async Task<CustomerDTO> CreateCustomer(CustomerDTO new_customer)
         {
-
-            string json = JsonSerializer.Serialize(new_customer);
-            Console.WriteLine(json);
-
             var result = await _http.PostAsJsonAsync("http://localhost:7035/api/customers/create", new_customer);
             var response = await result.Content.ReadFromJsonAsync<CustomerDTO>();
             return response!;
@@ -39,12 +35,17 @@ namespace Pharmatic.Services
 
         public async Task<CustomerDTO> EditCustomer(int id, CustomerDTO customer)
         {
-            string json = JsonSerializer.Serialize(customer);
-            Console.WriteLine(json);
-
             var result = await _http.PatchAsJsonAsync($"http://localhost:7035/api/customers/{id}", customer);
             var response = await result.Content.ReadFromJsonAsync<CustomerDTO>();
             return response!;
         }
+
+        public async Task<bool> DeleteCustomer(int id)
+        {
+            var url = $"http://localhost:7035/api/customers/{id}";
+            var response = await _http.DeleteAsync(url);
+            return response.IsSuccessStatusCode;
+        }
+
     }
 }
