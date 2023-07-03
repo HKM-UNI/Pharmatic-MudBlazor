@@ -5,6 +5,8 @@
 @layout MainLayout
 @inject TypeDoseService _doseService
 @inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
+
 
 <MudPaper>
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
@@ -27,11 +29,11 @@
                         <MudText Typo="Typo.body1">@dose.name</MudText>
 
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(dose.name)">
+                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(dose.name, dose.dosageFormNo)">
                             Eliminar
                         </MudButton>
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary" OnClick="() => OpenEditDialog(dose.name)">
+                                   Color="Color.Primary" OnClick="() => OpenEditDialog(dose.name, dose.dosageFormNo)">
                             Editar
                         </MudButton>
                    </MudCardContent>
@@ -52,7 +54,7 @@
         <MudTextField @bind-Value="dose_txt" Label="Tipo de dosis" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="AddSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CloseAddDialog" Class="px-10">Cancelar</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddSubmit" Class="px-10">Crear</MudButton>
     </DialogActions>
 </MudDialog>
@@ -70,8 +72,8 @@
         <MudTextField @bind-Value="dose_txt" Label="Nuevo nombre" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="EditSubmit" Class="px-10">Cancelar</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditSubmit" Class="px-10">Crear</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CloseEditDialog" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditSubmit" Class="px-10">Edit</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -85,7 +87,7 @@
         </MudText>
     </TitleContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" OnClick="DeleteSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" OnClick="CloseDeleteDialog" Class="px-10">Cancelar</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteSubmit" Class="px-10">Eliminar</MudButton>
     </DialogActions>
 </MudDialog>
@@ -94,28 +96,94 @@
     private string search_text = string.Empty;
     private List<TypeDoseDTO> dose_list = new List<TypeDoseDTO>();
 
+    private string dose_txt = string.Empty;
+    private string current_dose = string.Empty;
+    private int current_dose_id = -1;
+
     private bool add_visible;
     private void OpenAddDialog() => add_visible = true;
-    void AddSubmit() => add_visible = false;
+    private void CloseAddDialog()
+    {
+        add_visible = false;
+        dose_txt = string.Empty;
+    }
+
+    private async Task AddSubmit()
+    {
+        if (dose_txt.Count() > 0)
+        {
+            TypeDoseDTO new_dose = new TypeDoseDTO();
+            new_dose.name = dose_txt;
+
+            var result = await _doseService.CreateTypeDose(new_dose);
+
+            if (result != null)
+            {
+                Snackbar.Add("Tipo de dosis creada correctamente", Severity.Success);
+                await GetDoses();
+            }
+            else Snackbar.Add("Error al crear tipo de dosis", Severity.Error);
+
+            add_visible = false;
+        }
+        else Snackbar.Add("Ingresa un nombre válido", Severity.Warning);
+    }
 
     private bool edit_visible;
-    private void OpenEditDialog(string n)
+    private void OpenEditDialog(string n, int id)
     {
         edit_visible = true;
         current_dose = n;
+        current_dose_id = id;
     }
-    void EditSubmit() => edit_visible = false;
+    private void CloseEditDialog()
+    {
+        edit_visible = false;
+        dose_txt = string.Empty;
+    }
+
+    private async Task EditSubmit()
+    {
+        if (dose_txt.Count() > 0)
+        {
+            TypeDoseDTO updated_dose = new TypeDoseDTO();
+            updated_dose.dosageFormNo = current_dose_id;
+            updated_dose.name = dose_txt;
+
+            var result = await _doseService.EditTypeDose(current_dose_id, updated_dose);
+
+            if (result != null)
+            {
+                Snackbar.Add("Tipo de dosis actualizada correctamente", Severity.Success);
+                await GetDoses();
+            }
+            else Snackbar.Add("Error al actualizar tipo de dosis", Severity.Error);
+
+            edit_visible = false;
+        }
+        else Snackbar.Add("Ingresa un nombre válido", Severity.Warning);
+    }
 
     private bool delete_visible;
-    private void OpenDeleteDialog(string n)
+    private void OpenDeleteDialog(string n, int id)
     {
         delete_visible = true;
         current_dose = n;
+        current_dose_id = id;
     }
-    void DeleteSubmit() => delete_visible = false;
+    private void CloseDeleteDialog() => delete_visible = false;
 
-    private string dose_txt;
-    private string current_dose;
+    private async Task DeleteSubmit()
+    {
+        var response = await _doseService.DeleteTypeDose(current_dose_id);
+        delete_visible = false;
+
+        await GetDoses();
+
+        if (response) Snackbar.Add("Tipo de dosis eliminada", Severity.Info);
+        else Snackbar.Add("No se pudo eliminar el tipo de dosis", Severity.Warning);
+    }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -125,12 +193,10 @@
             new BreadcrumbItem("Metadata", href: "/metadata"),
             new BreadcrumbItem("Tipo de dosis", href: null, disabled: true)
         };
-        await GetDoses();
-    }
 
-    private void Devolver()
-    {
-        _navigationManager.NavigateTo("/metadata");
+        await GetDoses();
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
     }
 
     private async Task GetDoses()

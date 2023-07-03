@@ -6,6 +6,7 @@
 @inject LotService _lotService
 @inject NavigationManager _navigationManager
 @inject SharedData _data
+@inject ISnackbar Snackbar
 
 <MudPaper Class="ma-3">
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;">
@@ -13,7 +14,7 @@
         <MudSpacer />
 
         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Error">
+                   Color="Color.Error" OnClick="OpenDeleteDialog">
             Eliminar Producto
         </MudButton>
 
@@ -88,12 +89,44 @@
 
 </MudPaper>
 
+<MudDialog @bind-IsVisible="delete_visible">
+    <TitleContent>
+        <MudText Typo="Typo.h4">
+            Desea eliminar @product.name?
+        </MudText>
+        <MudText Typo="Typo.body1">
+            Estas completamente seguro, tambien eliminaras los registros que dependen de esta información.
+        </MudText>
+    </TitleContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" OnClick="CloseDeleteDialog" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteSubmit" Class="px-10">Eliminar</MudButton>
+    </DialogActions>
+</MudDialog>
+
 @code {
     [Parameter]
     public string Id { get; set; }
 
     private List<LotDTO> lot_list = new List<LotDTO>();
     private ProductDTO product = new ProductDTO();
+
+    private bool delete_visible;
+    private void OpenDeleteDialog() => delete_visible = true;
+    private void CloseDeleteDialog() => delete_visible = false;
+
+    private async Task DeleteSubmit()
+    {
+        var response = await _productService.DeleteProduct(int.Parse(Id));
+        delete_visible = false;
+
+        if (response)
+        {
+            Snackbar.Add("Producto eliminado", Severity.Info);
+            _navigationManager.NavigateTo("/productos/");
+        }
+        else Snackbar.Add("No se pudo eliminar el producto", Severity.Warning);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -103,6 +136,8 @@
             new BreadcrumbItem("Productos", href: "/productos"),
             new BreadcrumbItem("Detalle producto", href: null, disabled: true)
         };
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
 
         await GetLots();
         product = await _productService.SearchProduct(Id);

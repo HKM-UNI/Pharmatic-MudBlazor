@@ -3,6 +3,6 @@
     public class RouteOfAdmDTO
     {
         public int adminRouteNo { get; set; }
-        public string description { get; set; } = null!;
+        public string description { get; set; } = string.Empty;
     }
 }

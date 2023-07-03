@@ -5,6 +5,7 @@
 @inject SubCategoryService _subcategoryService
 @inject NavigationManager _navigationManager
 @inject SharedData _data
+@inject ISnackbar Snackbar
 
 <MudPaper>
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
@@ -26,12 +27,12 @@
                     <MudCardContent Style="display: flex; justify-content: space-evenly; align-items: center;">
                         <MudText Typo="Typo.body1">@subcat.name</MudText>
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(subcat.name)">
+                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(subcat.name, subcat.subcategoryNo)">
                             Eliminar
                         </MudButton>
 
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary" OnClick="() => OpenEditDialog(subcat.name)">
+                                   Color="Color.Primary" OnClick="() => OpenEditDialog(subcat.name, subcat.subcategoryNo)">
                             Editar
                         </MudButton>
                     </MudCardContent>
@@ -52,7 +53,7 @@
         <MudTextField @bind-Value="subcat_txt" Label="Nombre Sub Categoría" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="AddSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CloseAddDialog" Class="px-10">Cancelar</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddSubmit" Class="px-10">Crear</MudButton>
     </DialogActions>
 </MudDialog>
@@ -70,8 +71,8 @@
         <MudTextField @bind-Value="subcat_txt" Label="Nuevo nombre" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="EditSubmit" Class="px-10">Cancelar</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditSubmit" Class="px-10">Crear</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CloseEditDialog" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditSubmit" Class="px-10">Editar</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -85,7 +86,7 @@
         </MudText>
     </TitleContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" OnClick="DeleteSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" OnClick="CloseDeleteDialog" Class="px-10">Cancelar</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteSubmit" Class="px-10">Eliminar</MudButton>
     </DialogActions>
 </MudDialog>
@@ -94,28 +95,95 @@
     private string search_text = string.Empty;
     private List<SubCategoryDTO> cat_list = new List<SubCategoryDTO>();
 
+    private string subcat_txt;
+    private string current_subcat;
+    private int current_subcat_id = -1;
+
     private bool add_visible;
     private void OpenAddDialog() => add_visible = true;
-    void AddSubmit() => add_visible = false;
+
+    private void CloseAddDialog()
+    {
+        add_visible = false;
+        subcat_txt = string.Empty;
+    }
+
+    private async Task AddSubmit()
+    {
+        if (subcat_txt.Count() > 0)
+        {
+            SubCategoryDTO new_subcategory = new SubCategoryDTO();
+            new_subcategory.name = subcat_txt;
+
+            var result = await _subcategoryService.CreateSubCategory(new_subcategory);
+
+            if (result != null)
+            {
+                Snackbar.Add("Sub Categoría creada correctamente", Severity.Success);
+                await GetSubCategories();
+            }
+            else Snackbar.Add("Error al crear sub categoría", Severity.Error);
+
+            add_visible = false;
+        }
+        else Snackbar.Add("Ingresa un nombre válido", Severity.Warning);
+    }
 
     private bool edit_visible;
-    private void OpenEditDialog(string n)
+    private void OpenEditDialog(string n, int id)
     {
         edit_visible = true;
         current_subcat = n;
+        current_subcat_id = id;
     }
-    void EditSubmit() => edit_visible = false;
+
+    private void CloseEditDialog()
+    {
+        edit_visible = false;
+        subcat_txt = string.Empty;
+    }
+
+    private async Task EditSubmit()
+    {
+        if (subcat_txt.Count() > 0)
+        {
+            SubCategoryDTO updated_subcategory = new SubCategoryDTO();
+            updated_subcategory.subcategoryNo = current_subcat_id;
+            updated_subcategory.name = subcat_txt;
+
+            var result = await _subcategoryService.EditSubCategory(current_subcat_id, updated_subcategory);
+
+            if (result != null)
+            {
+                Snackbar.Add("Sub Categoría actualizada correctamente", Severity.Success);
+                await GetSubCategories();
+            }
+            else Snackbar.Add("Error al actualizar sub categoría", Severity.Error);
+
+            edit_visible = false;
+        }
+        else Snackbar.Add("Ingresa un nombre válido", Severity.Warning);
+    }
 
     private bool delete_visible;
-    private void OpenDeleteDialog(string n)
+    private void OpenDeleteDialog(string n, int id)
     {
         delete_visible = true;
         current_subcat = n;
+        current_subcat_id = id;
     }
-    void DeleteSubmit() => delete_visible = false;
+    private void CloseDeleteDialog() => delete_visible = false;
 
-    private string subcat_txt;
-    private string current_subcat;
+    private async Task DeleteSubmit()
+    {
+        var response = await _subcategoryService.DeleteSubCategory(current_subcat_id);
+        delete_visible = false;
+
+        await GetSubCategories();
+
+        if (response) Snackbar.Add("Sub categoría eliminada", Severity.Info);
+        else Snackbar.Add("No se pudo eliminar la sub categoría", Severity.Warning);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -125,15 +193,13 @@
             new BreadcrumbItem("Metadata", href: "/metadata"),
             new BreadcrumbItem("Sub categorías", href: null, disabled: true)
         };
-        await ObtenerCategorias();
+        
+        await GetSubCategories();
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
     }
 
-    private void Devolver()
-    {
-        _navigationManager.NavigateTo("/metadata");
-    }
-
-    private async Task ObtenerCategorias()
+    private async Task GetSubCategories()
     {
         var result = await _subcategoryService.SubCategoryList();
         cat_list = (List<SubCategoryDTO>)result!;

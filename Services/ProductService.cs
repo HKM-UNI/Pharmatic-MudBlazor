@@ -60,6 +60,12 @@ namespace Pharmatic.Services
             }
         }
 
+        public async Task<bool> DeleteProduct(int id)
+        {
+            var url = $"http://localhost:7035/api/products/{id}";
+            var response = await _http.DeleteAsync(url);
+            return response.IsSuccessStatusCode;
+        }
 
     }
 }

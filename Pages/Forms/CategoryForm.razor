@@ -5,6 +5,7 @@
 @inject CategoryService _categoryService
 @inject NavigationManager _navigationManager
 @inject SharedData _data
+@inject ISnackbar Snackbar
 
 
 <MudPaper>
@@ -27,12 +28,12 @@
                     <MudCardContent Style="display: flex; justify-content: space-evenly; align-items: center;">
                         <MudText Typo="Typo.body1">@cat.name</MudText>
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(cat.name)">
+                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(cat.name, cat.categoryNo)">
                             Eliminar
                         </MudButton>
 
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary" OnClick="() => OpenEditDialog(cat.name)">
+                                   Color="Color.Primary" OnClick="() => OpenEditDialog(cat.name, cat.categoryNo)">
                             Editar
                         </MudButton>
                    </MudCardContent>
@@ -53,7 +54,7 @@
         <MudTextField @bind-Value="cat_txt" Label="Nombre categoría" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="AddSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CloseAddDialog" Class="px-10">Cancelar</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddSubmit" Class="px-10">Crear</MudButton>
     </DialogActions>
 </MudDialog>
@@ -71,8 +72,8 @@
         <MudTextField @bind-Value="cat_txt" Label="Nuevo nombre" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="EditSubmit" Class="px-10">Cancelar</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditSubmit" Class="px-10">Crear</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CloseEditDialog" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditSubmit" Class="px-10">Editar</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -86,7 +87,7 @@
         </MudText>
     </TitleContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" OnClick="DeleteSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" OnClick="CloseDeleteDialog" Class="px-10">Cancelar</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteSubmit" Class="px-10">Eliminar</MudButton>
     </DialogActions>
 </MudDialog>
@@ -95,35 +96,95 @@
     private string search_text = string.Empty;
     private List<CategoryDTO> cat_list = new List<CategoryDTO>();
 
-    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
-    {
-        new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
-        new BreadcrumbItem("Metadata", href: "/metadata"),
-        new BreadcrumbItem("Categorías", href: null, disabled: true)
-    };
+    private string cat_txt = string.Empty;
+    private string current_cat = string.Empty;
+    private int current_cat_id = -1;
 
     private bool add_visible;
     private void OpenAddDialog() => add_visible = true;
-    void AddSubmit() => add_visible = false;
+    private void CloseAddDialog()
+    {
+        add_visible = false;
+        cat_txt = string.Empty;
+    }
+
+    private async Task AddSubmit() 
+    {
+        if (cat_txt.Count() > 0)
+        {
+            CategoryDTO new_category = new CategoryDTO();
+            new_category.name = cat_txt;
+
+            var result = await _categoryService.CreateCategory(new_category);
+
+            if (result != null)
+            {
+                Snackbar.Add("Categoría creada correctamente", Severity.Success);
+                await GetCategories();
+            }
+            else Snackbar.Add("Error al crear categoría", Severity.Error);
+
+            add_visible = false;
+        }
+        else Snackbar.Add("Ingresa un nombre válido", Severity.Warning);
+    }
 
     private bool edit_visible;
-    private void OpenEditDialog(string n)
+    private void OpenEditDialog(string n, int id)
     {
         edit_visible = true;
         current_cat = n;
+        current_cat_id = id;
     }
-    void EditSubmit() => edit_visible = false;
+
+    private void CloseEditDialog()
+    {
+        edit_visible = false;
+        cat_txt = string.Empty;
+    }
+
+    private async Task EditSubmit()
+    {
+        if (cat_txt.Count() > 0)
+        {
+            CategoryDTO updated_category = new CategoryDTO();
+            updated_category.categoryNo = current_cat_id;
+            updated_category.name = cat_txt;
+
+            var result = await _categoryService.EditCategory(current_cat_id, updated_category);
+
+            if (result != null) 
+            { 
+                Snackbar.Add("Categoría actualizada correctamente", Severity.Success);
+                await GetCategories();
+            }
+            else Snackbar.Add("Error al actualizar categoría", Severity.Error);
+
+            edit_visible = false;
+        }
+        else Snackbar.Add("Ingresa un nombre válido", Severity.Warning);
+    }
 
     private bool delete_visible;
-    private void OpenDeleteDialog(string n)
+    private void OpenDeleteDialog(string n, int id)
     {
         delete_visible = true;
         current_cat = n;
+        current_cat_id = id;
     }
-    void DeleteSubmit() => delete_visible = false;
 
-    private string cat_txt;
-    private string current_cat;
+    private void CloseDeleteDialog() => delete_visible = false;
+
+    private async Task DeleteSubmit()
+    {
+        var response = await _categoryService.DeleteCategory(current_cat_id);
+        delete_visible = false;
+
+        await GetCategories();
+
+        if (response) Snackbar.Add("Categoría eliminada", Severity.Info);
+        else Snackbar.Add("No se pudo eliminar la categoría", Severity.Warning);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -134,12 +195,10 @@
             new BreadcrumbItem("Metadata", href: "/metadata"),
             new BreadcrumbItem("Categorías", href: null, disabled: true)
         };
-        await GetCategories();
-    }
 
-    private void Devolver()
-    {
-        _navigationManager.NavigateTo("/metadata");
+        await GetCategories();
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
     }
 
     private async Task GetCategories()

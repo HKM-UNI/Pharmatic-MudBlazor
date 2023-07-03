@@ -5,6 +5,7 @@
 @inject MeasureService _measureService
 @inject NavigationManager _navigationManager
 @inject SharedData _data
+@inject ISnackbar Snackbar
 
 <MudPaper>
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
@@ -26,12 +27,12 @@
                     <MudCardContent Style="display: flex; justify-content: space-evenly; align-items: center;">
                         <MudText Typo="Typo.body1">@ms.unit</MudText>
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(ms.unit)">
+                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(ms.unit, ms.measureNo)">
                             Eliminar
                         </MudButton>
 
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary" OnClick="() => OpenEditDialog(ms.unit)">
+                                   Color="Color.Primary" OnClick="() => OpenEditDialog(ms.unit, ms.measureNo)">
                             Editar
                         </MudButton>
                     </MudCardContent>
@@ -52,7 +53,7 @@
         <MudTextField @bind-Value="measure_txt" Label="Nombre medida" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="AddSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CloseAddDialog" Class="px-10">Cancelar</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddSubmit" Class="px-10">Crear</MudButton>
     </DialogActions>
 </MudDialog>
@@ -67,11 +68,11 @@
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="measure_txt" Label="Nuevo nombre" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+        <MudTextField @bind-Value="measure_txt" Label="Nueva medida" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="EditSubmit" Class="px-10">Cancelar</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditSubmit" Class="px-10">Crear</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CloseEditDialog" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditSubmit" Class="px-10">Editar</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -85,7 +86,7 @@
         </MudText>
     </TitleContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" OnClick="DeleteSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" OnClick="CloseDeleteDialog" Class="px-10">Cancelar</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteSubmit" Class="px-10">Eliminar</MudButton>
     </DialogActions>
 </MudDialog>
@@ -95,28 +96,96 @@
     private string search_text = string.Empty;
     private List<MeasureDTO> ms_list = new List<MeasureDTO>();
 
+    private string measure_txt;
+    private string current_measure;
+    private int current_measure_id = -1;
+
     private bool add_visible;
     private void OpenAddDialog() => add_visible = true;
-    void AddSubmit() => add_visible = false;
+
+    private void CloseAddDialog()
+    {
+        add_visible = false;
+        measure_txt = string.Empty;
+    }
+
+    private async Task AddSubmit()
+    {
+        if (measure_txt.Count() > 0)
+        {
+            MeasureDTO new_measure = new MeasureDTO();
+            new_measure.unit = measure_txt;
+
+            var result = await _measureService.CreateMeasure(new_measure);
+
+            if (result != null)
+            {
+                Snackbar.Add("Medida creada correctamente", Severity.Success);
+                await GetMeasures();
+            }
+            else Snackbar.Add("Error al crear medida", Severity.Error);
+
+            add_visible = false;
+        }
+        else Snackbar.Add("Ingresa una medida válida", Severity.Warning);
+    }
 
     private bool edit_visible;
-    private void OpenEditDialog(string n)
+    private void OpenEditDialog(string n, int id)
     {
         edit_visible = true;
         current_measure = n;
+        current_measure_id = id;
     }
-    void EditSubmit() => edit_visible = false;
+
+    private void CloseEditDialog()
+    {
+        edit_visible = false;
+        measure_txt = string.Empty;
+    }
+
+    private async Task EditSubmit()
+    {
+        if (measure_txt.Count() > 0)
+        {
+            MeasureDTO updated_measure = new MeasureDTO();
+            updated_measure.measureNo = current_measure_id;
+            updated_measure.unit = measure_txt;
+
+            var result = await _measureService.EditMeasure(current_measure_id, updated_measure);
+
+            if (result != null)
+            {
+                Snackbar.Add("Medida actualizada correctamente", Severity.Success);
+                await GetMeasures();
+            }
+            else Snackbar.Add("Error al actualizar medida", Severity.Error);
+
+            edit_visible = false;
+        }
+        else Snackbar.Add("Ingresa un nombre válido", Severity.Warning);
+    }
 
     private bool delete_visible;
-    private void OpenDeleteDialog(string n)
+    private void OpenDeleteDialog(string n, int id)
     {
         delete_visible = true;
         current_measure = n;
+        current_measure_id = id;
     }
-    void DeleteSubmit() => delete_visible = false;
 
-    private string measure_txt;
-    private string current_measure;
+    private void CloseDeleteDialog() => delete_visible = false;
+
+    private async Task DeleteSubmit()
+    {
+        var response = await _measureService.DeleteMeasure(current_measure_id);
+        delete_visible = false;
+
+        await GetMeasures();
+
+        if (response) Snackbar.Add("Medida eliminada", Severity.Info);
+        else Snackbar.Add("No se pudo eliminar la medida", Severity.Warning);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -126,12 +195,10 @@
             new BreadcrumbItem("Metadata", href: "/metadata"),
             new BreadcrumbItem("Unidades de medida", href: null, disabled: true)
         };
-        await GetMeasures();
-    }
 
-    private void Devolver()
-    {
-        _navigationManager.NavigateTo("/metadata");
+        await GetMeasures();
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
     }
 
     private async Task GetMeasures()

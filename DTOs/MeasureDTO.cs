@@ -4,6 +4,6 @@
     {
         public int measureNo { get; set; }
 
-        public string unit { get; set; } = null!;
+        public string unit { get; set; } = string.Empty;
     }
 }

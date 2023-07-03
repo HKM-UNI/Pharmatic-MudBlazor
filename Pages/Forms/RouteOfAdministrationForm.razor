@@ -5,6 +5,7 @@
 @inject RouteOfAdministrationService _roaService
 @inject NavigationManager _navigationManager
 @inject SharedData _data
+@inject ISnackbar Snackbar
 
 
 <MudPaper>
@@ -27,12 +28,12 @@
                     <MudCardContent Style="display: flex; justify-content: space-evenly; align-items: center;">
                         <MudText Typo="Typo.body1">@roa.description</MudText>
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(roa.description)">
+                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(roa.description, roa.adminRouteNo)">
                             Eliminar
                         </MudButton>
 
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary" OnClick="() => OpenEditDialog(roa.description)">
+                                   Color="Color.Primary" OnClick="() => OpenEditDialog(roa.description, roa.adminRouteNo)">
                             Editar
                         </MudButton>
                     </MudCardContent>
@@ -53,7 +54,7 @@
         <MudTextField @bind-Value="roa_txt" Label="Vía de administración" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="AddSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CloseAddDialog" Class="px-10">Cancelar</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddSubmit" Class="px-10">Crear</MudButton>
     </DialogActions>
 </MudDialog>
@@ -64,15 +65,15 @@
             Edición de vía de administración
         </MudText>
         <MudText Typo="Typo.body1">
-            Nombre actual de vía de administración: @current_roa
+            Descripción actual de vía de administración: @current_roa
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="roa_txt" Label="Nuevo nombre" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+        <MudTextField @bind-Value="roa_txt" Label="Nueva descripción" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="EditSubmit" Class="px-10">Cancelar</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditSubmit" Class="px-10">Crear</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CloseEditDialog" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditSubmit" Class="px-10">Editar</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -86,7 +87,7 @@
         </MudText>
     </TitleContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" OnClick="DeleteSubmit" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" OnClick="CloseDeleteDialog" Class="px-10">Cancelar</MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteSubmit" Class="px-10">Eliminar</MudButton>
     </DialogActions>
 </MudDialog>
@@ -95,28 +96,95 @@
     private string search_text = string.Empty;
     private List<RouteOfAdmDTO> roa_list = new List<RouteOfAdmDTO>();
 
+    private string roa_txt = string.Empty;
+    private string current_roa = string.Empty;
+    private int current_roa_id = -1;
+
     private bool add_visible;
     private void OpenAddDialog() => add_visible = true;
-    void AddSubmit() => add_visible = false;
+
+    private void CloseAddDialog()
+    {
+        add_visible = false;
+        roa_txt = string.Empty;
+    }
+
+    private async Task AddSubmit()
+    {
+        if (roa_txt.Count() > 0)
+        {
+            RouteOfAdmDTO new_roa = new RouteOfAdmDTO();
+            new_roa.description = roa_txt;
+
+            var result = await _roaService.CreateRoa(new_roa);
+
+            if (result != null)
+            {
+                Snackbar.Add("Ruta de administración creada correctamente", Severity.Success);
+                await GetROAs();
+            }
+            else Snackbar.Add("Error al crear ruta de administración", Severity.Error);
+
+            add_visible = false;
+        }
+        else Snackbar.Add("Ingresa una descripción válida", Severity.Warning);
+    }
 
     private bool edit_visible;
-    private void OpenEditDialog(string n)
+    private void OpenEditDialog(string n, int id)
     {
         edit_visible = true;
         current_roa = n;
+        current_roa_id = id;
     }
-    void EditSubmit() => edit_visible = false;
+
+    private void CloseEditDialog()
+    {
+        edit_visible = false;
+        roa_txt = string.Empty;
+    }
+
+    private async Task EditSubmit()
+    {
+        if (roa_txt.Count() > 0)
+        {
+            RouteOfAdmDTO updated_roa = new RouteOfAdmDTO();
+            updated_roa.adminRouteNo = current_roa_id;
+            updated_roa.description = roa_txt;
+
+            var result = await _roaService.EditRoa(current_roa_id, updated_roa);
+
+            if (result != null)
+            {
+                Snackbar.Add("Vía de administración actualizada correctamente", Severity.Success);
+                await GetROAs();
+            }
+            else Snackbar.Add("Error al actualizar vía de administración", Severity.Error);
+
+            edit_visible = false;
+        }
+        else Snackbar.Add("Ingresa una descripción válido", Severity.Warning);
+    }
 
     private bool delete_visible;
-    private void OpenDeleteDialog(string n)
+    private void OpenDeleteDialog(string n, int id)
     {
         delete_visible = true;
         current_roa = n;
+        current_roa_id = id;
     }
-    void DeleteSubmit() => delete_visible = false;
+    private void CloseDeleteDialog() => delete_visible = false;
 
-    private string roa_txt;
-    private string current_roa;
+    private async Task DeleteSubmit()
+    {
+        var response = await _roaService.DeleteRoa(current_roa_id);
+        delete_visible = false;
+
+        await GetROAs();
+
+        if (response) Snackbar.Add("Vía de administración eliminada", Severity.Info);
+        else Snackbar.Add("No se pudo eliminar la vía de administración", Severity.Warning);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -126,12 +194,10 @@
             new BreadcrumbItem("Metadata", href: "/metadata"),
             new BreadcrumbItem("Vías de administración", href: null, disabled: true)
         };
-        await GetROAs();
-    }
 
-    private void Devolver()
-    {
-        _navigationManager.NavigateTo("/metadata");
+        await GetROAs();
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
     }
 
     private async Task GetROAs()

@@ -17,5 +17,26 @@ namespace Pharmatic.Services
             var result = await _http.GetFromJsonAsync<List<RouteOfAdmDTO>>(url);
             return result!;
         }
+
+        public async Task<RouteOfAdmDTO> CreateRoa(RouteOfAdmDTO new_roa)
+        {
+            var result = await _http.PostAsJsonAsync("http://localhost:7035/api/admin_routes/create", new_roa);
+            var response = await result.Content.ReadFromJsonAsync<RouteOfAdmDTO>();
+            return response!;
+        }
+
+        public async Task<RouteOfAdmDTO> EditRoa(int id, RouteOfAdmDTO roa)
+        {
+            var result = await _http.PatchAsJsonAsync($"http://localhost:7035/api/admin_routes/{id}", roa);
+            var response = await result.Content.ReadFromJsonAsync<RouteOfAdmDTO>();
+            return response!;
+        }
+
+        public async Task<bool> DeleteRoa(int id)
+        {
+            var url = $"http://localhost:7035/api/admin_routes/{id}";
+            var response = await _http.DeleteAsync(url);
+            return response.IsSuccessStatusCode;
+        }
     }
 }
