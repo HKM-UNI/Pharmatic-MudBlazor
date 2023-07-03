@@ -53,7 +53,7 @@
         <MudItem xs="12">
             <MudText Typo="Typo.h6" Inline="true">Lotes: @product.lotCount</MudText>
             <MudButton Class="rounded-pill mx-3" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                       Color="Color.Primary">
+                       Color="Color.Primary" OnClick="AddLot">
                 Agregar Lote
             </MudButton>
         </MudItem>
@@ -150,8 +150,8 @@
 
     }
 
-    private void EditProduct()
-    {
-        _navigationManager.NavigateTo("/productos/editar/" + Id);
-    }
+    private void AddLot() => _navigationManager.NavigateTo("/productos/lote/agregar/" + Id);
+
+    private void EditProduct() => _navigationManager.NavigateTo("/productos/editar/" + Id);
+    
 }

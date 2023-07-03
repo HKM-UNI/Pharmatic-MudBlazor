@@ -1,5 +1,5 @@
-﻿@page "/productos/lote/agregar"
-@page "/productos/lote/editar/{id}"
+﻿@page "/clientes/agregar"
+@page "/clientes/editar/{id}"
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @layout MainLayout
@@ -30,7 +30,8 @@
                 <MudTextField @bind-Value="txtSurname" Label="Apellido" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
                 <MudTextField @bind-Value="txtEmail" Label="Email" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
                 <MudTextField T="int" @bind-Value="txtPhone" Label="Telefono" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
-            <MudDatePicker Label="Fecha de nacimiento" Editable="true" @bind-Date="dpBirthDate" Placeholder="Selecciona Fecha" Class="mb-5" PickerVariant="PickerVariant.Dialog" />
+                <MudDatePicker Label="Fecha de nacimiento" Editable="true" @bind-Date="dpBirthDate" Placeholder="Selecciona Fecha" 
+                    Class="mb-5" PickerVariant="PickerVariant.Dialog" />
                 <MudSelect T="string" Label="Género" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @bind-Value="sGender">
                     <MudSelectItem T="string" Value="@("Masculino")" />
                     <MudSelectItem T="string" Value="@("Femenino")" />

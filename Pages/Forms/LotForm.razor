@@ -1,0 +1,155 @@
+﻿@page "/productos/lote/agregar/{id}"
+@using Pharmatic.DTOs;
+@using Pharmatic.Services;
+@layout MainLayout
+@inject NavigationManager _navigationManager
+@inject SharedData _data
+@inject LotService _lotService
+@inject MeasureService _measureService
+@inject TypeDoseService _doseService
+@inject RouteOfAdministrationService _roaService
+@inject ProviderService _providerService
+@inject ISnackbar Snackbar
+
+<MudPaper>
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
+
+        <MudSpacer />
+
+        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Error" OnClick="OnCancelClicked">
+            Cancelar
+        </MudButton>
+
+        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                   Color="Color.Primary" OnClick="OnSubmitClicked">
+            Agregar
+        </MudButton>
+    </MudAppBar>
+
+    <MudGrid Justify="Justify.Center" Class="pa-5">
+        <MudItem xs="2">
+            <MudTextField T="int" @bind-Value="txt_quantity" Label="Cantidad" Variant="Variant.Outlined"></MudTextField>
+        </MudItem>
+
+        <MudItem xs="2">
+            <MudSelect T="string" @bind-Value="txt_measure" Label="Unidad" AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
+                @foreach (var measure in measure_list)
+                {
+                    <MudSelectItem Value="@measure.unit" />
+                }
+            </MudSelect>
+        </MudItem>
+
+        <MudItem xs="4">
+            <MudSelect T="string" @bind-Value="txt_dose" Label="Tipo de dosis" AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
+                @foreach (var dose in dose_list)
+                {
+                    <MudSelectItem Value="@dose.name" />
+                }
+            </MudSelect>
+        </MudItem>
+            
+        <MudItem xs="4">
+            <MudSelect T="string" @bind-Value="txt_roa" Label="Vía de Adm." AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
+                @foreach (var roa in roa_list)
+                {
+                    <MudSelectItem Value="@roa.description" />
+                }
+            </MudSelect>
+
+        </MudItem>
+
+
+
+        <MudItem xs="4">
+            <MudDatePicker Label="Fecha de expiración" Editable="true" @bind-Date="dpExpDate" 
+                Placeholder="Selecciona Fecha" Class="mb-5" PickerVariant="PickerVariant.Dialog" Variant="Variant.Outlined"/>
+        </MudItem>
+
+        <MudItem xs="4">
+            <MudSelect T="string" @bind-Value="txt_provider" Label="Proveedor" AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
+                @foreach (var p in provider_list)
+                {
+                    <MudSelectItem Value="@p.name" />
+                }
+            </MudSelect>
+        </MudItem>
+
+        <MudItem xs="4" Style="display: flex; align-items:center;">
+            <MudText Typo="Typo.h6">Producto en consigna</MudText>
+            <MudSwitch @bind-Checked="@consign_enabled" Color="Color.Primary" Class="mx-3"/>
+        </MudItem>
+
+
+
+        <MudItem xs="4">
+            <MudTextField T="int" @bind-Value="txt_stock" Label="Stock adquirido" Variant="Variant.Outlined"></MudTextField>
+        </MudItem>
+
+        <MudItem xs="4">
+            <MudTextField T="int"  @bind-Value="txt_purchaseprice" Label="Precio compra (unidad)" Variant="Variant.Outlined"></MudTextField>
+        </MudItem>
+
+        <MudItem xs="4">
+            <MudTextField T="int" @bind-Value="txt_sellingprice" Label="Precio de venta (unidad)" Variant="Variant.Outlined"></MudTextField>
+        </MudItem>
+
+    </MudGrid>
+
+</MudPaper>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private int txt_quantity = 0;
+    private string txt_measure = string.Empty;
+    private string txt_dose = string.Empty;
+    private string txt_roa = string.Empty;
+    private string txt_provider = string.Empty;
+    private DateTime? dpExpDate;
+    private bool consign_enabled = false;
+    private int txt_stock = 0;
+    private int txt_purchaseprice = 0;
+    private int txt_sellingprice = 0;
+
+    List<MeasureDTO> measure_list = new List<MeasureDTO>();
+    List<TypeDoseDTO> dose_list = new List<TypeDoseDTO>();
+    List<RouteOfAdmDTO> roa_list = new List<RouteOfAdmDTO>();
+    List<ProviderDTO> provider_list = new List<ProviderDTO>();
+
+    private async Task GetSelectData()
+    {
+        var measure_result = await _measureService.MeasureList();
+        measure_list = measure_result!;
+
+        var dose_result = await _doseService.TypeDoseList();
+        dose_list = dose_result!;
+
+        var roa_result = await _roaService.RoutesOfAdmList();
+        roa_list = roa_result!;
+
+        var provider_result = await _providerService.ProviderList();
+        provider_list = provider_result!;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Productos", href: "/productos"),
+            new BreadcrumbItem("Detalle producto", href: "productos/detalle/" + Id),
+            new BreadcrumbItem("Agregar Lote", href: null, disabled:true),
+        };
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+
+        await GetSelectData();
+    }
+
+    private void OnSubmitClicked() => _navigationManager.NavigateTo($"/productos/detalle/{Id}");
+    private void OnCancelClicked() => _navigationManager.NavigateTo($"/productos/detalle/{Id}");
+
+}
