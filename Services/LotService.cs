@@ -1,5 +1,7 @@
 ﻿using Pharmatic.DTOs;
+using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using static System.Net.WebRequestMethods;
 
 namespace Pharmatic.Services
@@ -35,5 +37,18 @@ namespace Pharmatic.Services
 
             return result!;
         }
+
+        public async Task<(LotDTO? lot, bool statusCode)> CreateLot(LotDTO new_lot)
+        {
+            string json = JsonSerializer.Serialize(new_lot);
+            Console.WriteLine(json);
+
+            var result = await _http.PostAsJsonAsync("http://localhost:7035/api/lots/create", new_lot);
+            var statusCode = result.IsSuccessStatusCode;
+            var lot = await result.Content.ReadFromJsonAsync<LotDTO>();
+
+            return (lot, statusCode);
+        }
+
     }
 }

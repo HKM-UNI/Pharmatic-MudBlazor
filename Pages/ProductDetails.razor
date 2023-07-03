@@ -28,7 +28,7 @@
     <MudGrid Class="pa-5">
         <MudItem xs="3">
             <MudImage Src="@product.imageUrl" Elevation="3" 
-                Fluid="true"/>
+                Height="220"/>
         </MudItem>
 
         <MudItem xs="9">
@@ -75,7 +75,7 @@
                             <MudText Typo="Typo.body1" Color="Color.Success">
                                 <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Small" /> @lot.expirationDate.ToString("dd/MM/yyyy")
                             </MudText>
-                            @if (@lot.consign)
+                            @if (lot.consign)
                             {
                                 <MudChip Icon="@Icons.Material.Filled.VerifiedUser" Color="Color.Dark">En consigna</MudChip>
                             }
@@ -140,7 +140,9 @@
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
 
         await GetLots();
+
         product = await _productService.SearchProduct(Id);
+        _data.LastProduct = product;
     }
 
     private async Task GetLots()

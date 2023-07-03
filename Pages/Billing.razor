@@ -79,9 +79,9 @@
     <MudGrid Justify="Justify.SpaceAround" Class="px-5 mt-1 pb-5">
 
         <MudItem xs="5" Class="mt-5">
-            <MudAutocomplete Placeholder="Cliente de factura" @bind-Value="txtCustomer" Variant="Variant.Outlined" AdornmentIcon="@CustomIcons.Search"
+            <MudAutocomplete Placeholder="Nombre del cliente" @bind-Value="txtCustomer" Variant="Variant.Outlined" AdornmentIcon="@CustomIcons.Search"
                              Adornment="Adornment.Start" Margin="Margin.Dense" SearchFunc="SearchCustomers" T="string" ShowProgressIndicator="true"
-                             ProgressIndicatorColor="@Color.Primary">
+                             ProgressIndicatorColor="@Color.Primary" HelperText="Cliente de factura">
                 <NoItemsTemplate>
                     <MudText Align="Align.Center" Class="px-4 py-1">
                         No se encontró
@@ -193,7 +193,7 @@
 
     private double SubTotal()
     {
-        double subTotal = _data.product_cart.Sum(kvp => kvp.Key.sellingPrice * kvp.Value) ?? 0;
+        double subTotal = _data.product_cart.Sum(kvp => kvp.Key.sellingPrice * kvp.Value);
 
         if (discount_enabled) subTotal -= subTotal * discount_amount / 100;
 

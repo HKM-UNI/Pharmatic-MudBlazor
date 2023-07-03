@@ -149,7 +149,34 @@
         await GetSelectData();
     }
 
-    private void OnSubmitClicked() => _navigationManager.NavigateTo($"/productos/detalle/{Id}");
     private void OnCancelClicked() => _navigationManager.NavigateTo($"/productos/detalle/{Id}");
+
+    private async Task OnSubmitClicked()
+    {
+        LotDTO new_lot = new LotDTO();
+
+        new_lot.product = _data.LastProduct;
+        new_lot.provider = provider_list.FirstOrDefault(p => p.name == txt_provider);
+        new_lot.composition.adminRoute = roa_list.FirstOrDefault(roa => roa.description == txt_roa);
+        new_lot.composition.measure = measure_list.FirstOrDefault(m => m.unit == txt_measure);
+        new_lot.composition.contentSize = txt_quantity;
+        new_lot.composition.dose = dose_list.FirstOrDefault(d => d.name == txt_dose);
+        new_lot.expirationDate = DateOnly.FromDateTime(dpExpDate ?? DateTime.Now);
+        new_lot.stock = txt_stock;
+        new_lot.purchasePrice = txt_purchaseprice;
+        new_lot.sellingPrice = txt_sellingprice;
+        new_lot.consign = consign_enabled;
+
+        var (result, successCode) = await _lotService.CreateLot(new_lot);
+
+        if (successCode)
+        {
+            _navigationManager.NavigateTo($"/productos/detalle/{Id}");
+            Snackbar.Add("Lote agregado correctamente", Severity.Success);
+        }
+        else Snackbar.Add("Error al agregar lote", Severity.Error);
+
+    }
+
 
 }
