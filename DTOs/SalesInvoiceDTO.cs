@@ -4,31 +4,31 @@ namespace Pharmatic.DTOs
 {
     public class SalesInvoiceDTO
     {
-        public int InvoiceNo { get; set; }
+        public int invoiceNo { get; set; }
 
-        public int? CustomerNo { get; set; }
+        public int? customerNo { get; set; }
 
-        public int Discount { get; set; }
+        public int discount { get; set; }
 
-        public DateTime SalesDate { get; set; }
+        public DateTime salesDate { get; set; }
 
-        public double SubTotal { get; set; }
+        public double subtotal { get; set; }
 
-        public double Tax { get; set; }
+        public double tax { get; set; }
 
-        public double Total { get; set; }
+        public double total { get; set; }
 
-        public List<SalesDetailsDTO>? Details { get; set; }
+        public List<SalesDetailsDTO>? details { get; set; }
 
         public SalesInvoiceDTO()
         {
-            InvoiceNo = 0;
-            Details = new List<SalesDetailsDTO>();
-            Discount = 0;
-            SalesDate = DateTime.Now;
-            SubTotal = 0;
-            Tax = 0;
-            Total = 0;
+            invoiceNo = 0;
+            details = new List<SalesDetailsDTO>();
+            discount = 0;
+            salesDate = DateTime.Now;
+            subtotal = 0;
+            tax = 0;
+            total = 0;
         }
         
     }

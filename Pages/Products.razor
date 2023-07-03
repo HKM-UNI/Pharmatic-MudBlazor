@@ -25,21 +25,21 @@
 
                 <MudCard Style="background-color: #F5F5F5" Class="hover-card" Outlined="true">
 
-                    <a href="/productos/detalle/@prod.ProductNo" style="display: block; text-decoration: none;">
+                    <a href="/productos/detalle/@prod.productNo" style="display: block; text-decoration: none;">
 
                     <MudCardHeader>
                         
                         <CardHeaderAvatar>
-                            <MudImage Src="@prod.ImageUrl" Width="80" Height="80" Elevation="25" Class="rounded-lg ma-4" />
+                            <MudImage Src="@prod.imageUrl" Width="80" Height="80" Elevation="25" Class="rounded-lg ma-4" />
                         </CardHeaderAvatar>
                         <CardHeaderContent>
-                            <MudText Typo="Typo.h5">@prod.Name</MudText>
-                            <MudText Typo="Typo.body1">@prod.Category?.Name - # de lotes @prod.LotCount</MudText>
-                            @if (prod.Tags?.Count > 0)
+                            <MudText Typo="Typo.h5">@prod.name</MudText>
+                            <MudText Typo="Typo.body1">@prod.category?.name - # de lotes @prod.lotCount</MudText>
+                            @if (prod.tags?.Count > 0)
                             {
-                                @foreach (var tag in prod.Tags)
+                                @foreach (var tag in prod.tags)
                                 {
-                                    <MudChip Color="Color.Primary" Size="Size.Small">@tag.Name</MudChip>
+                                    <MudChip Color="Color.Primary" Size="Size.Small">@tag.name</MudChip>
                                 }
                             }
                             else

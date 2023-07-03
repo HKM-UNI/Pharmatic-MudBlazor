@@ -64,10 +64,10 @@
             var result = await _providerService.SearchProvider(Id);
             _provider = result!;
 
-            txtName = _provider.Name;
-            txtEmail = _provider.Email;
-            txtAddress = _provider.Address;
-            txtPhone = Convert.ToString(_provider.Phone);
+            txtName = _provider.name;
+            txtEmail = _provider.email;
+            txtAddress = _provider.address;
+            txtPhone = Convert.ToString(_provider.phone);
         }
 
     }

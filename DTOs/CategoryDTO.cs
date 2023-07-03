@@ -2,7 +2,7 @@
 {
     public class CategoryDTO
     {
-        public int CategoryNo { get; set; }
-        public string Name { get; set; } = default!;
+        public int categoryNo { get; set; }
+        public string name { get; set; } = string.Empty;
     }
 }

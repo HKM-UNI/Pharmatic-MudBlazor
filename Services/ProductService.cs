@@ -31,6 +31,9 @@ namespace Pharmatic.Services
 
         public async Task<ProductDTO> CreateProduct(ProductDTO new_product)
         {
+            string json = JsonSerializer.Serialize(new_product);
+            Console.WriteLine(json); // Imprime el JSON en la consola
+
             var result = await _http.PostAsJsonAsync("http://localhost:7035/api/products/create", new_product);
             var response = await result.Content.ReadFromJsonAsync<ProductDTO>();
             return response!;
@@ -38,6 +41,9 @@ namespace Pharmatic.Services
 
         public async Task<ProductDTO> EditProduct(int id, ProductDTO product)
         {
+            string json = JsonSerializer.Serialize(product);
+            Console.WriteLine(json); // Imprime el JSON en la consola
+
             var result = await _http.PatchAsJsonAsync($"http://localhost:7035/api/products/{id}", product);
             var response = await result.Content.ReadFromJsonAsync<ProductDTO>();
             return response!;

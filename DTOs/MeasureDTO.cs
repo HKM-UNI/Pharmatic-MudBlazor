@@ -2,8 +2,8 @@
 {
     public class MeasureDTO
     {
-        public int MeasureNo { get; set; }
+        public int measureNo { get; set; }
 
-        public string Unit { get; set; } = null!;
+        public string unit { get; set; } = null!;
     }
 }

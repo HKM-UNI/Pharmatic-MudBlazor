@@ -2,10 +2,10 @@
 {
     public class SubCategoryDTO
     {
-        public int SubcategoryNo { get; set; }
+        public int subcategoryNo { get; set; }
 
-        public int? CategoryNo { get; set; }
+        public int? categoryNo { get; set; } = null;
 
-        public string Name { get; set; } = null!;
+        public string name { get; set; } = string.Empty;
     }
 }

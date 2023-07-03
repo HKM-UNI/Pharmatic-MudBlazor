@@ -2,21 +2,21 @@
 {
     public class ProductDTO
     {
-        public int ProductNo { get; set; }
-        public string Name { get; set; } = default!;
-        public string Description { get; set; } = default!;
-        public CategoryDTO? Category { get; set; }
-        public SubCategoryDTO? SubCategory { get; set; }
-        public List<TagDTO>? Tags { get; set; }
-        public string? ImageUrl { get; set; }
-        public int LotCount { get; set; }
+        public int productNo { get; set; }
+        public string name { get; set; } = default!;
+        public string description { get; set; } = default!;
+        public CategoryDTO? category { get; set; }
+        public SubCategoryDTO? subcategory { get; set; }
+        public List<TagDTO>? tags { get; set; }
+        public string? imageUrl { get; set; }
+        public int lotCount { get; set; }
 
         public ProductDTO()
         {
-            Category = new CategoryDTO();
-            SubCategory = new SubCategoryDTO();
-            Tags = new List<TagDTO>();
-            ImageUrl = default!;
+            category = new CategoryDTO();
+            subcategory = new SubCategoryDTO();
+            tags = new List<TagDTO>();
+            imageUrl = default!;
         }
     }
 }

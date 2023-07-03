@@ -2,9 +2,9 @@
 {
     public class TypeDoseDTO
     {
-        public int DosageFormNo { get; set; }
+        public int dosageFormNo { get; set; }
 
-        public string Name { get; set; } = null!;
+        public string name { get; set; } = string.Empty;
 
     }
 }

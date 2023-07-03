@@ -26,31 +26,31 @@
     </MudAppBar>
     <MudGrid Class="pa-5">
         <MudItem xs="3">
-            <MudImage Src="@product.ImageUrl" Elevation="3" 
+            <MudImage Src="@product.imageUrl" Elevation="3" 
                 Fluid="true"/>
         </MudItem>
 
         <MudItem xs="9">
 
-            <MudText Typo="Typo.h3">@product.Name</MudText>
-            <MudText Typo="Typo.h4">@product.Category?.Name - @product.SubCategory?.Name</MudText>
+            <MudText Typo="Typo.h3">@product.name</MudText>
+            <MudText Typo="Typo.h4">@product.category?.name - @product.subcategory?.name</MudText>
                 
-            @if (product.Tags?.Count > 0)
+            @if (product.tags?.Count > 0)
             {
-                @foreach (var tag in product.Tags)
+                @foreach (var tag in product.tags)
                 {
-                    <MudChip Color="Color.Primary" Size="Size.Medium">@tag.Name</MudChip>
+                    <MudChip Color="Color.Primary" Size="Size.Medium">@tag.name</MudChip>
                 }
             }
             else
             {
                 <MudChip Color="Color.Error" Size="Size.Medium">Sin etiquetas</MudChip>
             }
-            <MudText Typo="Typo.body1">@product.Description</MudText>
+            <MudText Typo="Typo.body1">@product.description</MudText>
         </MudItem>
 
         <MudItem xs="12">
-            <MudText Typo="Typo.h6" Inline="true">Lotes: @product.LotCount</MudText>
+            <MudText Typo="Typo.h6" Inline="true">Lotes: @product.lotCount</MudText>
             <MudButton Class="rounded-pill mx-3" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
                        Color="Color.Primary">
                 Agregar Lote
@@ -64,17 +64,17 @@
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6" Inline="true">Proveedor:</MudText>
-                            <MudText Typo="Typo.h6" Color="Color.Info" Inline="true">@lot.Provider?.Name</MudText>
-                            <MudText Typo="Typo.body1"><b>Composicion:</b> @lot.Composition?.Dose?.Name @lot.Composition?.Roa?.Description @lot.Composition?.Measure?.Unit @lot.Composition?.ContentSize</MudText>
-                            <MudText Typo="Typo.body1"><b>Stock:</b> @lot.Stock</MudText>
-                            <MudText Typo="Typo.body1"><b>Venta:</b> @lot.SellingPrice C$</MudText>
-                            <MudText Typo="Typo.body1"><b>Compra:</b> @lot.PurchasePrice C$</MudText>
+                            <MudText Typo="Typo.h6" Color="Color.Info" Inline="true">@lot.provider?.name</MudText>
+                            <MudText Typo="Typo.body1"><b>Composicion:</b> @lot.composition?.Composition()</MudText>
+                            <MudText Typo="Typo.body1"><b>Stock:</b> @lot.stock</MudText>
+                            <MudText Typo="Typo.body1"><b>Venta:</b> @lot.sellingPrice C$</MudText>
+                            <MudText Typo="Typo.body1"><b>Compra:</b> @lot.purchasePrice C$</MudText>
                             
                             <MudText Typo="Typo.body1"> <b>Fecha Vencimiento:</b> </MudText>
                             <MudText Typo="Typo.body1" Color="Color.Success">
-                                <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Small" /> @lot.ExpirationDate.ToString("dd/MM/yyyy")
+                                <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Small" /> @lot.expirationDate.ToString("dd/MM/yyyy")
                             </MudText>
-                            @if (@lot.Consign)
+                            @if (@lot.consign)
                             {
                                 <MudChip Icon="@Icons.Material.Filled.VerifiedUser" Color="Color.Dark">En consigna</MudChip>
                             }

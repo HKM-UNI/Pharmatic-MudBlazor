@@ -2,12 +2,12 @@
 {
     public class SalesDetailsDTO
     {
-        public int LotNo { get; set; }
+        public int lotNo { get; set; }
 
-        public int InvoiceNo { get; set; }
+        public int invoiceNo { get; set; }
 
-        public int Quantity { get; set; }
+        public int quantity { get; set; }
 
-        public double Amount { get; set; }
+        public double amount { get; set; }
     }
 }

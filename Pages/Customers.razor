@@ -29,19 +29,19 @@
 
                         <MudCardContent>
 
-                            <MudText Typo="Typo.h4">@c.Name @c.Surname</MudText>
-                            <MudText Typo="Typo.body1" Color="Color.Info"> <MudIcon Icon="@Icons.Material.Filled.Mail" Size="Size.Small"/> @c.Email</MudText>
-                            <MudText Typo="Typo.body1" Color="Color.Success"> <MudIcon Icon="@Icons.Material.Filled.Phone" Size="Size.Small" /> @c.Phone</MudText>
-                            @if (c.BirthDate.HasValue)
+                            <MudText Typo="Typo.h4">@c.name @c.surname</MudText>
+                            <MudText Typo="Typo.body1" Color="Color.Info"> <MudIcon Icon="@Icons.Material.Filled.Mail" Size="Size.Small"/> @c.email</MudText>
+                            <MudText Typo="Typo.body1" Color="Color.Success"> <MudIcon Icon="@Icons.Material.Filled.Phone" Size="Size.Small" /> @c.phone</MudText>
+                            @if (c.birthDate.HasValue)
                             {
-                                <MudText Typo="Typo.body1"> <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Size="Size.Small" /> @c.BirthDate.Value.ToString("dd/MM/yyyy")</MudText>
+                                <MudText Typo="Typo.body1"> <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Size="Size.Small" /> @c.birthDate.Value.ToString("dd/MM/yyyy")</MudText>
                             }
 
-                            @if (c.Gender == "M")
+                            @if (c.gender == "M")
                             {
                                 <MudText Typo="Typo.body1"> <MudIcon Icon="@Icons.Material.Filled.Male" Size="Size.Small" /> Hombre</MudText>
                             }
-                            else if (c.Gender == "F")
+                            else if (c.gender == "F")
                             {
                                 <MudText Typo="Typo.body1"> <MudIcon Icon="@Icons.Material.Filled.Female" Size="Size.Small" /> Mujer</MudText>
                             }
@@ -59,7 +59,7 @@
                             </MudButton>
 
                             <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary" FullWidth="true" OnClick="() => EditClicked(Convert.ToString(c.CustomerNo))">
+                                   Color="Color.Primary" FullWidth="true" OnClick="() => EditClicked(Convert.ToString(c.customerNo))">
                                 Editar
                             </MudButton>
                         </MudCardActions>

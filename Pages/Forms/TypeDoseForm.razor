@@ -24,14 +24,14 @@
             <MudItem xs="3">
                 <MudCard Style="background-color: #F5F5F5">
                     <MudCardContent Style="display: flex; justify-content:space-evenly; align-items: center;">
-                        <MudText Typo="Typo.body1">@dose.Name</MudText>
+                        <MudText Typo="Typo.body1">@dose.name</MudText>
 
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(dose.Name)">
+                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(dose.name)">
                             Eliminar
                         </MudButton>
                         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary" OnClick="() => OpenEditDialog(dose.Name)">
+                                   Color="Color.Primary" OnClick="() => OpenEditDialog(dose.name)">
                             Editar
                         </MudButton>
                    </MudCardContent>

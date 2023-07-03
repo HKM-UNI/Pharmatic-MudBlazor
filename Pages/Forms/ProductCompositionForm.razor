@@ -32,14 +32,14 @@
                 <MudSelect T="string" Label="Tipo de dosis" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" FullWidth="true">
                     @foreach (var d in dose_list)
                     {
-                        <MudSelectItem Value="@d.Name" />
+                        <MudSelectItem Value="@d.name" />
                     }
                 </MudSelect>
 
                 <MudSelect T="string" Label="Unidad de medida" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" FullWidth="true">
                     @foreach (var m in measure_list)
                     {
-                        <MudSelectItem Value="@m.Unit" />
+                        <MudSelectItem Value="@m.unit" />
                     }
                 </MudSelect>
 
@@ -50,7 +50,7 @@
                 <MudSelect T="string" Label="Vía de administración" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" FullWidth="true">
                     @foreach (var roa in roa_list)
                     {
-                        <MudSelectItem Value="@roa.Description" />
+                        <MudSelectItem Value="@roa.description" />
                     }
                 </MudSelect>
             </EditForm>

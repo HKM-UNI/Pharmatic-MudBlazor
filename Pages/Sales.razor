@@ -59,22 +59,22 @@
                     <MudCardHeader Class="px-3 py-0">
 
                         <CardHeaderAvatar>
-                            <MudImage Src="@p.Key.Product?.ImageUrl"
+                            <MudImage Src="@p.Key.product?.imageUrl"
                                       Width="150" Height="150" Elevation="25" Class="rounded-lg ma-3" />
                         </CardHeaderAvatar>
                         <CardHeaderContent>
-                            <MudText Typo="Typo.h6" Align="Align.End">Stock: @p.Key.Stock</MudText>
-                            <MudText Typo="Typo.h4" Inline="true">@p.Key.Product?.Name</MudText>
+                            <MudText Typo="Typo.h6" Align="Align.End">Stock: @p.Key.stock</MudText>
+                            <MudText Typo="Typo.h4" Inline="true">@p.Key.product?.name</MudText>
                             <MudText Typo="Typo.body1" Inline="true">
-                                : @p.Key.Composition?.Dose?.Name @p.Key.Composition?.Roa?.Description - @p.Key.Composition?.ContentSize 
-                                @p.Key.Composition?.Measure?.Unit 
+                                : @p.Key.composition?.dose?.name @p.Key.composition?.adminRoute?.description - @p.Key.composition?.contentSize 
+                                @p.Key.composition?.measure?.unit 
                             </MudText>
                             <MudText Typo="Typo.h5">
-                                <MudIcon Icon="@Icons.Material.Outlined.PersonOutline" Size="Size.Medium" /> @p.Key.Provider?.Name
-                                <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Medium" /> @p.Key.ExpirationDate.ToString("dd/MM/yyyy")
+                                <MudIcon Icon="@Icons.Material.Outlined.PersonOutline" Size="Size.Medium" /> @p.Key.provider?.name
+                                <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Medium" /> @p.Key.expirationDate.ToString("dd/MM/yyyy")
                             </MudText>
-                            <MudText Typo="Typo.h5" Inline="true">@p.Key.Product?.Category?.Name</MudText>
-                            <MudText Typo="Typo.h6" Align="Align.End">Precio cliente: C$ @p.Key.SellingPrice</MudText>
+                            <MudText Typo="Typo.h5" Inline="true">@p.Key.product?.category?.name</MudText>
+                            <MudText Typo="Typo.h6" Align="Align.End">Precio cliente: C$ @p.Key.sellingPrice</MudText>
                         </CardHeaderContent>
 
                     </MudCardHeader>
@@ -224,7 +224,7 @@
 
                     foreach (var kvp in _data.product_cart)
                     {
-                        if (kvp.Key.LotNo == lot.LotNo)
+                        if (kvp.Key.lotNo == lot.lotNo)
                         {
                             isLotAlreadyAdded = true;
                             break;
@@ -256,9 +256,9 @@
 
     private int GetProductId()
     {
-        var prod = product_list.Find(product => product.Name.Equals(txtProduct, StringComparison.InvariantCultureIgnoreCase));
+        var prod = product_list.Find(product => product.name.Equals(txtProduct, StringComparison.InvariantCultureIgnoreCase));
 
-        if (prod != null) return prod.ProductNo;
+        if (prod != null) return prod.productNo;
         
         return -1;
     }
@@ -269,10 +269,10 @@
 
         if (!string.IsNullOrEmpty(value))
             return product_list
-                .Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-                .Select(x => x.Name);
+                .Where(x => x.name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+                .Select(x => x.name);
         
-        else return product_list.Select(x => x.Name);
+        else return product_list.Select(x => x.name);
     }
 
 }

@@ -69,11 +69,11 @@
             var result = await _customerService.SearchCustomer(Id);
             _customer = result!;
 
-            txtName = _customer.Name;
-            txtEmail = _customer.Email;
-            txtPhone = Convert.ToString(_customer.Phone);
-            dpBirthDate = _customer.BirthDate;
-            sGender = (_customer.Gender == "M") ? "Masculino" : "Femenino";
+            txtName = _customer.name;
+            txtEmail = _customer.email;
+            txtPhone = Convert.ToString(_customer.phone);
+            dpBirthDate = _customer.birthDate;
+            sGender = (_customer.gender == "M") ? "Masculino" : "Femenino";
         }
         
     }

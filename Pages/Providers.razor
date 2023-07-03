@@ -29,10 +29,10 @@
 
                     <MudCardContent>
 
-                        <MudText Typo="Typo.h4">@p.Name</MudText>
-                        <MudText Typo="Typo.body1" Color="Color.Info"> <MudIcon Icon="@Icons.Material.Filled.Mail" Size="Size.Small" /> @p.Email</MudText>
-                        <MudText Typo="Typo.body1" Color="Color.Success"> <MudIcon Icon="@Icons.Material.Filled.Phone" Size="Size.Small" /> @p.Phone</MudText>
-                        <MudText Typo="Typo.body1"> <MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Small" /> @p.Address</MudText>
+                        <MudText Typo="Typo.h4">@p.name</MudText>
+                        <MudText Typo="Typo.body1" Color="Color.Info"> <MudIcon Icon="@Icons.Material.Filled.Mail" Size="Size.Small" /> @p.email</MudText>
+                        <MudText Typo="Typo.body1" Color="Color.Success"> <MudIcon Icon="@Icons.Material.Filled.Phone" Size="Size.Small" /> @p.phone</MudText>
+                        <MudText Typo="Typo.body1"> <MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Small" /> @p.address</MudText>
 
                     </MudCardContent>
 
@@ -43,7 +43,7 @@
                         </MudButton>
 
                         <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary" FullWidth="true" OnClick="() => EditClicked(Convert.ToString(p.ProviderNo))">
+                                   Color="Color.Primary" FullWidth="true" OnClick="() => EditClicked(Convert.ToString(p.providerNo))">
                             Editar
                         </MudButton>
                     </MudCardActions>

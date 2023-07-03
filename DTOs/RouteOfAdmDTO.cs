@@ -2,7 +2,7 @@
 {
     public class RouteOfAdmDTO
     {
-        public int AdminRouteNo { get; set; }
-        public string Description { get; set; } = null!;
+        public int adminRouteNo { get; set; }
+        public string description { get; set; } = null!;
     }
 }

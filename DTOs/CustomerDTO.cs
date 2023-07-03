@@ -2,18 +2,18 @@
 {
     public class CustomerDTO
     {
-        public int CustomerNo { get; set; }
+        public int customerNo { get; set; }
 
-        public string Name { get; set; } = null!;
+        public string name { get; set; } = null!;
 
-        public string Surname { get; set; } = null!;
+        public string surname { get; set; } = null!;
 
-        public string? Email { get; set; }
+        public string? email { get; set; }
 
-        public int? Phone { get; set; }
+        public int? phone { get; set; }
 
-        public string? Gender { get; set; }
+        public string? gender { get; set; }
 
-        public DateTime? BirthDate { get; set; }
+        public DateTime? birthDate { get; set; }
     }
 }

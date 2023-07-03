@@ -4,15 +4,15 @@ namespace Pharmatic.DTOs
 {
     public class LotDTO
     {
-        public ProductCompositionDTO? Composition { get; set; }
-        public bool Consign { get; set; }
-        public int Discount { get; set; }
-        public DateTime ExpirationDate { get; set; }
-        public int LotNo { get; set; }
-        public ProductDTO Product { get; set; } = new ProductDTO();
-        public ProviderDTO? Provider { get; set; }
-        public double? PurchasePrice { get; set; }
-        public double? SellingPrice { get; set; }
-        public int Stock { get; set; }
+        public ProductCompositionDTO? composition { get; set; }
+        public bool consign { get; set; }
+        public int discount { get; set; }
+        public DateTime expirationDate { get; set; }
+        public int lotNo { get; set; }
+        public ProductDTO product { get; set; } = new ProductDTO();
+        public ProviderDTO? provider { get; set; }
+        public double? purchasePrice { get; set; }
+        public double? sellingPrice { get; set; }
+        public int stock { get; set; }
     }
 }

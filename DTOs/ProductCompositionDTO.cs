@@ -2,19 +2,19 @@
 {
     public class ProductCompositionDTO
     {
-        public int CompositionNo { get; set; }
+        public int compositionNo { get; set; }
 
-        public MeasureDTO? Measure { get; set; }
+        public MeasureDTO? measure { get; set; }
 
-        public RouteOfAdmDTO? Roa { get; set; }
+        public RouteOfAdmDTO? adminRoute { get; set; }
 
-        public TypeDoseDTO? Dose { get; set; }
+        public TypeDoseDTO? dose { get; set; }
 
-        public ushort ContentSize { get; set; }
+        public ushort contentSize { get; set; }
 
         public string Composition()
         {
-            return $"{ContentSize}{Measure?.Unit} {Dose?.Name} {Roa?.Description}";
+            return $"{contentSize}{measure?.unit} {dose?.name} {adminRoute?.description}";
         }
     }
 }

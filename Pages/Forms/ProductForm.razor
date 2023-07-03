@@ -31,23 +31,25 @@
         <MudItem xs="6">
                 <MudTextField T="string" @bind-Value="prod_name" Label="Nombre" Class="my-5" Variant="Variant.Outlined"/>
                 <MudTextField T="string" @bind-Value="prod_desc" Label="Descripción" Lines="5" Class="my-5" Variant="Variant.Outlined" />
+                
                 <MudSelect T="string" @bind-Value="category" Label="Categoría" AnchorOrigin="Origin.BottomCenter" Class="my-5" Variant="Variant.Outlined">
                     @foreach (var cat in cat_list)
                     {
-                        <MudSelectItem Value="@cat.Name"/>
+                        <MudSelectItem Value="@cat.name"/>
                     }
                 </MudSelect>
+                
                 <MudSelect T="string" @bind-Value="sub_cat" Label="SubCategoría" AnchorOrigin="Origin.BottomCenter" Class="my-5" Variant="Variant.Outlined">
                     @foreach (var subcat in subcat_list)
                     {
-                        <MudSelectItem Value="@subcat.Name"/>
+                        <MudSelectItem Value="@subcat.name"/>
                     }
                     
                 </MudSelect>
                 <MudSelect T="string" Label="Tags" AnchorOrigin="Origin.BottomCenter" MultiSelection="true" Class="my-5" Variant="Variant.Outlined" @bind-SelectedValues="selected_tags">
                     @foreach (var tag in tag_list)
                     {
-                        <MudSelectItem Value="@tag.Name"/>
+                        <MudSelectItem Value="@tag.name"/>
                     }
                 </MudSelect>     
         </MudItem>
@@ -137,11 +139,11 @@
         if (IsEditMode)
         {
             ProductDTO product_data = await _productService.SearchProduct(Id);
-            prod_name = product_data.Name;
-            prod_desc = product_data.Description;
-            if (product_data.Category != null) category = product_data.Category.Name;
-            if (product_data.SubCategory != null) sub_cat = product_data.SubCategory.Name;
-            if (product_data.Tags != null) selected_tags = product_data.Tags.Select(tag => tag.Name);
+            prod_name = product_data.name;
+            prod_desc = product_data.description;
+            if (product_data.category != null) category = product_data.category.name;
+            if (product_data.subcategory != null) sub_cat = product_data.subcategory.name;
+            if (product_data.tags != null) selected_tags = product_data.tags.Select(tag => tag.name);
         }
 
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
@@ -173,21 +175,21 @@
     {
         ProductDTO new_product = new ProductDTO();
 
-        new_product.Name = prod_name;
-        new_product.Description = prod_desc;
+        new_product.name = prod_name;
+        new_product.description = prod_desc;
 
-        var selectedCategory = cat_list.FirstOrDefault(cat => cat.Name == category);
-        new_product.Category = selectedCategory;
+        var selectedCategory = cat_list.FirstOrDefault(cat => cat.name == category);
+        new_product.category = selectedCategory;
 
-        var selectedSubCategory = subcat_list.FirstOrDefault(subcat => subcat.Name == sub_cat);
-        new_product.SubCategory = selectedSubCategory;
+        var selectedSubCategory = subcat_list.FirstOrDefault(subcat => subcat.name == sub_cat);
+        new_product.subcategory = selectedSubCategory;
 
         var selectedTags = tag_list
-            .Where(tag => selected_tags.Contains(tag.Name))
-            .Select(tag => new TagDTO { TagNo = tag.TagNo, Name = tag.Name })
+            .Where(tag => selected_tags.Contains(tag.name))
+            .Select(tag => new TagDTO { tagNo = tag.tagNo, name = tag.name })
             .ToList();
 
-        new_product.Tags = selectedTags;
+        new_product.tags = selectedTags;
 
         var result = await _productService.CreateProduct(new_product);
         return result;
@@ -197,21 +199,21 @@
     {
         ProductDTO updated_product = new ProductDTO();
 
-        updated_product.Name = prod_name;
-        updated_product.Description = prod_desc;
+        updated_product.name = prod_name;
+        updated_product.description = prod_desc;
 
-        var selectedCategory = cat_list.FirstOrDefault(cat => cat.Name == category);
-        updated_product.Category = selectedCategory;
+        var selectedCategory = cat_list.FirstOrDefault(cat => cat.name == category);
+        updated_product.category = selectedCategory;
 
-        var selectedSubCategory = subcat_list.FirstOrDefault(subcat => subcat.Name == sub_cat);
-        updated_product.SubCategory = selectedSubCategory;
+        var selectedSubCategory = subcat_list.FirstOrDefault(subcat => subcat.name == sub_cat);
+        updated_product.subcategory = selectedSubCategory;
 
         var selectedTags = tag_list
-            .Where(tag => selected_tags.Contains(tag.Name))
-            .Select(tag => new TagDTO { TagNo = tag.TagNo, Name = tag.Name })
+            .Where(tag => selected_tags.Contains(tag.name))
+            .Select(tag => new TagDTO { tagNo = tag.tagNo, name = tag.name })
             .ToList();
 
-        updated_product.Tags = selectedTags;
+        updated_product.tags = selectedTags;
 
         var result = await _productService.EditProduct(int.Parse(Id), updated_product);
         return result;
@@ -244,7 +246,7 @@
 
             if (prod != null)
             {
-                if (!string.IsNullOrEmpty(photoB64)) await AddPhoto(Convert.ToString(prod.ProductNo), photoB64);
+                if (!string.IsNullOrEmpty(photoB64)) await AddPhoto(Convert.ToString(prod.productNo), photoB64);
 
                 Snackbar.Add("Producto creado correctamente", Severity.Success);
                 _navigationManager.NavigateTo("/productos");
@@ -266,7 +268,7 @@
             if (prod != null)
             {
                 Snackbar.Add("Producto actualizado correctamente", Severity.Success);
-                _navigationManager.NavigateTo($"/productos/detalle/{prod.ProductNo}");
+                _navigationManager.NavigateTo($"/productos/detalle/{Id}");
             }
             else Snackbar.Add("Error al editar producto", Severity.Error);
         }

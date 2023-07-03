@@ -31,21 +31,21 @@
 
                         <MudCardContent>
 
-                            <MudText Typo="Typo.body1" Align="Align.End"><b>Número de productos: @sale.Details?.Sum(detail => detail.Quantity)</b></MudText>
+                            <MudText Typo="Typo.body1" Align="Align.End"><b>Número de productos: @sale.details?.Sum(detail => detail.quantity)</b></MudText>
                             <MudText Typo="Typo.h6" Inline="true">Total venta: </MudText>
-                            <MudText Typo="Typo.h6" Color="Color.Success" Inline="true"> C$ @sale.Total</MudText>
+                            <MudText Typo="Typo.h6" Color="Color.Success" Inline="true"> C$ @sale.total</MudText>
                             <MudText Typo="Typo.body1">
-                                Venta realizada el <b>@sale.SalesDate.ToString("dd/MM/yyyy")</b> a las <b>@sale.SalesDate.ToString("hh:mm tt")</b>
+                                Venta realizada el <b>@sale.salesDate.ToString("dd/MM/yyyy")</b> a las <b>@sale.salesDate.ToString("hh:mm tt")</b>
                             </MudText>
 
                         <MudContainer Class="my-2 rounded py-2" Style="height: 100px; overflow: auto; background-color: white;">
-                            @foreach (var detail in sale.Details)
+                            @foreach (var detail in sale.details)
                             {
-                                <MudText Typo="Typo.body2"> @GetLotDetails(detail.LotNo) : @detail.Quantity</MudText>
+                                <MudText Typo="Typo.body2"> @GetLotDetails(detail.lotNo) : @detail.quantity</MudText>
                             }
                         </MudContainer>
 
-                            <MudText Typo="Typo.body1" Align="Align.End"><b>Cliente: @GetCustomerName(sale.CustomerNo ?? -1)</b></MudText>
+                            <MudText Typo="Typo.body1" Align="Align.End"><b>Cliente: @GetCustomerName(sale.customerNo ?? -1)</b></MudText>
                             
                         </MudCardContent>
 
@@ -81,17 +81,17 @@
 
     private string GetLotDetails(int lot_no)
     {
-        var lot = lot_list.FirstOrDefault(l => l.LotNo == lot_no);
+        var lot = lot_list.FirstOrDefault(l => l.lotNo == lot_no);
 
-        return $"{lot?.Product.Name} ({lot?.Composition?.Composition()})";
+        return $"{lot?.product.name} ({lot?.composition?.Composition()})";
     }
 
     private string GetCustomerName(int customer_no)
     {
         if (customer_no == -1) return string.Empty;
-        var customer = customer_list.FirstOrDefault(c => c.CustomerNo == customer_no);
+        var customer = customer_list.FirstOrDefault(c => c.customerNo == customer_no);
 
-        return customer?.Name ?? string.Empty;
+        return customer?.name ?? string.Empty;
     }
 
     private async Task GetSales()
