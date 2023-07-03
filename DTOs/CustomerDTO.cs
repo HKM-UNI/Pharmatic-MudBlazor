@@ -14,6 +14,6 @@
 
         public string? gender { get; set; }
 
-        public DateTime? birthDate { get; set; }
+        public DateOnly? birthDate { get; set; }
     }
 }

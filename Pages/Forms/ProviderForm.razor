@@ -6,6 +6,7 @@
 @inject NavigationManager _navigationManager
 @inject SharedData _data
 @inject ProviderService _providerService
+@inject ISnackbar Snackbar
 
 <MudPaper>
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
@@ -13,36 +14,31 @@
         <MudSpacer />
 
         <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Error" OnClick="SaveClicked">
+                   Color="Color.Error" OnClick="OnCancelClicked">
             Cancelar
         </MudButton>
 
         <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Primary" OnClick="SaveClicked">
+                   Color="Color.Primary" OnClick="OnSubmitClicked">
             @SubmitButtonLabel
         </MudButton>
     </MudAppBar>
 
     <MudGrid Justify="Justify.Center" Class="pa-5">
         <MudItem xs="8">
-            <EditForm Model="_provider">
-                <MudTextField @bind-Value="txtName" Label="Nombre" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
-                <MudTextField @bind-Value="txtEmail" Label="Email" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
-                <MudTextField @bind-Value="txtAddress" Label="Dirección" Variant="Variant.Outlined" Class="mb-5" Lines="3"></MudTextField>
-                <MudTextField @bind-Value="txtPhone" Label="Teléfono" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
-            </EditForm>
+            <MudTextField @bind-Value="txtName" Label="Nombre" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
+            <MudTextField @bind-Value="txtEmail" Label="Email" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
+            <MudTextField @bind-Value="txtAddress" Label="Dirección" Variant="Variant.Outlined" Class="mb-5" Lines="3"></MudTextField>
+            <MudTextField T="int" @bind-Value="txtPhone" Label="Teléfono" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
         </MudItem>
     </MudGrid>
 
 </MudPaper>
 @code {
-    [Parameter]
-    public ProviderDTO _provider { get; set; } = new ProviderDTO();
-
-    private string txtName;
-    private string txtEmail;
-    private string txtAddress;
-    private string txtPhone;
+    private string txtName = string.Empty;
+    private string txtEmail = string.Empty;
+    private string txtAddress = string.Empty;
+    private int txtPhone;
 
     [Parameter]
     public string Id { get; set; }
@@ -61,19 +57,72 @@
 
         if (IsEditMode)
         {
-            var result = await _providerService.SearchProvider(Id);
-            _provider = result!;
+            ProviderDTO provider_data = new ProviderDTO();
 
-            txtName = _provider.name;
-            txtEmail = _provider.email;
-            txtAddress = _provider.address;
-            txtPhone = Convert.ToString(_provider.phone);
+            var result = await _providerService.SearchProvider(Id);
+            provider_data = result!;
+
+            txtName = provider_data.name ?? string.Empty;
+            txtEmail = provider_data.email ?? string.Empty;
+            txtAddress = provider_data.address ?? string.Empty;
+            txtPhone = provider_data.phone ?? 0;
         }
 
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
     }
 
-    private void SaveClicked()
+    private async Task<ProviderDTO> AddProvider()
     {
-        _navigationManager.NavigateTo("/proveedores/");
+        ProviderDTO new_provider = new ProviderDTO();
+
+        new_provider.name = txtName;
+        new_provider.email = txtEmail;
+        new_provider.phone = txtPhone;
+        new_provider.address = txtAddress;
+
+        var result = await _providerService.CreateProvider(new_provider);
+        return result;
+    }
+
+    private async Task<ProviderDTO> EditProvider()
+    {
+        ProviderDTO updated_provider = new ProviderDTO();
+
+        updated_provider.name = txtName;
+        updated_provider.email = txtEmail;
+        updated_provider.phone = txtPhone;
+        updated_provider.address = txtAddress;
+
+        var result = await _providerService.EditProvider(int.Parse(Id), updated_provider);
+        return result;
+    }
+
+    private void OnCancelClicked() => _navigationManager.NavigateTo("/clientes/");
+
+    private async Task OnSubmitClicked()
+    {
+        if (!IsEditMode)
+        {
+            var provider = await AddProvider();
+
+            if (provider != null)
+            {
+                Snackbar.Add("Proveedor agregado correctamente", Severity.Success);
+                _navigationManager.NavigateTo("/proveedores");
+            }
+            else Snackbar.Add("Error al agregar proveedor", Severity.Error);
+        }
+        else
+        {
+            var provider = await EditProvider();
+
+            if (provider != null)
+            {
+                Snackbar.Add("Proveedor actualizado correctamente", Severity.Success);
+                _navigationManager.NavigateTo($"/proveedores");
+            }
+            else Snackbar.Add("Error al actualizar proveedor", Severity.Error);
+        }
+
     }
 }

@@ -6,6 +6,7 @@
 @inject NavigationManager _navigationManager
 @inject SharedData _data
 @inject CustomerService _customerService
+@inject ISnackbar Snackbar
 
 <MudPaper>
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
@@ -13,41 +14,38 @@
         <MudSpacer />
 
         <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Error" OnClick="SaveClicked">
+                   Color="Color.Error" OnClick="OnCancelClicked">
             Cancelar
         </MudButton>
 
         <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Primary" OnClick="SaveClicked">
+                   Color="Color.Primary" OnClick="OnSubmitClicked">
             @SubmitButtonLabel
         </MudButton>
     </MudAppBar>
 
     <MudGrid Justify="Justify.Center" Class="pa-5">
         <MudItem xs="8">
-            <EditForm Model="_customer">
                 <MudTextField @bind-Value="txtName" Label="Nombre" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
+                <MudTextField @bind-Value="txtSurname" Label="Apellido" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
                 <MudTextField @bind-Value="txtEmail" Label="Email" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
-                <MudTextField @bind-Value="txtPhone" Label="Telefono" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
-                <MudDatePicker Label="Fecha de nacimiento" Editable="true" @bind-Date="dpBirthDate" Placeholder="Selecciona Fecha" Class="mb-5" />
+                <MudTextField T="int" @bind-Value="txtPhone" Label="Telefono" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
+            <MudDatePicker Label="Fecha de nacimiento" Editable="true" @bind-Date="dpBirthDate" Placeholder="Selecciona Fecha" Class="mb-5" PickerVariant="PickerVariant.Dialog" />
                 <MudSelect T="string" Label="Género" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @bind-Value="sGender">
                     <MudSelectItem T="string" Value="@("Masculino")" />
                     <MudSelectItem T="string" Value="@("Femenino")" />
                 </MudSelect>
-            </EditForm>
         </MudItem>
     </MudGrid>
 
 </MudPaper>
 @code {
-    [Parameter]
-    public CustomerDTO _customer { get; set; } = new CustomerDTO();
-
-    private string txtName;
-    private string txtEmail;
-    private string txtPhone;
+    private string txtName = string.Empty;
+    private string txtSurname = string.Empty;
+    private string txtEmail = string.Empty;
+    private int txtPhone;
     private DateTime? dpBirthDate;
-    private string sGender;
+    private string sGender = string.Empty;
 
     [Parameter]
     public string Id { get; set; }
@@ -66,20 +64,80 @@
 
         if (IsEditMode)
         {
-            var result = await _customerService.SearchCustomer(Id);
-            _customer = result!;
+            CustomerDTO customer_data = new CustomerDTO();
 
-            txtName = _customer.name;
-            txtEmail = _customer.email;
-            txtPhone = Convert.ToString(_customer.phone);
-            dpBirthDate = _customer.birthDate;
-            sGender = (_customer.gender == "M") ? "Masculino" : "Femenino";
+            var result = await _customerService.SearchCustomer(Id);
+            customer_data = result!;
+
+            txtName = customer_data.name;
+            txtSurname = customer_data.surname;
+            txtEmail = customer_data.email ?? string.Empty;
+            txtPhone = customer_data.phone ?? 0;
+            if (customer_data.birthDate != null)
+            dpBirthDate = new DateTime(customer_data.birthDate.Value.Year, customer_data.birthDate.Value.Month, customer_data.birthDate.Value.Day);
+            sGender = (customer_data.gender == "M") ? "Masculino" : "Femenino";
         }
-        
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+
     }
 
-    private void SaveClicked()
+    private async Task<CustomerDTO> AddCustomer()
     {
-        _navigationManager.NavigateTo("/clientes/");
+        CustomerDTO new_customer = new CustomerDTO();
+
+        new_customer.name = txtName;
+        new_customer.surname = txtSurname;
+        new_customer.email = txtEmail;
+        new_customer.phone = txtPhone;
+        new_customer.gender = (sGender == "Masculino") ? "M" : (sGender == "Femenino") ? "F" : "";
+        new_customer.birthDate = DateOnly.FromDateTime(dpBirthDate ?? DateTime.Now);
+
+        var result = await _customerService.CreateCustomer(new_customer);
+        return result;
+    }
+
+    private async Task<CustomerDTO> EditCustomer()
+    {
+        CustomerDTO updated_customer = new CustomerDTO();
+
+        updated_customer.name = txtName;
+        updated_customer.surname = txtSurname;
+        updated_customer.email = txtEmail;
+        updated_customer.phone = txtPhone;
+        updated_customer.gender = (sGender == "Masculino") ? "M" : (sGender == "Femenino") ? "F" : "";
+        updated_customer.birthDate = DateOnly.FromDateTime(dpBirthDate ?? DateTime.Now);
+
+        var result = await _customerService.EditCustomer(int.Parse(Id), updated_customer);
+        return result;
+    }
+
+    private void OnCancelClicked() => _navigationManager.NavigateTo("/clientes/");
+
+    private async Task OnSubmitClicked()
+    {
+        if (!IsEditMode)
+        {
+            var customer = await AddCustomer();
+
+            if (customer != null)
+            {
+                Snackbar.Add("Cliente agregado correctamente", Severity.Success);
+                _navigationManager.NavigateTo("/clientes");
+            }
+            else Snackbar.Add("Error al agregar cliente", Severity.Error);
+        }
+        else
+        {
+            var customer = await EditCustomer();
+
+            if (customer != null)
+            {
+                Snackbar.Add("Cliente actualizado correctamente", Severity.Success);
+                _navigationManager.NavigateTo($"/clientes");
+            }
+            else Snackbar.Add("Error al actualizar cliente", Severity.Error);
+        }
+
     }
 }
