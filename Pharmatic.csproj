@@ -20,6 +20,7 @@
 	  <Content Remove="wwwroot\icons\filter.svg" />
 	  <Content Remove="wwwroot\icons\hashtagdown.svg" />
 	  <Content Remove="wwwroot\icons\logout.svg" />
+	  <Content Remove="wwwroot\icons\menu.svg" />
 	  <Content Remove="wwwroot\icons\milk.svg" />
 	  <Content Remove="wwwroot\icons\notepad.svg" />
 	  <Content Remove="wwwroot\icons\notification.svg" />
@@ -46,6 +47,7 @@
 	  <EmbeddedResource Include="wwwroot\icons\filter.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\hashtagdown.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\logout.svg" />
+	  <EmbeddedResource Include="wwwroot\icons\menu.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\milk.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\notepad.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\notification.svg" />
@@ -56,9 +58,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.8" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.8" PrivateAssets="all" />
-		<PackageReference Include="MudBlazor" Version="6.5.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.11" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.11" PrivateAssets="all" />
+		<PackageReference Include="MudBlazor" Version="6.10.0" />
 	</ItemGroup>
 	
 	

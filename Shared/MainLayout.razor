@@ -1,10 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿@using MudBlazor.Services
+@inherits LayoutComponentBase
 @inject NavigationManager _navigationManager
 @inject SharedData _data
 @using static CustomIcons
-@using System
-@using System.Timers
-@using Pharmatic.Services;
+@using Pharmatic.Services
 <link rel="stylesheet" href="/css/background.css?version=6" />
 
 <MudThemeProvider Theme="selectedTheme" />
@@ -16,36 +15,33 @@
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-3">
     <MudGrid>
-        <MudItem xs="2">
-            <MudPaper Class="d-flex flex-column gap-4" 
-                    Elevation="0" 
-                    Style="background-color: white;"
-                    Height="97vh">
-                
-                <MudImage Fluid="true" Src="/img/PharmaticLogo.png" Class="mt-3 mr-3 ml-3"/>
-                <center>
-                    <hr style="height: 1px; border: none; background-color: rgba(82, 82, 92, 0.5); width: 80%;" />
-                </center>
 
-                <NavMenu/>
+        <MudBreakpointProvider>
+            <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                <MudItem md="2">
+                    <MudPaper Class="d-flex flex-column gap-4"
+                              Elevation="0"
+                              Style="background-color: white;"
+                              Height="97vh">
 
-                <div style="flex-grow: 1;"/>
+                        <DrawerContent />
 
-                <center>
-                    <hr style="height: 1px; border: none; background-color: rgba(82, 82, 92, 0.5); width: 80%;" />
-                    <MudText Typo="Typo.h3" Class="my-3">
-                        @currentTime
-                    </MudText>
-                </center>
+                    </MudPaper>
+                </MudItem>
+            </MudHidden>
+        </MudBreakpointProvider>
 
-            </MudPaper>
-        </MudItem>
-
-        <MudItem xs="10" >
+        <MudItem lg="10" md="12">
 
             <MudPaper Class="d-flex flex-column gap-4" Elevation="0" 
                     Style="background-color: rgba(231, 255, 255, 0.4);" Height="97vh">
                 <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;">
+
+                    <MudBreakpointProvider>
+                        <MudHidden Breakpoint="Breakpoint.LgAndUp">
+                            <MudIconButton Icon="@CustomIcons.Menu" Color="Color.Primary" Edge="Edge.Start" OnClick="OpenDrawer"/>
+                        </MudHidden>
+                    </MudBreakpointProvider>
 
                     <MudBreadcrumbs Items="_data.Items" Separator=">"/>
 
@@ -53,26 +49,31 @@
 
                     <MudIconButton Icon="@CustomIcons.Notification" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
 
-                    <MudCard Style="background: inherit;" Elevation="0">
+                    <MudMenu PositionAtCursor="true">
+                        <ActivatorContent>
+                            <MudCard Style="background: inherit;" Elevation="0" Class="hover-card2">
 
-                        <MudCardHeader>
-                            <CardHeaderAvatar>
-                                <MudAvatar Color="Color.Secondary" Size="Size.Large">R</MudAvatar>
-                            </CardHeaderAvatar>
+                                <MudCardHeader>
+                                    <CardHeaderAvatar>
+                                        <MudAvatar Color="Color.Secondary" Size="Size.Large">R</MudAvatar>
+                                    </CardHeaderAvatar>
 
-                            <CardHeaderContent>
-                                <MudText Typo="Typo.body1">Ricardo Montenegro</MudText>
-                                <MudText Typo="Typo.body2">Tonny.n1105@gmail.com</MudText>
-                            </CardHeaderContent>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.body1">Ricardo Montenegro</MudText>
+                                        <MudText Typo="Typo.body2">Tonny.n1105@gmail.com</MudText>
+                                    </CardHeaderContent>
 
-                        </MudCardHeader>
-                    </MudCard>
+                                </MudCardHeader>
+                            </MudCard>
+                        </ActivatorContent>
 
-                    <MudMenu Icon="@CustomIcons.Down" Color="Color.Primary" Size="Size.Large">
-                        <MudMenuItem>Profile</MudMenuItem>
-                        <MudMenuItem>My account</MudMenuItem>
-                        <MudMenuItem OnClick="CerrarSesion">Logout</MudMenuItem>
+                        <ChildContent>
+                            <MudMenuItem>Profile</MudMenuItem>
+                            <MudMenuItem>My account</MudMenuItem>
+                            <MudMenuItem OnClick="CerrarSesion">Logout</MudMenuItem>
+                        </ChildContent>
                     </MudMenu>
+
                 </MudAppBar>
 
                 <MudMainContent Class="ma-5 pa-0" Style="border-radius: 15px; overflow-y:auto; overflow-x:hidden;">
@@ -84,21 +85,18 @@
 
     </MudGrid>  
 </MudContainer>
+
+<MudDrawer @bind-Open="@open" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <DrawerContent/>
+</MudDrawer>
     
-
-
 @code {
     private MudTheme selectedTheme = CustomThemes.PharmaticThemeRounded;
     string search_text = string.Empty;
-    private string currentTime;
-    private Timer timer;
+    bool open;
 
     protected override void OnInitialized()
     {
-        timer = new Timer(1000);
-        timer.Elapsed += TimerElapsed;
-        timer.Start();
-        UpdateCurrentTime();
 
         _data.Items = new List<BreadcrumbItem>
         {
@@ -111,20 +109,6 @@
         _navigationManager.NavigateTo("/");
     }
 
-    private void TimerElapsed(object sender, ElapsedEventArgs e)
-    {
-        UpdateCurrentTime();
-        StateHasChanged();
-    }
-
-    private void UpdateCurrentTime()
-    {
-        currentTime = DateTime.Now.ToString("HH:mm tt");
-    }
-
-    public void Dispose()
-    {
-        timer.Dispose();
-    }
-
+    void OpenDrawer() => open = true;
+    
 }

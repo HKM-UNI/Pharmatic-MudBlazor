@@ -1,0 +1,49 @@
+﻿@using System.Timers
+@using System.Globalization;
+
+<MudImage Fluid="true" Src="/img/PharmaticLogo.png" Class="mt-3 mr-3 ml-3" />
+<center>
+    <hr style="height: 1px; border: none; background-color: rgba(82, 82, 92, 0.5); width: 80%;" />
+</center>
+
+<NavMenu />
+
+<div style="flex-grow: 1;" />
+
+<center>
+    <hr style="height: 1px; border: none; background-color: rgba(82, 82, 92, 0.5); width: 80%;" />
+    <MudText Typo="Typo.h3" Class="my-3">
+        @currentTime
+    </MudText>
+</center>
+
+@code {
+    private string currentTime;
+    private Timer timer;
+
+    protected override void OnInitialized()
+    {
+        timer = new Timer(1000);
+        timer.Elapsed += TimerElapsed;
+        timer.Start();
+        UpdateCurrentTime();
+
+    }
+
+    private void TimerElapsed(object sender, ElapsedEventArgs e)
+    {
+        UpdateCurrentTime();
+        StateHasChanged();
+    }
+
+    private void UpdateCurrentTime()
+    {
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+        currentTime = DateTime.Now.ToString("hh:mm tt");
+    }
+
+    public void Dispose()
+    {
+        timer.Dispose();
+    }
+}
