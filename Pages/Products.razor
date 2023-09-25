@@ -6,50 +6,50 @@
 @inject NavigationManager _navigationManager
 @inject SharedData _data
 
-<MudPaper>
-    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
+<MudPaper Class="mx-2" Style="height:100%; overflow-y:auto; overflow-x: hidden; background-color:white;">
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;" Dense="true">
         <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
                       AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />
 
         <MudSpacer />
 
-        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
                    Color="Color.Primary" OnClick="AgregarClicked">
             Agregar
         </MudButton>
     </MudAppBar>
-    <MudGrid Class="pa-3">
+    <MudGrid Class="pa-3" Spacing="2">
         @foreach (var prod in product_list)
         {
-            <MudItem xs="4">
+            <MudItem xl="4" lg="6" sm="6" xs="12">
 
-                <MudCard Style="background-color: #F5F5F5" Class="hover-card" Outlined="true">
+                <MudCard Style="background-color: #F5F5F5; height:170px;" Class="hover-card" Outlined="true">
 
                     <a href="/productos/detalle/@prod.productNo" style="display: block; text-decoration: none;">
 
-                    <MudCardHeader>
+                        <MudCardHeader>
                         
-                        <CardHeaderAvatar>
-                            <MudImage Src="@prod.imageUrl" Width="80" Height="80" Elevation="25" Class="rounded-lg ma-4" />
-                        </CardHeaderAvatar>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h5">@prod.name</MudText>
-                            <MudText Typo="Typo.body1">@prod.category?.name - # de lotes @prod.lotCount</MudText>
-                            @if (prod.tags?.Count > 0)
-                            {
-                                @foreach (var tag in prod.tags)
+                            <CardHeaderAvatar>
+                                <MudImage Src="@prod.imageUrl" Width="80" Height="80" Elevation="25" Class="rounded-lg ma-2" />
+                            </CardHeaderAvatar>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h5">@prod.name</MudText>
+                                <MudText Typo="Typo.body1">@prod.category?.name - # de lotes @prod.lotCount</MudText>
+                                @if (prod.tags?.Count > 0)
                                 {
-                                    <MudChip Color="Color.Primary" Size="Size.Small">@tag.name</MudChip>
+                                    @foreach (var tag in prod.tags)
+                                    {
+                                        <MudChip Color="Color.Primary" Size="Size.Small">@tag.name</MudChip>
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                    <MudChip Color="Color.Error" Size="Size.Small">Sin etiquetas</MudChip>
+                                else
+                                {
+                                        <MudChip Color="Color.Error" Size="Size.Small">Sin etiquetas</MudChip>
                                 
-                            }
-                        </CardHeaderContent>
+                                }
+                            </CardHeaderContent>
 
-                    </MudCardHeader>
+                        </MudCardHeader>
                         
                     </a>
 

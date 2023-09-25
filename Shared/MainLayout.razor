@@ -14,15 +14,14 @@
                    CloseOnEscapeKey="true" />
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-3">
-    <MudGrid>
+    <MudGrid Style="height:100vh;">
 
         <MudBreakpointProvider>
             <MudHidden Breakpoint="Breakpoint.MdAndDown">
-                <MudItem md="2">
+                <MudItem md="2" Style="height:100%">
                     <MudPaper Class="d-flex flex-column gap-4"
                               Elevation="0"
-                              Style="background-color: white;"
-                              Height="97vh">
+                              Style="background-color: white; height:100%">
 
                         <DrawerContent />
 
@@ -31,15 +30,16 @@
             </MudHidden>
         </MudBreakpointProvider>
 
-        <MudItem lg="10" md="12">
+        <MudItem lg="10" md="12" Style="height:100%">
 
             <MudPaper Class="d-flex flex-column gap-4" Elevation="0" 
-                    Style="background-color: rgba(231, 255, 255, 0.4);" Height="97vh">
-                <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;">
+                    Style="background-color: rgba(231, 255, 255, 0.4); height:100%;">
+                <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;" Dense="true">
 
                     <MudBreakpointProvider>
                         <MudHidden Breakpoint="Breakpoint.LgAndUp">
-                            <MudIconButton Icon="@CustomIcons.Menu" Color="Color.Primary" Edge="Edge.Start" OnClick="OpenDrawer"/>
+                            <MudIconButton Icon="@CustomIcons.Menu" Color="Color.Primary"
+                                OnClick="OpenDrawer" Size="Size.Medium"/>
                         </MudHidden>
                     </MudBreakpointProvider>
 
@@ -47,7 +47,7 @@
 
                     <MudSpacer />
 
-                    <MudIconButton Icon="@CustomIcons.Notification" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Large" />
+                    <MudIconButton Icon="@CustomIcons.Notification" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Medium" />
 
                     <MudMenu PositionAtCursor="true">
                         <ActivatorContent>
@@ -55,12 +55,17 @@
 
                                 <MudCardHeader>
                                     <CardHeaderAvatar>
-                                        <MudAvatar Color="Color.Secondary" Size="Size.Large">R</MudAvatar>
+                                        <MudAvatar Color="Color.Secondary" Size="Size.Medium">R</MudAvatar>
                                     </CardHeaderAvatar>
 
                                     <CardHeaderContent>
-                                        <MudText Typo="Typo.body1">Ricardo Montenegro</MudText>
-                                        <MudText Typo="Typo.body2">Tonny.n1105@gmail.com</MudText>
+                                        <MudBreakpointProvider>
+                                            <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                                                <MudText Typo="Typo.body2">Ricardo Montenegro</MudText>
+                                                <MudText Typo="Typo.body2">Tonny.n1105@gmail.com</MudText>
+                                            </MudHidden>
+                                        </MudBreakpointProvider>
+                                        
                                     </CardHeaderContent>
 
                                 </MudCardHeader>
@@ -76,8 +81,8 @@
 
                 </MudAppBar>
 
-                <MudMainContent Class="ma-5 pa-0" Style="border-radius: 15px; overflow-y:auto; overflow-x:hidden;">
-                                @Body
+                <MudMainContent Class="pa-0" Style="border-radius: 15px; height: calc(100% - 90px);">
+                    @Body
                 </MudMainContent>
             </MudPaper>
 

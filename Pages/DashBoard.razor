@@ -3,8 +3,8 @@
 @layout MainLayout
 @inject SharedData _data
 
-<MudGrid Class="px-8 pt-3">
-    <MudItem xs="7">
+<MudGrid Class="px-2 pt-1" Style="height:100%; overflow-y:auto; overflow-x: hidden;">
+    <MudItem md="7" sm="12">
         <MudPaper Class="mb-5">
 			<MudChart ChartType="ChartType.Bar" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="300px">
 				<CustomGraphics>
@@ -46,7 +46,7 @@
         </MudPaper>
     </MudItem>
 
-    <MudItem xs="5">
+    <MudItem md="5" sm="12">
 		<MudPaper Class="pa-4">
 			<MudChart ChartType="ChartType.Donut" Width="300px" Height="300px" @bind-SelectedIndex="Index" InputData="@data" InputLabels="@labels"></MudChart>
 		</MudPaper>

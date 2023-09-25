@@ -3,34 +3,43 @@
 @layout LoginLayout
 
 
-<MudPaper Class="pa-4 d-flex align-content-space-between" Elevation="0" Square="true" Height="100%">
-    <EditForm Model="@loginUser" OnValidSubmit="OnValidSubmit">
+<MudPaper Class="px-4" Elevation="0" Square="true" Style="height:85vh; display: flex; flex-direction: column; justify-content: center;">
+    <EditForm Model="@loginUser" OnValidSubmit="OnValidSubmit" style="">
         <MudImage Fluid="true" Src="/img/PharmaticLogo.png" />
 
         <DataAnnotationsValidator></DataAnnotationsValidator>
 
-        <MudText Typo="Typo.h4" GutterBottom="true" Align="Align.Left" Class="ml-8">Login</MudText>
+        <div style="width:75%; margin:auto;">
+            <MudText Typo="Typo.h3" GutterBottom="true" Align="Align.Left">Login</MudText>
 
-        <MudTextField T="string"
+            <MudTextField T="string"
             @bind-Value="@loginUser.Email"
-                          Label="Correo"
+                          Placeholder="Correo"
                           Variant="Variant.Outlined"
                           Class="my-6"
                           For="@(() => loginUser.Email)"
-                          Margin="Margin.Dense">
-        </MudTextField>
+                          Margin="Margin.Dense"
+                          Style="">
+            </MudTextField>
 
-        <MudTextField @bind-Value="@loginUser.Password"
-            Label="Contraseña"
-            Variant="Variant.Outlined"
-            InputType="@PasswordInput"
-            Adornment="Adornment.End"
-            AdornmentIcon="@PasswordInputIcon"
-            OnAdornmentClick="TogglePasswordVisibility"
-            For="@(() => loginUser.Password)"
-            Margin="Margin.Dense" />
+            <MudTextField @bind-Value="@loginUser.Password"
+                          Variant="Variant.Outlined"
+                          InputType="@PasswordInput"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@PasswordInputIcon"
+                          OnAdornmentClick="TogglePasswordVisibility"
+                          For="@(() => loginUser.Password)"
+                          Margin="Margin.Dense"
+                          FullWidth="false" Placeholder="Contraseña"
+                          Style="">
+            </MudTextField>
 
-        <MudCheckBox @bind-Checked="@checkvalue" Color="@Color.Primary" Label="Mantener Sesión" />
+            <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                <MudCheckBox @bind-Checked="@checkvalue" Color="@Color.Primary" Label="Mantener Sesión" LabelPosition="LabelPosition.Start" />
+            </div>
+        </div>
+ 
+        
 
         <center>
             <MudButton Class="mt-5 btn rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
@@ -40,9 +49,11 @@
         </center>
 
         <center>
-            <MudButton Variant="Variant.Text" Color="Color.Primary" Class="ma-4">¿Tienes problemas?</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" Class="mt-5">
+                ¿Tienes problemas?
+            </MudButton>
         </center>
-        <MudProgressLinear Color="Color.Primary" Indeterminate="loading" Class="object-bottom"/>
+        
     </EditForm>
 </MudPaper>
 

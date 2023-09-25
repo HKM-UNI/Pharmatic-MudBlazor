@@ -7,26 +7,26 @@
 @inject SharedData _data
 @inject ISnackbar Snackbar
 
-<MudPaper>
-    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
+<MudPaper Class="mx-2" Style="height:100%; overflow-y:auto; overflow-x: hidden; background-color:white;">
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius:24px; position: sticky; top: 0;" Class="pa-0 ma-0" Dense="true">
         <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
-                      AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />
+                      AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense"/>
 
         <MudSpacer />
 
         <MudDivider DividerType="DividerType.Middle"></MudDivider>
 
-        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
                    Color="Color.Primary" OnClick="AddClicked">
             Agregar
         </MudButton>
     </MudAppBar>
-    <MudGrid Class="pa-3" Spacing="5">
+    <MudGrid Class="pa-2" Spacing="1" Style="border-radius:24px;">
         @foreach (var c in customer_list)
         {
-            <MudItem xs="4">
+            <MudItem md="4" sm="6" xs="12">
 
-                <MudCard Style="background-color: #F5F5F5">
+                <MudCard Style="background-color: #F5F5F5; height:100%; width:100%;">
 
                         <MudCardContent>
 
