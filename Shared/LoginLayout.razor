@@ -10,20 +10,15 @@
              Style="border: 10px solid rgba(231, 255, 255, 0.6); box-sizing: border-box; border-radius: 10px;">
 
         <MudBreakpointProvider>
-            <MudHidden Breakpoint="Breakpoint.MdAndDown">
-                <MudItem xs="6">
-                    <MudCard Class="pillbkg">
-                    </MudCard>
-
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudItem md="6" Class="overflow-hidden">
+                    <MudImage Src="/img/drug_bkg.jpg" Style="width: 100%; height: 100%; object-fit: none; object-position: 15% 50%" />
                 </MudItem>
             </MudHidden>
         </MudBreakpointProvider>
 
-            <MudItem xs="6">
-                <MudPaper Class="pa-6" Width="100%" Height="100%">
-                    <MudImage Fluid="true" Src="/img/PharmaticLogo.png" />
+            <MudItem md="6" sm="12">
                     @Body
-                </MudPaper>
             </MudItem>
 
     </MudGrid>

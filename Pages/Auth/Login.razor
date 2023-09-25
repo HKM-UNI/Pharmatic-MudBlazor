@@ -2,56 +2,51 @@
 @inject NavigationManager _navigationManager
 @layout LoginLayout
 
-<EditForm Model="@loginUser" OnValidSubmit="OnValidSubmit">
-    
 
-    <DataAnnotationsValidator></DataAnnotationsValidator>
+<MudPaper Class="pa-4 d-flex align-content-space-between" Elevation="0" Square="true" Height="100%">
+    <EditForm Model="@loginUser" OnValidSubmit="OnValidSubmit">
+        <MudImage Fluid="true" Src="/img/PharmaticLogo.png" />
 
-    <MudText Typo="Typo.h4" GutterBottom="true" Align="Align.Left" Class="ml-8">Login</MudText>
+        <DataAnnotationsValidator></DataAnnotationsValidator>
 
-    <center>
-        <MudItem xs="10">
-            <MudTextField T="string"
+        <MudText Typo="Typo.h4" GutterBottom="true" Align="Align.Left" Class="ml-8">Login</MudText>
+
+        <MudTextField T="string"
             @bind-Value="@loginUser.Email"
                           Label="Correo"
                           Variant="Variant.Outlined"
                           Class="my-6"
                           For="@(() => loginUser.Email)"
                           Margin="Margin.Dense">
+        </MudTextField>
 
-            </MudTextField>
-            
-            <MudTextField @bind-Value="@loginUser.Password"
-                          Label="Contraseña"
-                          Variant="Variant.Outlined"
-                          InputType="@PasswordInput"
-                          Adornment="Adornment.End"
-                          AdornmentIcon="@PasswordInputIcon"
-                          OnAdornmentClick="TogglePasswordVisibility"
-                          For="@(() => loginUser.Password)"
-                          Margin="Margin.Dense" />
+        <MudTextField @bind-Value="@loginUser.Password"
+            Label="Contraseña"
+            Variant="Variant.Outlined"
+            InputType="@PasswordInput"
+            Adornment="Adornment.End"
+            AdornmentIcon="@PasswordInputIcon"
+            OnAdornmentClick="TogglePasswordVisibility"
+            For="@(() => loginUser.Password)"
+            Margin="Margin.Dense" />
 
-            <MudCheckBox @bind-Checked="@checkvalue" Color="@Color.Primary" Label="Mantener Sesión" />
-             
-        </MudItem>
-    </center>
-    
-    <center>
-        <MudButton Class="mt-5 btn rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Disabled="@disableButton" Color="Color.Primary">
-            Iniciar Sesión
-        </MudButton>
-    </center>
+        <MudCheckBox @bind-Checked="@checkvalue" Color="@Color.Primary" Label="Mantener Sesión" />
 
-    <center>
-        <MudButton Variant="Variant.Text" Color="Color.Primary" Class="ma-4">¿Tienes problemas?</MudButton>
-    </center>
+        <center>
+            <MudButton Class="mt-5 btn rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                    Disabled="@disableButton" Color="Color.Primary">
+                Iniciar Sesión
+            </MudButton>
+        </center>
 
-    <MudProgressLinear Color="Color.Primary" Indeterminate="loading" Class="my-4" />
-</EditForm>
+        <center>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" Class="ma-4">¿Tienes problemas?</MudButton>
+        </center>
+        <MudProgressLinear Color="Color.Primary" Indeterminate="loading" Class="object-bottom"/>
+    </EditForm>
+</MudPaper>
 
 <MudAlert Severity="Severity.Error" Class="@(myAlert + " mt-8 mud-width-full")" Style="max-width:500px;" Elevation="25">No se encontraron coincidencias</MudAlert>
-
 
 @code {
     LoginUser loginUser = new LoginUser();
