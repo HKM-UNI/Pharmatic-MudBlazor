@@ -18,10 +18,10 @@
 
         <MudBreakpointProvider>
             <MudHidden Breakpoint="Breakpoint.MdAndDown">
-                <MudItem md="2" Style="height:100%">
+                <MudItem lg="2" Style="height:100%;">
                     <MudPaper Class="d-flex flex-column gap-4"
                               Elevation="0"
-                              Style="background-color: white; height:100%">
+                              Style="background-color: white; height:100%; overflow-y:auto; overflow-x: hidden;">
 
                         <DrawerContent />
 
@@ -30,7 +30,7 @@
             </MudHidden>
         </MudBreakpointProvider>
 
-        <MudItem lg="10" md="12" Style="height:100%">
+        <MudItem lg="10" md="12" sm="12" xs="12" Style="height:100%; width:100%;">
 
             <MudPaper Class="d-flex flex-column gap-4" Elevation="0" 
                     Style="background-color: rgba(231, 255, 255, 0.4); height:100%;">

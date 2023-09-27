@@ -14,16 +14,42 @@
         <MudSpacer />
 
         <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
-                   Color="Color.Primary" OnClick="AgregarClicked">
+                   Color="Color.Primary" OnClick="AgregarClicked" Style="text-transform:none">
             Agregar
         </MudButton>
     </MudAppBar>
-    <MudGrid Class="pa-3" Spacing="2">
+    <MudGrid Class="pa-5" Spacing="4">
         @foreach (var prod in product_list)
         {
             <MudItem xl="4" lg="6" sm="6" xs="12">
+                <a href="/productos/detalle/@prod.productNo">
+                    <MudGrid Style="outline: 1px solid #E6E6E6; border-radius:24px;" Class="hover-card">
+                    
 
-                <MudCard Style="background-color: #F5F5F5; height:170px;" Class="hover-card" Outlined="true">
+                        <MudItem xs="4">
+                            <MudImage Src="@prod.imageUrl" Width="80" Height="80" Elevation="25" Class="rounded-lg ma-2" />
+                        </MudItem>
+                        
+                        <MudItem xs="8">
+                            <MudText Typo="Typo.body1" Style="font-weight:bolder;">@prod.name</MudText>
+                            <MudText Typo="Typo.body2">@prod.category?.name - # de lotes @prod.lotCount</MudText>
+                            @if (prod.tags?.Count > 0)
+                            {
+                                @foreach (var tag in prod.tags)
+                                {
+                                    <MudChip Color="Color.Primary" Size="Size.Small">@tag.name</MudChip>
+                                }
+                            }
+                            else
+                            {
+                                <MudChip Color="Color.Error" Size="Size.Small">Sin etiquetas</MudChip>
+
+                            }
+                        </MudItem>
+                    
+                </MudGrid>
+                </a>
+                @* <MudCard Style="background-color: #F5F5F5; height:170px;" Class="hover-card" Outlined="true">
 
                     <a href="/productos/detalle/@prod.productNo" style="display: block; text-decoration: none;">
 
@@ -53,7 +79,7 @@
                         
                     </a>
 
-                </MudCard>
+                </MudCard> *@
 
             </MudItem>
         }

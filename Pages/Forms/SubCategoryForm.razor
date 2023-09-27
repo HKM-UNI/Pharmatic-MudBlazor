@@ -7,35 +7,43 @@
 @inject SharedData _data
 @inject ISnackbar Snackbar
 
-<MudPaper>
+<MudPaper Class="mx-2" Style="height:100%; overflow-y:auto; overflow-x: hidden; background-color:white;">
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
         <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
                       AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />
 
         <MudSpacer />
 
-        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Primary" OnClick="OpenAddDialog">
+        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
+                   Color="Color.Primary" OnClick="OpenAddDialog" Style="text-transform:none">
             Agregar
         </MudButton>
     </MudAppBar>
     <MudGrid Class="pa-3" Spacing="1">
         @foreach (var subcat in cat_list)
         {
-            <MudItem xs="3">
+            <MudItem lg="3" md="4" sm="6" xs="12">
                 <MudCard Style="background-color: #F5F5F5">
-                    <MudCardContent Style="display: flex; justify-content: space-evenly; align-items: center;">
-                        <MudText Typo="Typo.body1">@subcat.name</MudText>
-                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(subcat.name, subcat.subcategoryNo)">
-                            Eliminar
-                        </MudButton>
+                    <MudCardHeader>
+                        <MudCardContent Style="display: flex; justify-content: space-evenly; align-items: center;">
+                            <MudText Typo="Typo.body1">@subcat.name</MudText>
 
-                        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary" OnClick="() => OpenEditDialog(subcat.name, subcat.subcategoryNo)">
-                            Editar
-                        </MudButton>
-                    </MudCardContent>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                           Color="Color.Error" OnClick="() => OpenDeleteDialog(subcat.name, subcat.subcategoryNo)"
+                                           Icon="@Icons.Material.Filled.Delete" Class="mx-1">
+                                Eliminar
+                            </MudIconButton>
+
+                            <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                           Color="Color.Primary" OnClick="() => OpenEditDialog(subcat.name, subcat.subcategoryNo)"
+                                           Icon="@Icons.Material.Filled.Edit" Class="mx-1">
+                                Editar
+                            </MudIconButton>
+                        </MudCardActions>
+                    </MudCardHeader>
+                    
                 </MudCard>
             </MudItem>
         }

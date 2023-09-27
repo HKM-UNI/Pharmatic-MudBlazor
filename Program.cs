@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using Pharmatic;
 using Pharmatic.Services;
+using Pharmatic.Pages.Auth;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -22,6 +23,7 @@ builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<ProviderService>();
 builder.Services.AddScoped<LotService>();
 builder.Services.AddScoped<SalesService>();
+builder.Services.AddScoped<AuthService>();
 
 builder.Services.AddScoped<SharedData>();
 

@@ -1,68 +1,66 @@
 ﻿@page "/"
 @inject NavigationManager _navigationManager
+@inject AuthService _authService
 @layout LoginLayout
+@inject ISnackbar Snackbar
 
 
-<MudPaper Class="px-4" Elevation="0" Square="true" Style="height:85vh; display: flex; flex-direction: column; justify-content: center;">
+<MudPaper Class="px-4" Elevation="0" Square="true" Style="height:100%; display: flex; flex-direction: column; justify-content: center; width:100%">
     <EditForm Model="@loginUser" OnValidSubmit="OnValidSubmit" style="">
-        <MudImage Fluid="true" Src="/img/PharmaticLogo.png" />
+        <MudImage Width="246" Height="78" Src="/img/PharmaticLogo.png" />
 
         <DataAnnotationsValidator></DataAnnotationsValidator>
 
         <div style="width:75%; margin:auto;">
-            <MudText Typo="Typo.h3" GutterBottom="true" Align="Align.Left">Login</MudText>
+            <MudText Typo="Typo.h4" GutterBottom="true" Align="Align.Left">Login</MudText>
 
             <MudTextField T="string"
-            @bind-Value="@loginUser.Email"
+            @bind-Value="@loginUser.username"
                           Placeholder="Correo"
                           Variant="Variant.Outlined"
-                          Class="my-6"
-                          For="@(() => loginUser.Email)"
+                          Class="my-2"
+                          For="@(() => loginUser.username)"
                           Margin="Margin.Dense"
                           Style="">
             </MudTextField>
 
-            <MudTextField @bind-Value="@loginUser.Password"
+            <MudTextField @bind-Value="@loginUser.password"
                           Variant="Variant.Outlined"
+                          Class="my-2"
                           InputType="@PasswordInput"
                           Adornment="Adornment.End"
                           AdornmentIcon="@PasswordInputIcon"
                           OnAdornmentClick="TogglePasswordVisibility"
-                          For="@(() => loginUser.Password)"
+                          For="@(() => loginUser.password)"
                           Margin="Margin.Dense"
                           FullWidth="false" Placeholder="Contraseña"
                           Style="">
             </MudTextField>
 
-            <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
-                <MudCheckBox @bind-Checked="@checkvalue" Color="@Color.Primary" Label="Mantener Sesión" LabelPosition="LabelPosition.Start" />
+            <div style="display: flex; justify-content: flex-end;">
+                <MudCheckBox @bind-Checked="@checkvalue" Color="@Color.Primary" Label="Mantener Sesión" LabelPosition="LabelPosition.Start" Size="Size.Medium"/>
             </div>
         </div>
- 
         
-
+        
         <center>
-            <MudButton Class="mt-5 btn rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                    Disabled="@disableButton" Color="Color.Primary">
+            <MudButton Class="mt-1 btn rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
+                       Disabled="@disableButton" Color="Color.Primary" Style="text-transform:none">
                 Iniciar Sesión
             </MudButton>
         </center>
 
         <center>
-            <MudButton Variant="Variant.Text" Color="Color.Primary" Class="mt-5">
+            <MudButton Variant="Variant.Text" Color="Color.Primary" Class="mt-1" Size="Size.Medium" Style="text-transform:none">
                 ¿Tienes problemas?
             </MudButton>
         </center>
-        
+
     </EditForm>
 </MudPaper>
 
-<MudAlert Severity="Severity.Error" Class="@(myAlert + " mt-8 mud-width-full")" Style="max-width:500px;" Elevation="25">No se encontraron coincidencias</MudAlert>
-
 @code {
-    LoginUser loginUser = new LoginUser();
-    string myImageClass { get; set; } = "d-none";
-    string myAlert { get; set; } = "d-none";
+    LoginRequest loginUser = new LoginRequest();
     bool disableButton { get; set; } = false;
     public bool? checkvalue { get; set; } = false;
 
@@ -72,6 +70,11 @@
     bool PasswordVisibility;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+    }
 
     void TogglePasswordVisibility()
     {
@@ -91,21 +94,28 @@
 
     private async Task OnValidSubmit()
     {
-        myImageClass = "d-block";
         disableButton = true;
-        var result = true;
 
-        if (result)
+        var loginRequest = new LoginRequest
+            {
+                username = loginUser.username,
+                password = loginUser.password
+            };
+
+        loading = true;
+
+        var loginResponse = await _authService.LoginAsync(loginRequest);
+
+        loading = false;
+        if (loginResponse != null)
         {
-            loading = true;
-            await Task.Delay(2000);
+            Snackbar.Add($"Bienvenido {loginRequest.username}!", Severity.Success);
             _navigationManager.NavigateTo("/dashboard");
-        }   
+        }
         else
         {
-            myImageClass = "d-none";
+            Snackbar.Add("No se encontraron coincidencias", Severity.Error);
             disableButton = false;
-            myAlert = "d-block";
         }
     }
 }

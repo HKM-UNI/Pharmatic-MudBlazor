@@ -6,8 +6,8 @@
 <MudSnackbarProvider />
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="d-flex align-center" Style="height: 100vh;">
-    <MudGrid Spacing="0" Justify="Justify.Center"
-             Style="border: 10px solid rgba(231, 255, 255, 0.6); box-sizing: border-box; border-radius: 10px;">
+    <MudGrid Spacing="0" Class="align-self-center"
+             Style="border: 10px solid rgba(231, 255, 255, 0.6); box-sizing: border-box; border-radius: 10px; height:100%; max-height:550px;">
 
         <MudBreakpointProvider>
             <MudHidden Breakpoint="Breakpoint.SmAndDown">
@@ -17,7 +17,7 @@
             </MudHidden>
         </MudBreakpointProvider>
 
-        <MudItem md="6" sm="12">
+        <MudItem md="6" sm="12" xs="12">
             @Body
         </MudItem>
 

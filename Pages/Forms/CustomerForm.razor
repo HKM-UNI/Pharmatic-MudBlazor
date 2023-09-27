@@ -8,31 +8,34 @@
 @inject CustomerService _customerService
 @inject ISnackbar Snackbar
 
-<MudPaper>
-    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
+<MudPaper Class="mx-2" Style="height:100%; overflow-y:auto; overflow-x: hidden; background-color:white;">
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius:24px; position: sticky; top: 0;" Class="pa-0 ma-0" Dense="true">
+
+        <MudText Typo="Typo.h6" Align="Align.Left" Color="Color.Dark" Margin="Margin.Dense">Formulario cliente</MudText>
 
         <MudSpacer />
 
-        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Error" OnClick="OnCancelClicked">
+        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
+                   Color="Color.Error" OnClick="OnCancelClicked" Style="text-transform:none">
             Cancelar
         </MudButton>
 
-        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Primary" OnClick="OnSubmitClicked">
+        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
+                   Color="Color.Primary" OnClick="OnSubmitClicked" Style="text-transform:none">
             @SubmitButtonLabel
         </MudButton>
     </MudAppBar>
 
     <MudGrid Justify="Justify.Center" Class="pa-5">
-        <MudItem xs="8">
-                <MudTextField @bind-Value="txtName" Label="Nombre" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
-                <MudTextField @bind-Value="txtSurname" Label="Apellido" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
-                <MudTextField @bind-Value="txtEmail" Label="Email" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
-                <MudTextField T="int" @bind-Value="txtPhone" Label="Telefono" Variant="Variant.Outlined" Class="mb-5"></MudTextField>
-                <MudDatePicker Label="Fecha de nacimiento" Editable="true" @bind-Date="dpBirthDate" Placeholder="Selecciona Fecha" 
-                    Class="mb-5" PickerVariant="PickerVariant.Dialog" />
-                <MudSelect T="string" Label="Género" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @bind-Value="sGender">
+        <MudItem xs="10">
+            <MudTextField @bind-Value="txtName" Label="Nombre" Variant="Variant.Outlined" Class="my-3" Margin="Margin.Dense"></MudTextField>
+            <MudTextField @bind-Value="txtSurname" Label="Apellido" Variant="Variant.Outlined" Class="my-3" Margin="Margin.Dense"></MudTextField>
+            <MudTextField @bind-Value="txtEmail" Label="Email" Variant="Variant.Outlined" Class="my-3" Margin="Margin.Dense"></MudTextField>
+            <MudTextField T="int" @bind-Value="txtPhone" Label="Telefono" Variant="Variant.Outlined" Class="my-3" Margin="Margin.Dense"></MudTextField>
+                <MudDatePicker Label="Fecha de nacimiento" Editable="true" @bind-Date="dpBirthDate" Placeholder="Selecciona Fecha"
+                           Class="my-3" PickerVariant="PickerVariant.Dialog" Margin="Margin.Dense" />
+            <MudSelect T="string" Label="Género" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @bind-Value="sGender" 
+                       Class="my-3" Margin="Margin.Dense">
                     <MudSelectItem T="string" Value="@("Masculino")" />
                     <MudSelectItem T="string" Value="@("Femenino")" />
                 </MudSelect>

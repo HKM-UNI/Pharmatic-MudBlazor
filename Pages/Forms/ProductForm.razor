@@ -12,41 +12,46 @@
 @inject CategoryService _catService
 @inject SubCategoryService _subcatService
 
-<MudPaper Class="ma-5">
-    <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;">
+<MudPaper Class="mx-2" Style="height:100%; overflow-y:auto; overflow-x: hidden; background-color:white;">
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius:24px; position: sticky; top: 0;" Class="pa-0 ma-0" Dense="true">
+
+        <MudText Typo="Typo.h6" Align="Align.Left" Color="Color.Dark" Margin="Margin.Dense">Formulario producto</MudText>
 
         <MudSpacer />
 
-        <MudButton Class="rounded-pill" ButtonType="ButtonType.Submit" Size="Size.Large" Variant="Variant.Filled"
-                   Color="Color.Error" Style="margin-right:10px;" OnClick="OnCancelClicked">
+        <MudButton Class="rounded-pill mx-2" ButtonType="ButtonType.Submit" Size="Size.Medium" Variant="Variant.Filled"
+                   Color="Color.Error" OnClick="OnCancelClicked" Style="text-transform:none">
             Cancelar
         </MudButton>
 
-        <MudButton Class="rounded-pill" ButtonType="ButtonType.Submit" Size="Size.Large" Variant="Variant.Filled"
-                   Color="Color.Primary" OnClick="OnSubmitClicked">
+        <MudButton Class="rounded-pill mx-2" ButtonType="ButtonType.Submit" Size="Size.Medium" Variant="Variant.Filled"
+                   Color="Color.Primary" OnClick="OnSubmitClicked" Style="text-transform:none">
             @SubmitButtonLabel
         </MudButton>
     </MudAppBar>
     <MudGrid Class="pa-5">
-        <MudItem xs="6">
-                <MudTextField T="string" @bind-Value="prod_name" Label="Nombre" Class="my-5" Variant="Variant.Outlined"/>
-                <MudTextField T="string" @bind-Value="prod_desc" Label="Descripción" Lines="5" Class="my-5" Variant="Variant.Outlined" />
+        <MudItem lg="6" md="6" sm="12">
+            <MudTextField T="string" @bind-Value="prod_name" Label="Nombre" Class="my-3" Variant="Variant.Outlined" Margin="Margin.Dense"/>
+            <MudTextField T="string" @bind-Value="prod_desc" Label="Descripción" Lines="5" Class="my-3" Variant="Variant.Outlined" Margin="Margin.Dense" />
                 
-                <MudSelect T="string" @bind-Value="category" Label="Categoría" AnchorOrigin="Origin.BottomCenter" Class="my-5" Variant="Variant.Outlined">
+                <MudSelect T="string" @bind-Value="category" Label="Categoría" AnchorOrigin="Origin.BottomCenter" Class="my-3"
+                       Variant="Variant.Outlined" Margin="Margin.Dense">
                     @foreach (var cat in cat_list)
                     {
                         <MudSelectItem Value="@cat.name"/>
                     }
                 </MudSelect>
                 
-                <MudSelect T="string" @bind-Value="sub_cat" Label="SubCategoría" AnchorOrigin="Origin.BottomCenter" Class="my-5" Variant="Variant.Outlined">
+                <MudSelect T="string" @bind-Value="sub_cat" Label="SubCategoría" AnchorOrigin="Origin.BottomCenter" Class="my-3"
+                       Variant="Variant.Outlined" Margin="Margin.Dense">
                     @foreach (var subcat in subcat_list)
                     {
                         <MudSelectItem Value="@subcat.name"/>
                     }
                     
                 </MudSelect>
-                <MudSelect T="string" Label="Tags" AnchorOrigin="Origin.BottomCenter" MultiSelection="true" Class="my-5" Variant="Variant.Outlined" @bind-SelectedValues="selected_tags">
+                <MudSelect T="string" Label="Tags" AnchorOrigin="Origin.BottomCenter" MultiSelection="true" Class="my-3"
+                       Variant="Variant.Outlined" @bind-SelectedValues="selected_tags" Margin="Margin.Dense">
                     @foreach (var tag in tag_list)
                     {
                         <MudSelectItem Value="@tag.name"/>
@@ -54,22 +59,22 @@
                 </MudSelect>     
         </MudItem>
 
-        <MudItem xs="6">
+        <MudItem lg="6" md="6" sm="12">
             <MudCard Class="pa-5">
-                <MudCardMedia Image="@photoUrl" Height="450" Style="background-size: contain; background-color: gray;"/>
+                <MudCardMedia Image="@photoUrl" Height="400" Style="background-size: contain; background-color: gray;"/>
 
                 <MudFileUpload T="IBrowserFile" OnFilesChanged="OnInputFileChanged">
                     <ButtonTemplate>
-                            <MudButton HtmlTag="label"
-                                       Variant="Variant.Filled"
-                                       Color="Color.Info"
-                                       Class="rounded-pill ma-2"
-                                       for="@context">
+                        <MudButton HtmlTag="label"
+                            Variant="Variant.Filled"
+                            Color="Color.Info"
+                            Class="rounded-pill ma-2"
+                            for="@context">
                                 Subir Foto
                             </MudButton>
                     </ButtonTemplate>
                         <SelectedTemplate>
-                            <MudButton Class="rounded-pill ma-2" ButtonType="ButtonType.Submit" Size="Size.Large"
+                            <MudButton Class="rounded-pill ma-2" ButtonType="ButtonType.Submit"
                                        Variant="Variant.Filled" Color="Color.Error" OnClick="ClearFile">
                                 Limpiar
                             </MudButton>
