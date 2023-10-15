@@ -2,9 +2,14 @@
 @inherits LayoutComponentBase
 @inject NavigationManager _navigationManager
 @inject SharedData _data
+@inject ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider _authState
 @using static CustomIcons
 @using Pharmatic.Services
 <link rel="stylesheet" href="/css/background.css?version=6" />
+
+<AuthorizeView>
+    <Authorized>
 
 <MudThemeProvider Theme="selectedTheme" />
 <MudSnackbarProvider />
@@ -47,7 +52,7 @@
 
                     <MudSpacer />
 
-                    <MudIconButton Icon="@CustomIcons.Notification" Color="Color.Inherit" OnClick="CerrarSesion" Size="Size.Medium" />
+                    <MudIconButton Icon="@CustomIcons.Notification" Color="Color.Inherit" Size="Size.Medium" />
 
                     <MudMenu PositionAtCursor="true">
                         <ActivatorContent>
@@ -94,7 +99,12 @@
 <MudDrawer @bind-Open="@open" Elevation="1" Variant="@DrawerVariant.Temporary">
     <DrawerContent/>
 </MudDrawer>
-    
+    </Authorized>
+
+    <NotAuthorized>
+        <RedirectToLogin/>
+    </NotAuthorized>
+</AuthorizeView>
 @code {
     private MudTheme selectedTheme = CustomThemes.PharmaticThemeRounded;
     string search_text = string.Empty;
@@ -109,8 +119,10 @@
         };
     }
 
-    private void CerrarSesion()
+    private async void CerrarSesion()
     {
+        await LocalStorage.RemoveItemAsync("token");
+        await _authState.GetAuthenticationStateAsync();
         _navigationManager.NavigateTo("/");
     }
 

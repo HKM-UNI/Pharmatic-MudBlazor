@@ -1,39 +1,42 @@
-﻿using System.Net.Http.Json;
+﻿using Pharmatic.Pages.Auth;
+using System;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 
-namespace Pharmatic.Pages.Auth
+public class AuthService
 {
-    public class AuthService
+    private readonly HttpClient _httpClient;
+
+    public AuthService(HttpClient httpClient)
     {
-        private readonly HttpClient _httpClient;
+        _httpClient = httpClient;
+    }
 
-        public AuthService(HttpClient httpClient)
+    public async Task<string> LoginAsync(LoginRequest loginRequest)
+    {
+        var url = "http://127.0.0.1:7035/api/users/login";
+
+        try
         {
-            _httpClient = httpClient;
+            var response = await _httpClient.PostAsJsonAsync(url, loginRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<AuthResult>();
+                if (result != null && !string.IsNullOrEmpty(result.Token))
+                {
+                    return result.Token; // Devuelve el token JWT en caso de autenticación exitosa.
+                }
+            }
+
+            // Maneja el caso de error de autenticación aquí si es necesario.
+            return null;
         }
-
-        public async Task<LoginResponse> LoginAsync(LoginRequest loginRequest)
+        catch (Exception ex)
         {
-            var url = "http://127.0.0.1:7035/api/users/login";
-
-            try
-            {
-                var response = await _httpClient.PostAsJsonAsync(url, loginRequest);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return await response.Content.ReadFromJsonAsync<LoginResponse>();
-                }
-                else
-                {
-                    // Maneja el caso de error de autenticación aquí si es necesario.
-                    return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                // Maneja las excepciones aquí si es necesario.
-                return null;
-            }
+            // Maneja las excepciones aquí si es necesario.
+            return null;
         }
     }
 }

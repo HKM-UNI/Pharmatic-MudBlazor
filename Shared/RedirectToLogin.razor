@@ -1,0 +1,17 @@
+﻿@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateTask;
+
+        if (authenticationState?.User?.Identity is null || !authenticationState.User.Identity.IsAuthenticated)
+        {
+            Snackbar.Add("Inicia sesión!", Severity.Info);
+            Navigation.NavigateTo("/");
+        }
+    }
+}

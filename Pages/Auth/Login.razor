@@ -3,7 +3,8 @@
 @inject AuthService _authService
 @layout LoginLayout
 @inject ISnackbar Snackbar
-
+@inject ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider _authState
 
 <MudPaper Class="px-4" Elevation="0" Square="true" Style="height:100%; display: flex; flex-direction: column; justify-content: center; width:100%">
     <EditForm Model="@loginUser" OnValidSubmit="OnValidSubmit" style="">
@@ -57,6 +58,7 @@
         </center>
 
     </EditForm>
+
 </MudPaper>
 
 @code {
@@ -104,11 +106,13 @@
 
         loading = true;
 
-        var loginResponse = await _authService.LoginAsync(loginRequest);
+        var jwt = await _authService.LoginAsync(loginRequest);
 
         loading = false;
-        if (loginResponse != null)
+        if (jwt != null)
         {
+            await LocalStorage.SetItemAsync("token", jwt);
+            await _authState.GetAuthenticationStateAsync();
             Snackbar.Add($"Bienvenido {loginRequest.username}!", Severity.Success);
             _navigationManager.NavigateTo("/dashboard");
         }

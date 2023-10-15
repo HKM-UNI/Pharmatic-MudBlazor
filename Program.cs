@@ -4,6 +4,8 @@ using MudBlazor.Services;
 using Pharmatic;
 using Pharmatic.Services;
 using Pharmatic.Pages.Auth;
+using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -24,6 +26,9 @@ builder.Services.AddScoped<ProviderService>();
 builder.Services.AddScoped<LotService>();
 builder.Services.AddScoped<SalesService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddScoped<SharedData>();
 
