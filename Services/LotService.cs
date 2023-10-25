@@ -6,7 +6,7 @@ using static System.Net.WebRequestMethods;
 
 namespace Pharmatic.Services
 {
-    public class LotService
+    public class LotService : Global
     {
         private readonly HttpClient _http;
         public LotService(HttpClient http)
@@ -16,7 +16,7 @@ namespace Pharmatic.Services
 
         public async Task<List<LotDTO>> LotList(string? productNo)
         {
-            var url = "http://localhost:7035/api/lots?product_no=" + productNo;
+            var url = $"http://localhost:{port}/api/lots?product_no=" + productNo;
             var result = await _http.GetFromJsonAsync<List<LotDTO>>(url);
 
             return result!;
@@ -24,7 +24,7 @@ namespace Pharmatic.Services
 
         public async Task<List<LotDTO>> LotList()
         {
-            var url = "http://localhost:7035/api/lots";
+            var url = $"http://localhost:{port}/api/lots";
             var result = await _http.GetFromJsonAsync<List<LotDTO>>(url);
 
             return result!;
@@ -32,7 +32,7 @@ namespace Pharmatic.Services
 
         public async Task<LotDTO> SearchLot(string lotNo)
         {
-            var url = "http://localhost:7035/api/lots/" + lotNo;
+            var url = $"http://localhost:{port}/api/lots/" + lotNo;
             var result = await _http.GetFromJsonAsync<LotDTO>(url);
 
             return result!;
@@ -43,7 +43,7 @@ namespace Pharmatic.Services
             string json = JsonSerializer.Serialize(new_lot);
             Console.WriteLine(json);
 
-            var result = await _http.PostAsJsonAsync("http://localhost:7035/api/lots/create", new_lot);
+            var result = await _http.PostAsJsonAsync($"http://localhost:{port}/api/lots/create", new_lot);
             var statusCode = result.IsSuccessStatusCode;
             var lot = await result.Content.ReadFromJsonAsync<LotDTO>();
 

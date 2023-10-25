@@ -1,10 +1,11 @@
-﻿using Pharmatic.Pages.Auth;
+﻿using Pharmatic.Authorization;
+using Pharmatic.Services;
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-public class AuthService
+public class AuthService : Global
 {
     private readonly HttpClient _httpClient;
 
@@ -15,7 +16,7 @@ public class AuthService
 
     public async Task<string> LoginAsync(LoginRequest loginRequest)
     {
-        var url = "http://127.0.0.1:7035/api/users/login";
+        var url = $"http://127.0.0.1:{port}/api/users/login";
 
         try
         {
@@ -26,7 +27,8 @@ public class AuthService
                 var result = await response.Content.ReadFromJsonAsync<AuthResult>();
                 if (result != null && !string.IsNullOrEmpty(result.Token))
                 {
-                    return result.Token; // Devuelve el token JWT en caso de autenticación exitosa.
+                    Console.WriteLine(result.Token);
+                    return result.Token;
                 }
             }
 

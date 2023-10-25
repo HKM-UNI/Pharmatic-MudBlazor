@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace Pharmatic.Services
 {
-    public class ProductService
+    public class ProductService : Global
     {
         private readonly HttpClient _http;
         public ProductService(HttpClient http)
@@ -17,28 +17,28 @@ namespace Pharmatic.Services
 
         public async Task<List<ProductDTO>> ProductList()
         {
-            var url = "http://localhost:7035/api/products";
+            var url = $"http://localhost:{port}/api/products";
             var result = await _http.GetFromJsonAsync<List<ProductDTO>>(url);
             return result!;
         }
 
         public async Task<ProductDTO> SearchProduct(string id)
         {
-            var url = "http://localhost:7035/api/products/" + id;
+            var url = $"http://localhost:{port}/api/products/" + id;
             var result = await _http.GetFromJsonAsync<ProductDTO>(url);
             return result!;
         }
 
         public async Task<ProductDTO> CreateProduct(ProductDTO new_product)
         {
-            var result = await _http.PostAsJsonAsync("http://localhost:7035/api/products/create", new_product);
+            var result = await _http.PostAsJsonAsync($"http://localhost:{port}/api/products/create", new_product);
             var response = await result.Content.ReadFromJsonAsync<ProductDTO>();
             return response!;
         }
 
         public async Task<ProductDTO> EditProduct(int id, ProductDTO product)
         {
-            var result = await _http.PatchAsJsonAsync($"http://localhost:7035/api/products/{id}", product);
+            var result = await _http.PatchAsJsonAsync($"http://localhost:{port}/api/products/{id}", product);
             var response = await result.Content.ReadFromJsonAsync<ProductDTO>();
             return response!;
         }
@@ -54,7 +54,7 @@ namespace Pharmatic.Services
 
                 content.Add(fileContent, "image", fileName);
 
-                var result = await _http.PutAsync($"http://localhost:7035/api/products/{id}/image", content);
+                var result = await _http.PutAsync($"http://localhost:{port}/api/products/{id}/image", content);
 
                 return result.IsSuccessStatusCode;
             }
@@ -62,7 +62,7 @@ namespace Pharmatic.Services
 
         public async Task<bool> DeleteProduct(int id)
         {
-            var url = $"http://localhost:7035/api/products/{id}";
+            var url = $"http://localhost:{port}/api/products/{id}";
             var response = await _http.DeleteAsync(url);
             return response.IsSuccessStatusCode;
         }

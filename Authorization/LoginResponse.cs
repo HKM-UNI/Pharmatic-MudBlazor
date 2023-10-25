@@ -1,4 +1,4 @@
-﻿namespace Pharmatic.Pages.Auth
+﻿namespace Pharmatic.Authorization
 {
     public class LoginResponse
     {

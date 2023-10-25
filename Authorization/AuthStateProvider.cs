@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Pharmatic
+namespace Pharmatic.Authorization
 {
     public class AuthStateProvider : AuthenticationStateProvider
     {
@@ -16,14 +16,14 @@ namespace Pharmatic
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            string token =  await _localStorage.GetItemAsStringAsync("token");
-            //string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-
+            string token = await _localStorage.GetItemAsStringAsync("token");
 
             var identity = new ClaimsIdentity();
 
-            if(!string.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(token))
+            {
                 identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
+            }
 
             var user = new ClaimsPrincipal(identity);
             var state = new AuthenticationState(user);
@@ -38,7 +38,10 @@ namespace Pharmatic
             var payload = jwt.Split('.')[1];
             var jsonBytes = ParseBase64WithoutPadding(payload);
             var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
-            return keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()));
+
+            IEnumerable<Claim> claims = keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()));
+
+            return claims;
         }
 
         private static byte[] ParseBase64WithoutPadding(string base64)

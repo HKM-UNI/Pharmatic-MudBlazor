@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Pharmatic.Pages.Auth
+namespace Pharmatic.Authorization
 {
     public class LoginRequest
     {

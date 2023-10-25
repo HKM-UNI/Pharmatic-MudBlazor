@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace Pharmatic.Services
 {
-    public class SalesService
+    public class SalesService : Global
     {
         private readonly HttpClient _http;
         public SalesService(HttpClient http)
@@ -13,7 +13,7 @@ namespace Pharmatic.Services
 
         public async Task<List<SalesInvoiceDTO>> SalesList()
         {
-            var url = "http://localhost:7035/api/sales";
+            var url = $"http://localhost:{port}/api/sales";
             var result = await _http.GetFromJsonAsync<List<SalesInvoiceDTO>>(url);
 
             return result!;
@@ -21,14 +21,14 @@ namespace Pharmatic.Services
 
         public async Task<SalesInvoiceDTO> CreateInvoice(SalesInvoiceDTO new_invoice)
         {
-            var result = await _http.PostAsJsonAsync("http://localhost:7035/api/sales/create", new_invoice);
+            var result = await _http.PostAsJsonAsync($"http://localhost:{port}/api/sales/create", new_invoice);
             var response = await result.Content.ReadFromJsonAsync<SalesInvoiceDTO>();
             return response!;
         }
 
         public async Task<SalesInvoiceDTO> EditInvoice(int id, SalesInvoiceDTO invoice)
         {
-            var result = await _http.PatchAsJsonAsync($"http://localhost:7035/api/sales/{id}", invoice);
+            var result = await _http.PatchAsJsonAsync($"http://localhost:{port}/api/sales/{id}", invoice);
             var response = await result.Content.ReadFromJsonAsync<SalesInvoiceDTO>();
             return response!;
         }
