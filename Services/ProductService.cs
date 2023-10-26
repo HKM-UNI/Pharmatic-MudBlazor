@@ -21,8 +21,7 @@ namespace Pharmatic.Services
         private async Task SetTokenAsync()
         {
             string token = await _localStorage.GetItemAsStringAsync("token");
-            Console.WriteLine(token);
-            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Trim('"'));
         }
 
         public async Task<List<ProductDTO>> ProductList()
@@ -43,6 +42,7 @@ namespace Pharmatic.Services
 
         public async Task<ProductDTO> CreateProduct(ProductDTO new_product)
         {
+            await SetTokenAsync();
             var result = await _http.PostAsJsonAsync($"http://localhost:{port}/api/products/create", new_product);
             var response = await result.Content.ReadFromJsonAsync<ProductDTO>();
             return response!;
@@ -50,6 +50,7 @@ namespace Pharmatic.Services
 
         public async Task<ProductDTO> EditProduct(int id, ProductDTO product)
         {
+            await SetTokenAsync();
             var result = await _http.PatchAsJsonAsync($"http://localhost:{port}/api/products/{id}", product);
             var response = await result.Content.ReadFromJsonAsync<ProductDTO>();
             return response!;
@@ -57,6 +58,7 @@ namespace Pharmatic.Services
 
         public async Task<bool> AddPhoto(string id, string fileName, string fileType, string base64Image)
         {
+            await SetTokenAsync();
             var imageBytes = Convert.FromBase64String(base64Image);
 
             using (var content = new MultipartFormDataContent())
@@ -74,6 +76,7 @@ namespace Pharmatic.Services
 
         public async Task<bool> DeleteProduct(int id)
         {
+            await SetTokenAsync();
             var url = $"http://localhost:{port}/api/products/{id}";
             var response = await _http.DeleteAsync(url);
             return response.IsSuccessStatusCode;

@@ -25,6 +25,7 @@ builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<ProviderService>();
 builder.Services.AddScoped<LotService>();
 builder.Services.AddScoped<SalesService>();
+builder.Services.AddScoped<UserService>();
 
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();

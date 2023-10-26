@@ -6,6 +6,7 @@
 @inject NavigationManager _navigationManager
 @inject SharedData _data
 @inject ISnackbar Snackbar
+@inject UserService _userService
 
 <MudPaper Class="mx-2" Style="height:100%; overflow-y:auto; overflow-x: hidden; background-color:white;">
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;" Dense="true">
@@ -23,7 +24,7 @@
 
     </MudAppBar>
     <MudGrid Class="pa-5" Spacing="4">
-        @foreach (var n in new List<int>{0, 0, 0, 0, 0, 0})
+        @foreach (var u in user_list)
         {
             <MudItem xl="4" lg="6" sm="6" xs="12">
                 <a href="/usuarios#"> @* /usuarios/editar/n *@
@@ -35,9 +36,9 @@
                         </MudItem>
 
                         <MudItem xs="8">
-                            <MudText Typo="Typo.body1" Style="font-weight:bolder;">Nombre</MudText>
-                            <MudText Typo="Typo.body2">Correo</MudText>
-                            <MudText Typo="Typo.body2">Rol</MudText>
+                            <MudText Typo="Typo.body1" Style="font-weight:bolder;">@u.username</MudText>
+                            <MudText Typo="Typo.body2">@u.email</MudText>
+                            <MudText Typo="Typo.body2">@u.role.roleName</MudText>
                         </MudItem>
 
                     </MudGrid>
@@ -52,7 +53,7 @@
 <MudDialog @bind-IsVisible="delete_visible">
     <TitleContent>
         <MudText Typo="Typo.h4">
-            Desea eliminar al usuario @(current_provider)?
+            Desea eliminar al usuario @(current_user)?
         </MudText>
         <MudText Typo="Typo.body1">
             Estas completamente seguro, tambien eliminaras los registros que dependen de esta información.
@@ -66,16 +67,16 @@
 
 @code {
     private string search_text = string.Empty;
-    private List<ProviderDTO> provider_list = new List<ProviderDTO>();
+    private List<UserDTO> user_list = new List<UserDTO>();
     private bool delete_visible = false;
-    private string current_provider = string.Empty;
-    private int id_provider_delete = -1;
+    private string current_user = string.Empty;
+    private int id_user_delete = -1;
 
     private void OpenDeleteDialog(string n, int id)
     {
         delete_visible = true;
-        current_provider = n;
-        id_provider_delete = id;
+        current_user = n;
+        id_user_delete = id;
     }
 
     private void CancelDelete() => delete_visible = false;
@@ -99,15 +100,15 @@
             new BreadcrumbItem("Usuarios", href: null, disabled: true)
         };
 
-        //await GetProviders();
+        await GetUsers();
 
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
     }
 
-    private async Task GetProviders()
+    private async Task GetUsers()
     {
-        //var result = await _providerService.ProviderList();
-        //provider_list = result!;
+        var result = await _userService.UserList();
+        user_list = result!;
     }
 
     private void AgregarClicked() => _navigationManager.NavigateTo("/usarios/agregar");
