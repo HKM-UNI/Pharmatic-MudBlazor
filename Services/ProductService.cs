@@ -21,6 +21,7 @@ namespace Pharmatic.Services
         private async Task SetTokenAsync()
         {
             string token = await _localStorage.GetItemAsStringAsync("token");
+            Console.WriteLine(token);
             _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 

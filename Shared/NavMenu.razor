@@ -14,5 +14,11 @@
     <MudNavLink Href="/clientes" Match="NavLinkMatch.All" Icon="@CustomIcons.Client">Clientes</MudNavLink>
 
     <MudNavLink Href="/proveedores" Match="NavLinkMatch.All" Icon="@CustomIcons.Providers">Proveedores</MudNavLink>
+    
+    <AuthorizeView Policy="UserRead">
+        <Authorized>
+            <MudNavLink Href="/usuarios" Match="NavLinkMatch.All" Icon="@CustomIcons.User">Usuarios</MudNavLink>
+        </Authorized>
+    </AuthorizeView>
 
 </MudNavMenu>

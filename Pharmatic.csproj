@@ -28,6 +28,7 @@
 	  <Content Remove="wwwroot\icons\search.svg" />
 	  <Content Remove="wwwroot\icons\setting3.svg" />
 	  <Content Remove="wwwroot\icons\tag2.svg" />
+	  <Content Remove="wwwroot\icons\user.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -55,6 +56,7 @@
 	  <EmbeddedResource Include="wwwroot\icons\search.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\setting3.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\tag2.svg" />
+	  <EmbeddedResource Include="wwwroot\icons\user.svg" />
 	</ItemGroup>
 
 	<ItemGroup>

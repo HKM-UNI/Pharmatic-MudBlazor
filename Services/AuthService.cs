@@ -27,7 +27,6 @@ public class AuthService : Global
                 var result = await response.Content.ReadFromJsonAsync<AuthResult>();
                 if (result != null && !string.IsNullOrEmpty(result.Token))
                 {
-                    Console.WriteLine(result.Token);
                     return result.Token;
                 }
             }
