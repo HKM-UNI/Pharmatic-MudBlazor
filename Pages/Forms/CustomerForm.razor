@@ -1,5 +1,6 @@
 ﻿@page "/clientes/agregar"
 @page "/clientes/editar/{id}"
+@attribute [Authorize(Policy = "CustomerWrite")]
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @layout MainLayout

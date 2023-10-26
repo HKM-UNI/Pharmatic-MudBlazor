@@ -1,4 +1,5 @@
-﻿using Pharmatic.DTOs;
+﻿using Blazored.LocalStorage;
+using Pharmatic.DTOs;
 using Pharmatic.Pages;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -10,14 +11,23 @@ namespace Pharmatic.Services
     public class ProductService : Global
     {
         private readonly HttpClient _http;
-        public ProductService(HttpClient http)
+        private readonly ILocalStorageService _localStorage;
+        public ProductService(HttpClient http, ILocalStorageService localStorage)
         {
             _http = http;
+            _localStorage = localStorage;
+        }
+
+        private async Task SetTokenAsync()
+        {
+            string token = await _localStorage.GetItemAsStringAsync("token");
+            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
         public async Task<List<ProductDTO>> ProductList()
         {
             var url = $"http://localhost:{port}/api/products";
+            await SetTokenAsync();
             var result = await _http.GetFromJsonAsync<List<ProductDTO>>(url);
             return result!;
         }
@@ -25,6 +35,7 @@ namespace Pharmatic.Services
         public async Task<ProductDTO> SearchProduct(string id)
         {
             var url = $"http://localhost:{port}/api/products/" + id;
+            await SetTokenAsync();
             var result = await _http.GetFromJsonAsync<ProductDTO>(url);
             return result!;
         }

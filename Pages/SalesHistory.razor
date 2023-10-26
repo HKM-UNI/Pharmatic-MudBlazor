@@ -1,4 +1,5 @@
 ﻿@page "/ventas/historial"
+@attribute [Authorize(Policy = "SalesRead")]
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @layout MainLayout

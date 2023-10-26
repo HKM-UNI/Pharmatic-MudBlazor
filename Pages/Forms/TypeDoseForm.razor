@@ -1,4 +1,5 @@
 ﻿@page "/metadata/dosis"
+@attribute [Authorize(Policy = "ProductRead")]
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @inject SharedData _data
@@ -15,10 +16,16 @@
 
         <MudSpacer />
 
-        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
-                   Color="Color.Primary" OnClick="OpenAddDialog" Style="text-transform:none">
-            Agregar
-        </MudButton>
+        <AuthorizeView Policy="ProductWrite">
+            <Authorized>
+                <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
+                           Color="Color.Primary" OnClick="OpenAddDialog" Style="text-transform:none">
+                    Agregar
+                </MudButton>
+            </Authorized>
+
+        </AuthorizeView>
+
     </MudAppBar>
     <MudGrid Class="pa-3" Spacing="1">
         @foreach (var dose in dose_list)
@@ -32,16 +39,31 @@
 
                         </MudCardContent>
                         <MudCardActions>
-                            <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                       Color="Color.Error" OnClick="() => OpenDeleteDialog(dose.name, dose.dosageFormNo)"
-                                       Icon="@Icons.Material.Filled.Delete" Class="mx-1">
-                                Eliminar
-                            </MudIconButton>
-                            <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                       Color="Color.Primary" OnClick="() => OpenEditDialog(dose.name, dose.dosageFormNo)"
-                                       Icon="@Icons.Material.Filled.Delete" Class="mx-1">
-                                Editar
-                            </MudIconButton>
+
+                            <AuthorizeView Policy="ProductWrite">
+                                <Authorized>
+                                    <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                                   Color="Color.Primary" OnClick="() => OpenEditDialog(dose.name, dose.dosageFormNo)"
+                                                   Icon="@Icons.Material.Filled.Delete" Class="mx-1">
+                                        Editar
+                                    </MudIconButton>
+                                </Authorized>
+
+                            </AuthorizeView>
+
+                            <AuthorizeView Policy="ProductDelete">
+                                <Authorized>
+                                    <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(dose.name, dose.dosageFormNo)"
+                                                   Icon="@Icons.Material.Filled.Delete" Class="mx-1">
+                                        Eliminar
+                                    </MudIconButton>
+                                </Authorized>
+
+                            </AuthorizeView>
+
+                            
+                            
                         </MudCardActions>
                     </MudCardHeader>
                     

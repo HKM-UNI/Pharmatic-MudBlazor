@@ -1,4 +1,5 @@
 ﻿@page "/proveedores"
+@attribute [Authorize (Policy = "ProviderRead")]
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @layout MainLayout
@@ -13,13 +14,16 @@
                       AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />
 
         <MudSpacer />
-
-        <MudDivider DividerType="DividerType.Middle"></MudDivider>
-
-        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
-                   Color="Color.Primary" OnClick="AgregarClicked" Style="text-transform:none">
-            Agregar
-        </MudButton>
+        
+        <AuthorizeView Policy="ProviderWrite">
+            <Authorized>
+                <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
+                           Color="Color.Primary" OnClick="AgregarClicked" Style="text-transform:none">
+                    Agregar
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
+        
     </MudAppBar>
     <MudGrid Class="pa-3" Spacing="5">
         @foreach (var p in provider_list)
@@ -38,15 +42,25 @@
                     </MudCardContent>
 
                     <MudCardActions>
-                        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Error" FullWidth="true" OnClick="() => OpenDeleteDialog(p.name, p.providerNo)">
-                            Eliminar
-                        </MudButton>
+                        <AuthorizeView Policy="ProviderWrite">
+                            <Authorized>
+                                <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                           Color="Color.Primary" FullWidth="true" OnClick="() => EditClicked(Convert.ToString(p.providerNo))">
+                                    Editar
+                                </MudButton>
+                            </Authorized>
+                        </AuthorizeView>
 
-                        <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                   Color="Color.Primary" FullWidth="true" OnClick="() => EditClicked(Convert.ToString(p.providerNo))">
-                            Editar
-                        </MudButton>
+                        <AuthorizeView Policy="ProviderDelete">
+                            <Authorized>
+                                <MudButton Class="rounded-pill mx-1" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                           Color="Color.Error" FullWidth="true" OnClick="() => OpenDeleteDialog(p.name, p.providerNo)">
+                                    Eliminar
+                                </MudButton>
+                            </Authorized>
+                        </AuthorizeView>
+                        
+
                     </MudCardActions>
 
                 </MudCard>

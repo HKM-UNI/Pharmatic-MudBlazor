@@ -1,4 +1,5 @@
 ﻿@page "/ventas/carrito"
+@attribute [Authorize (Policy = "SalesWrite")]
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @layout MainLayout

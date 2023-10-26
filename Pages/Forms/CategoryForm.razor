@@ -1,4 +1,5 @@
 ﻿@page "/metadata/categorias"
+@attribute [Authorize (Policy = "ProductRead")]
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @layout MainLayout
@@ -7,7 +8,6 @@
 @inject SharedData _data
 @inject ISnackbar Snackbar
 
-
 <MudPaper Class="mx-2" Style="height:100%; overflow-y:auto; overflow-x: hidden; background-color:white;">
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius:24px; position: sticky; top: 0;" Class="pa-0 ma-0" Dense="true">
         <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
@@ -15,10 +15,16 @@
 
         <MudSpacer />
 
-        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
+        <AuthorizeView Policy="ProductWrite">
+            <Authorized>
+                <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
                    Color="Color.Primary" OnClick="OpenAddDialog" Style="text-transform:none">
             Agregar
         </MudButton>
+            </Authorized>
+
+        </AuthorizeView>
+        
     </MudAppBar>
     <MudGrid Class="pa-3" Spacing="1">
         @foreach (var cat in cat_list)
@@ -29,18 +35,32 @@
                         <MudCardContent>
                             <MudText Typo="Typo.body1">@cat.name</MudText>
                         </MudCardContent>
+                        
                         <MudCardActions>
-                            <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                           Color="Color.Error" OnClick="() => OpenDeleteDialog(cat.name, cat.categoryNo)"
-                                           Icon="@Icons.Material.Filled.Delete" Class="mx-1">
-                                Eliminar
-                            </MudIconButton>
 
-                            <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                           Color="Color.Primary" OnClick="() => OpenEditDialog(cat.name, cat.categoryNo)"
-                                           Icon="@Icons.Material.Filled.Edit" Class="mx-1">
-                                Editar
-                            </MudIconButton>
+                            <AuthorizeView Policy="ProductWrite">
+                                <Authorized>
+
+
+                                    <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                                   Color="Color.Primary" OnClick="() => OpenEditDialog(cat.name, cat.categoryNo)"
+                                                   Icon="@Icons.Material.Filled.Edit" Class="mx-1">
+                                        Editar
+                                    </MudIconButton>
+                                </Authorized>
+                            </AuthorizeView>
+
+                            <AuthorizeView Policy="ProductDelete">
+                                <Authorized>
+                                    <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                                   Color="Color.Error" OnClick="() => OpenDeleteDialog(cat.name, cat.categoryNo)"
+                                                   Icon="@Icons.Material.Filled.Delete" Class="mx-1">
+                                        Eliminar
+                                    </MudIconButton>
+                                </Authorized>
+
+                            </AuthorizeView>
+                            
                         </MudCardActions>
                    </MudCardHeader>
                 </MudCard>

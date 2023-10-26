@@ -1,4 +1,5 @@
 ﻿@page "/productos/detalle/{id}"
+@attribute [Authorize (Policy = "ProductRead")]
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @layout MainLayout
@@ -13,17 +14,28 @@
 
         <MudSpacer />
 
-        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Error" OnClick="OpenDeleteDialog">
-            Eliminar Producto
-        </MudButton>
+        <AuthorizeView Policy="ProductWrite">
+            <Authorized>
+                <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                           Color="Color.Primary" OnClick="EditProduct">
+                    Editar Producto
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView Policy="ProductDelete">
+            <Authorized>
+                <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                           Color="Color.Error" OnClick="OpenDeleteDialog">
+                    Eliminar Producto
+                </MudButton>
+            </Authorized>
+
+        </AuthorizeView>
 
         <MudDivider DividerType="DividerType.Middle"></MudDivider>
 
-        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                   Color="Color.Primary" OnClick="EditProduct">
-            Editar Producto
-        </MudButton>
+        
     </MudAppBar>
     <MudGrid Class="pa-5">
         <MudItem xs="3">
@@ -50,40 +62,50 @@
             <MudText Typo="Typo.body1">@product.description</MudText>
         </MudItem>
 
-        <MudItem xs="12">
-            <MudText Typo="Typo.h6" Inline="true">Lotes: @product.lotCount</MudText>
-            <MudButton Class="rounded-pill mx-3" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
-                       Color="Color.Primary" OnClick="AddLot">
-                Agregar Lote
-            </MudButton>
-        </MudItem>
+        <AuthorizeView Policy="InventoryWrite">
+            <Authorized>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6" Inline="true">Lotes: @product.lotCount</MudText>
+                    <MudButton Class="rounded-pill mx-3" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Large"
+                               Color="Color.Primary" OnClick="AddLot">
+                        Agregar Lote
+                    </MudButton>
+                </MudItem>
+            </Authorized>
+        </AuthorizeView>
 
-        @foreach(var lot in lot_list)
-        {
-            <MudItem xs="3">
-                <MudCard Style="background-color: #F5F5F5">
-                    <MudCardHeader>
-                        <CardHeaderContent>
-                            <MudText Typo="Typo.h6" Inline="true">Proveedor:</MudText>
-                            <MudText Typo="Typo.h6" Color="Color.Info" Inline="true">@lot.provider?.name</MudText>
-                            <MudText Typo="Typo.body1"><b>Composicion:</b> @lot.composition?.Composition()</MudText>
-                            <MudText Typo="Typo.body1"><b>Stock:</b> @lot.stock</MudText>
-                            <MudText Typo="Typo.body1"><b>Venta:</b> @lot.sellingPrice C$</MudText>
-                            <MudText Typo="Typo.body1"><b>Compra:</b> @lot.purchasePrice C$</MudText>
-                            
-                            <MudText Typo="Typo.body1"> <b>Fecha Vencimiento:</b> </MudText>
-                            <MudText Typo="Typo.body1" Color="Color.Success">
-                                <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Small" /> @lot.expirationDate.ToString("dd/MM/yyyy")
-                            </MudText>
-                            @if (lot.consign)
-                            {
-                                <MudChip Icon="@Icons.Material.Filled.VerifiedUser" Color="Color.Dark">En consigna</MudChip>
-                            }
-                        </CardHeaderContent>
-                    </MudCardHeader>
-                </MudCard>
-            </MudItem>
-        }
+        <AuthorizeView Policy="InventoryRead">
+            <Authorized>
+                @foreach (var lot in lot_list)
+                {
+                    <MudItem xs="3">
+                        <MudCard Style="background-color: #F5F5F5">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.h6" Inline="true">Proveedor:</MudText>
+                                    <MudText Typo="Typo.h6" Color="Color.Info" Inline="true">@lot.provider?.name</MudText>
+                                    <MudText Typo="Typo.body1"><b>Composicion:</b> @lot.composition?.Composition()</MudText>
+                                    <MudText Typo="Typo.body1"><b>Stock:</b> @lot.stock</MudText>
+                                    <MudText Typo="Typo.body1"><b>Venta:</b> @lot.sellingPrice C$</MudText>
+                                    <MudText Typo="Typo.body1"><b>Compra:</b> @lot.purchasePrice C$</MudText>
+
+                                    <MudText Typo="Typo.body1"> <b>Fecha Vencimiento:</b> </MudText>
+                                    <MudText Typo="Typo.body1" Color="Color.Success">
+                                        <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Small" /> @lot.expirationDate.ToString("dd/MM/yyyy")
+                                    </MudText>
+                                    @if (lot.consign)
+                                    {
+                                        <MudChip Icon="@Icons.Material.Filled.VerifiedUser" Color="Color.Dark">En consigna</MudChip>
+                                    }
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                        </MudCard>
+                    </MudItem>
+                }
+            </Authorized>
+        </AuthorizeView>
+
+        
 
     </MudGrid>
 

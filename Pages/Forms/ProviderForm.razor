@@ -1,5 +1,6 @@
 ﻿@page "/proveedores/agregar"
 @page "/proveedores/editar/{id}"
+@attribute [Authorize(Policy = "ProviderWrite")]
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @layout MainLayout

@@ -1,5 +1,6 @@
 ﻿@page "/productos/agregar"
 @page "/productos/editar/{id}"
+@attribute [Authorize(Policy = "ProductWrite")]
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @layout MainLayout

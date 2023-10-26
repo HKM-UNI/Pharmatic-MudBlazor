@@ -1,4 +1,7 @@
-﻿using Pharmatic.DTOs;
+﻿using Blazored.LocalStorage;
+using Newtonsoft.Json.Linq;
+using Pharmatic.DTOs;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace Pharmatic.Services
@@ -7,9 +10,9 @@ namespace Pharmatic.Services
     {
         private readonly HttpClient _http;
 
-        public CategoryService(HttpClient http)
+        public CategoryService(HttpClient http, ILocalStorageService localStorage)
         {
-            _http = http;   
+            _http = http;
         }
 
         public async Task<List<CategoryDTO>> CategoryList()

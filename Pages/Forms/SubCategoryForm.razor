@@ -1,4 +1,5 @@
 ﻿@page "/metadata/subcategorias"
+@attribute [Authorize(Policy = "ProductRead")]
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
 @layout MainLayout
@@ -14,10 +15,16 @@
 
         <MudSpacer />
 
-        <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
+        <AuthorizeView Policy="ProductWrite">
+            <Authorized>
+                <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
                    Color="Color.Primary" OnClick="OpenAddDialog" Style="text-transform:none">
             Agregar
         </MudButton>
+            </Authorized>
+
+        </AuthorizeView>
+
     </MudAppBar>
     <MudGrid Class="pa-3" Spacing="1">
         @foreach (var subcat in cat_list)
@@ -30,17 +37,29 @@
 
                         </MudCardContent>
                         <MudCardActions>
-                            <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                            <AuthorizeView Policy="ProductWrite">
+                                <Authorized>
+                                    <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                                   Color="Color.Primary" OnClick="() => OpenEditDialog(subcat.name, subcat.subcategoryNo)"
+                                                   Icon="@Icons.Material.Filled.Edit" Class="mx-1">
+                                        Editar
+                                    </MudIconButton>
+                                </Authorized>
+
+                            </AuthorizeView>
+
+                            <AuthorizeView Policy="ProductDelete">
+                                <Authorized>
+                                    <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
                                            Color="Color.Error" OnClick="() => OpenDeleteDialog(subcat.name, subcat.subcategoryNo)"
                                            Icon="@Icons.Material.Filled.Delete" Class="mx-1">
                                 Eliminar
                             </MudIconButton>
+                                </Authorized>
 
-                            <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
-                                           Color="Color.Primary" OnClick="() => OpenEditDialog(subcat.name, subcat.subcategoryNo)"
-                                           Icon="@Icons.Material.Filled.Edit" Class="mx-1">
-                                Editar
-                            </MudIconButton>
+                            </AuthorizeView>
+
+                            
                         </MudCardActions>
                     </MudCardHeader>
                     
