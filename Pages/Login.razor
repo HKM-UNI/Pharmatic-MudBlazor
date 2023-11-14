@@ -1,10 +1,13 @@
 ﻿@page "/"
+@using Pharmatic.Services;
 @inject NavigationManager _navigationManager
 @inject AuthService _authService
 @layout LoginLayout
 @inject ISnackbar Snackbar
 @inject ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider _authState
+@inject UserService _userService
+@inject SharedData _data
 
 <MudPaper Class="px-4" Elevation="0" Square="true" Style="height:100%; display: flex; flex-direction: column; justify-content: center; width:100%">
     <EditForm Model="@loginUser" OnValidSubmit="OnValidSubmit" style="">
@@ -94,6 +97,12 @@
         }
     }
 
+    async Task SaveUserData()
+    {
+        var result = await _userService.CurrentUser();
+        _data.User = result!;
+    }
+
     private async Task OnValidSubmit()
     {
         disableButton = true;
@@ -113,6 +122,7 @@
         {
             await LocalStorage.SetItemAsync("token", jwt);
             await _authState.GetAuthenticationStateAsync();
+            await SaveUserData();
             Snackbar.Add($"Bienvenido {loginRequest.username}!", Severity.Success);
             _navigationManager.NavigateTo("/dashboard");
         }

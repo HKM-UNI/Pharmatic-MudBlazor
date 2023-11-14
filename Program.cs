@@ -77,5 +77,6 @@ builder.Services.AddAuthorizationCore(options =>
 builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddScoped<SharedData>();
+builder.Services.AddScoped<ScopeService>();
 
 await builder.Build().RunAsync();

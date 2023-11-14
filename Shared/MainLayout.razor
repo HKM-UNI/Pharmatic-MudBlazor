@@ -4,119 +4,136 @@
 @inject SharedData _data
 @inject ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider _authState
+@inject UserService _userService
 @using static CustomIcons
 @using Pharmatic.Services
+
 <link rel="stylesheet" href="/css/background.css?version=6" />
+<link rel="stylesheet" href="/css/style.css"/>
 
 <AuthorizeView>
     <Authorized>
+        <MudThemeProvider Theme="selectedTheme" />
+        <MudSnackbarProvider />
+        <MudDialogProvider FullWidth="true"
+                           DisableBackdropClick="true"
+                           Position="DialogPosition.Center"
+                           CloseOnEscapeKey="true" />
 
-<MudThemeProvider Theme="selectedTheme" />
-<MudSnackbarProvider />
-<MudDialogProvider FullWidth="true"
-                   DisableBackdropClick="true"
-                   Position="DialogPosition.Center"
-                   CloseOnEscapeKey="true" />
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-3">
+            <MudGrid Style="height:100vh;">
 
-<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-3">
-    <MudGrid Style="height:100vh;">
+                <MudBreakpointProvider>
+                    <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                        <MudItem lg="2" Style="height:100%;">
+                            <MudPaper Class="d-flex flex-column gap-4"
+                                      Elevation="0"
+                                      Style="background-color: white; height:100%; overflow-y:auto; overflow-x: hidden;">
 
-        <MudBreakpointProvider>
-            <MudHidden Breakpoint="Breakpoint.MdAndDown">
-                <MudItem lg="2" Style="height:100%;">
-                    <MudPaper Class="d-flex flex-column gap-4"
-                              Elevation="0"
-                              Style="background-color: white; height:100%; overflow-y:auto; overflow-x: hidden;">
+                                <DrawerContent />
 
-                        <DrawerContent />
+                            </MudPaper>
+                        </MudItem>
+                    </MudHidden>
+                </MudBreakpointProvider>
 
-                    </MudPaper>
-                </MudItem>
-            </MudHidden>
-        </MudBreakpointProvider>
+                <MudItem lg="10" md="12" sm="12" xs="12" Style="height:100%; width:100%;">
 
-        <MudItem lg="10" md="12" sm="12" xs="12" Style="height:100%; width:100%;">
+                    <MudPaper Class="d-flex flex-column gap-4" Elevation="0" 
+                            Style="background-color: rgba(231, 255, 255, 0.4); height:100%;">
+                        <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;" Dense="true">
 
-            <MudPaper Class="d-flex flex-column gap-4" Elevation="0" 
-                    Style="background-color: rgba(231, 255, 255, 0.4); height:100%;">
-                <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;" Dense="true">
+                            <MudBreakpointProvider>
+                                <MudHidden Breakpoint="Breakpoint.LgAndUp">
+                                    <MudIconButton Icon="@CustomIcons.Menu" Color="Color.Primary"
+                                        OnClick="OpenDrawer" Size="Size.Medium"/>
+                                </MudHidden>
+                            </MudBreakpointProvider>
 
-                    <MudBreakpointProvider>
-                        <MudHidden Breakpoint="Breakpoint.LgAndUp">
-                            <MudIconButton Icon="@CustomIcons.Menu" Color="Color.Primary"
-                                OnClick="OpenDrawer" Size="Size.Medium"/>
-                        </MudHidden>
-                    </MudBreakpointProvider>
+                            <MudBreadcrumbs Items="_data.Items" Separator=">"/>
 
-                    <MudBreadcrumbs Items="_data.Items" Separator=">"/>
+                            <MudSpacer />
 
-                    <MudSpacer />
+                            <MudIconButton Icon="@CustomIcons.Notification" Color="Color.Inherit" Size="Size.Medium" />
 
-                    <MudIconButton Icon="@CustomIcons.Notification" Color="Color.Inherit" Size="Size.Medium" />
+                            <MudMenu PositionAtCursor="true">
+                                <ActivatorContent>
+                                    <MudCard Style="background: inherit;" Elevation="0" Class="hover-card2">
 
-                    <MudMenu PositionAtCursor="true">
-                        <ActivatorContent>
-                            <MudCard Style="background: inherit;" Elevation="0" Class="hover-card2">
+                                        <MudCardHeader>
+                                            <CardHeaderAvatar>
+                                                <MudAvatar Size="Size.Medium" Image="@_data.User.imageUrl"></MudAvatar>
+                                            </CardHeaderAvatar>
 
-                                <MudCardHeader>
-                                    <CardHeaderAvatar>
-                                        <MudAvatar Color="Color.Secondary" Size="Size.Medium">R</MudAvatar>
-                                    </CardHeaderAvatar>
-
-                                    <CardHeaderContent>
-                                        <MudBreakpointProvider>
-                                            <MudHidden Breakpoint="Breakpoint.MdAndDown">
-                                                <MudText Typo="Typo.body2">Ricardo Montenegro</MudText>
-                                                <MudText Typo="Typo.body2">Tonny.n1105@gmail.com</MudText>
-                                            </MudHidden>
-                                        </MudBreakpointProvider>
+                                            <CardHeaderContent>
+                                                <MudBreakpointProvider>
+                                                    <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                                                        <MudText Typo="Typo.body2">@_data.User.username</MudText>
+                                                        <MudText Typo="Typo.body2">@_data.User.email</MudText>
+                                                    </MudHidden>
+                                                </MudBreakpointProvider>
                                         
-                                    </CardHeaderContent>
+                                            </CardHeaderContent>
 
-                                </MudCardHeader>
-                            </MudCard>
-                        </ActivatorContent>
+                                        </MudCardHeader>
+                                    </MudCard>
+                                </ActivatorContent>
 
-                        <ChildContent>
-                            <MudMenuItem>Profile</MudMenuItem>
-                            <MudMenuItem>My account</MudMenuItem>
-                            <MudMenuItem OnClick="CerrarSesion">Logout</MudMenuItem>
-                        </ChildContent>
-                    </MudMenu>
+                                <ChildContent>
+                                    <MudMenuItem>Profile</MudMenuItem>
+                                    <MudMenuItem>My account</MudMenuItem>
+                                    <MudMenuItem OnClick="CerrarSesion">Logout</MudMenuItem>
+                                </ChildContent>
+                            </MudMenu>
 
-                </MudAppBar>
+                        </MudAppBar>
 
-                <MudMainContent Class="pa-0" Style="border-radius: 15px; height: calc(100% - 90px);">
-                    @Body
-                </MudMainContent>
-            </MudPaper>
+                        <MudMainContent Class="pa-0" Style="border-radius: 15px; height: calc(100% - 90px);">
+                            @Body
+                        </MudMainContent>
+                    </MudPaper>
 
-        </MudItem>
+                </MudItem>
 
-    </MudGrid>  
-</MudContainer>
+            </MudGrid>  
+        </MudContainer>
 
-<MudDrawer @bind-Open="@open" Elevation="1" Variant="@DrawerVariant.Temporary">
-    <DrawerContent/>
-</MudDrawer>
+        <MudDrawer @bind-Open="@open" Elevation="1" Variant="@DrawerVariant.Temporary">
+            <DrawerContent/>
+        </MudDrawer>
+
     </Authorized>
-
+    
     <NotAuthorized>
         <RedirectToLogin/>
     </NotAuthorized>
 </AuthorizeView>
+
 @code {
     private MudTheme selectedTheme = CustomThemes.PharmaticThemeRounded;
+    private bool authenticated = false;
     string search_text = string.Empty;
     bool open;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
 
         _data.Items = new List<BreadcrumbItem>
         {
             new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home, disabled:true)
         };
+
+        var authenticationState = await _authState.GetAuthenticationStateAsync();
+        authenticated = authenticationState.User.Identity.IsAuthenticated;
+        
+        if(authenticated)
+            await UpdateUserData();
+    }
+
+    async Task UpdateUserData()
+    {
+        var result = await _userService.CurrentUser();
+        _data.User = result!;
     }
 
     private async void CerrarSesion()

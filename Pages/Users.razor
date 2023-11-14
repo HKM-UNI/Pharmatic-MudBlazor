@@ -27,12 +27,12 @@
         @foreach (var u in user_list)
         {
             <MudItem xl="4" lg="6" sm="6" xs="12">
-                <a href="/usuarios#"> @* /usuarios/editar/n *@
+                <a href="/usuarios/editar/@u.username">
                     <MudGrid Style="outline: 1px solid #E6E6E6; border-radius:24px;" Class="hover-card">
 
 
                         <MudItem xs="4">
-                            <MudImage Src="" Width="80" Height="80" Elevation="25" Class="rounded-lg ma-2" />
+                            <MudImage Src="@u.imageUrl" Width="90" Height="90" Elevation="25" Class="rounded-lg ma-2" />
                         </MudItem>
 
                         <MudItem xs="8">
@@ -111,6 +111,6 @@
         user_list = result!;
     }
 
-    private void AgregarClicked() => _navigationManager.NavigateTo("/usarios/agregar");
+    private void AgregarClicked() => _navigationManager.NavigateTo("/usuarios/agregar");
 
 }

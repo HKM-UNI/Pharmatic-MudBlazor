@@ -1,0 +1,238 @@
+﻿@page "/usuarios/agregar"
+@page "/usuarios/editar/{id}"
+@attribute [Authorize(Policy = "UserWrite")]
+@using Pharmatic.DTOs;
+@using Pharmatic.Services;
+@inject NavigationManager _navigationManager
+@inject SharedData _data
+@inject UserService _userService
+@inject ScopeService _scopeService
+
+<MudPaper Class="mx-2" Style="height:100%; overflow-y:auto; overflow-x: hidden; background-color:white;">
+    <MudAppBar Elevation="0" Fixed="false" Style="border-radius:24px; position: sticky; top: 0;" Class="pa-0 ma-0" Dense="true">
+
+        <MudText Typo="Typo.h6" Align="Align.Left" Color="Color.Dark" Margin="Margin.Dense">Formulario usuario</MudText>
+
+        <MudSpacer />
+
+        <MudButton Class="rounded-pill mx-2" ButtonType="ButtonType.Submit" Size="Size.Medium" Variant="Variant.Filled"
+                   Color="Color.Error" OnClick="OnCancelClicked" Style="text-transform:none">
+            Cancelar
+        </MudButton>
+
+        <MudButton Class="rounded-pill mx-2" ButtonType="ButtonType.Submit" Size="Size.Medium" Variant="Variant.Filled"
+                   Color="Color.Primary" OnClick="OnSubmitClicked" Style="text-transform:none">
+            @SubmitButtonLabel
+        </MudButton>
+    </MudAppBar>
+    <MudGrid Class="pa-5" Justify="Justify.SpaceAround">
+        <MudItem lg="5" md="5" sm="12" xs="12">
+            <MudTextField T="string" @bind-Value="username" Label="Nombre de usuario" Class="my-6" Variant="Variant.Outlined" Placeholder="Usuario"/>
+            <MudTextField T="string" @bind-Value="email" Label="Correo" Class="my-6" Variant="Variant.Outlined" Placeholder="correo@gmail.com"/>
+
+            <MudSelect T="string" @bind-Value="permissions" Label="Permisos" AnchorOrigin="Origin.BottomCenter" Class="my-6"
+                    Variant="Variant.Outlined" Placeholder="Selecciona un permiso">
+                
+                <MudSelectItem Value="@("Admin")" />
+                <MudSelectItem Value="@("Dependiente")" />
+                <MudSelectItem Value="@("Personalizado")" />
+            </MudSelect>
+        </MudItem>
+
+        <MudItem lg="5" md="5" sm="12" xs="12">
+            <MudCard Class="pa-3">
+                <MudCardMedia Image="@photoUrl" Style="background-size: contain; background-color: gray;" />
+
+                <MudFileUpload T="IBrowserFile" OnFilesChanged="OnInputFileChanged">
+                    <ButtonTemplate>
+                        <MudButton HtmlTag="label"
+                                   Variant="Variant.Filled"
+                                   Color="Color.Info"
+                                   Class="rounded-pill ma-2"
+                                   for="@context">
+                            Subir Foto
+                        </MudButton>
+                    </ButtonTemplate>
+                    <SelectedTemplate>
+                        <MudButton Class="rounded-pill ma-2" ButtonType="ButtonType.Submit"
+                                   Variant="Variant.Filled" Color="Color.Error" OnClick="ClearFile">
+                            Limpiar
+                        </MudButton>
+                        @if (photo != null)
+                        {
+                            <MudText>@context.Name</MudText>
+                        }
+                        else
+                        {
+                            <MudText>@SubmitPhotoLabel</MudText>
+                        }
+                    </SelectedTemplate>
+                </MudFileUpload>
+
+            </MudCard>
+        </MudItem>
+
+    </MudGrid>
+
+    <MudGrid Justify="Justify.SpaceAround">
+
+        <MudBreakpointProvider>
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudItem lg="1" md="2">
+                    <MudText Typo="Typo.body1" Style="font-weight:bolder;">Estado</MudText>
+                </MudItem>
+            </MudHidden>
+        </MudBreakpointProvider>
+        
+        <MudItem lg="1" md="3" xs="3">
+            <MudText Typo="Typo.body1" Style="font-weight:bolder;">Categoría</MudText>
+        </MudItem>
+
+        <MudBreakpointProvider>
+            <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                <MudItem lg="4">
+                    <MudText Typo="Typo.body1" Style="font-weight:bolder;">Descripción</MudText>
+                </MudItem>
+            </MudHidden>
+        </MudBreakpointProvider>
+
+        <MudItem lg="1" md="2" sm="2">
+            <MudText Typo="Typo.body1" Style="font-weight:bolder;">Lectura</MudText>
+        </MudItem>
+        <MudItem lg="1" md="2" sm="2">
+            <MudText Typo="Typo.body1" Style="font-weight:bolder;">Escritura</MudText>
+        </MudItem>
+        <MudItem lg="1" md="2" sm="2">
+            <MudText Typo="Typo.body1" Style="font-weight:bolder;">Eliminación</MudText>
+        </MudItem>
+
+        @foreach (var (scope, index) in _scopeService.GetScopes().Select((s, i) => (s, i)))
+        {
+            var toggleBackground = index % 2 == 0;
+
+            <MudItem xs="12">
+                <div style="background-color:@(toggleBackground ? "lavender" : "white");">
+                <MudGrid Justify="Justify.SpaceAround">
+
+                        <MudBreakpointProvider>
+                            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                                <MudItem lg="1" md="2">
+                                    <MudChip Variant="Variant.Text" Color="Color.Primary" Size="Size.Small">TuMamá</MudChip>
+                                </MudItem>
+                            </MudHidden>
+                        </MudBreakpointProvider>
+
+                    <MudItem lg="1" md="3" xs="3">
+                            <MudText Typo="Typo.body2">@scope.Category</MudText>
+                    </MudItem>
+
+                        <MudBreakpointProvider>
+                            <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                                <MudItem lg="4">
+                                    <MudText Typo="Typo.body2">@scope.Notes</MudText>
+                                </MudItem>
+                            </MudHidden>
+                        </MudBreakpointProvider>
+                    
+                    <MudItem lg="1" md="2" xs="2">
+                        <MudSwitch @bind-Checked="@read_switch" Color="Color.Primary" />
+                    </MudItem>
+
+                    <MudItem lg="1" md="2" xs="2">
+                        <MudSwitch @bind-Checked="@write_switch" Color="Color.Primary" />
+                    </MudItem>
+
+                    <MudItem lg="1" md="2" xs="2">
+                        <MudSwitch @bind-Checked="@delete_switch" Color="Color.Primary" />
+                    </MudItem>
+
+                </MudGrid>
+                </div>
+                
+            </MudItem>
+        }
+        
+    </MudGrid>
+
+</MudPaper>
+
+@code {
+    string username;
+    string email;
+    string permissions;
+
+    bool read_switch = false;
+    bool write_switch = false;
+    bool delete_switch = false;
+
+    private IBrowserFile? photo;
+    private string photoUrl = string.Empty;
+    private string photoB64 = string.Empty;
+
+    [Parameter]
+    public string Id { get; set; }
+    bool IsEditMode => !string.IsNullOrEmpty(Id);
+    string SubmitButtonLabel => IsEditMode ? "Editar" : "Guardar";
+    string SubmitPhotoLabel => IsEditMode ? "Al no subir foto se dejará la anterior" : "Sin foto";
+    string SubmitBreadCrumbLabel => IsEditMode ? "Editar usuario" : "Nuevo usuario";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Usuarios", href: "/usuarios"),
+            new BreadcrumbItem(SubmitBreadCrumbLabel, href: null, disabled:true),
+        };
+
+        if (IsEditMode)
+        {
+            UserDTO user_data = await _userService.GetUser(Id);
+            username = user_data.username;
+            email = user_data.email;
+            permissions = "Personalizado";
+        }
+
+        //Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+    }
+
+    private void OnCancelClicked()
+    {
+        _navigationManager.NavigateTo("/usuarios");
+    }
+
+    private async Task OnSubmitClicked()
+    {
+        
+    }
+
+    private async Task OnInputFileChanged(InputFileChangeEventArgs e)
+    {
+        photo = e.File;
+        photoB64 = await ConvertToB64(photo);
+        photoUrl = ConvertToUrl(photoB64);
+    }
+
+    private string ConvertToUrl(string base64)
+    {
+        var url = $"data:{photo?.ContentType};base64,{base64}";
+        return url;
+    }
+
+    private async Task<string> ConvertToB64(IBrowserFile file)
+    {
+        using var stream = file.OpenReadStream();
+        using var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+
+        return Convert.ToBase64String(memoryStream.ToArray());
+    }
+
+    private void ClearFile()
+    {
+        photo = null;
+        photoB64 = string.Empty;
+        photoUrl = string.Empty;
+    }
+
+}
