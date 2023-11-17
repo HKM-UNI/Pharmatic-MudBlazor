@@ -48,10 +48,21 @@
         public string Category { get; set; }
         public string Notes { get; set; }
         public string AccessLevel {  get; set; }
-
-        bool read = false;
-        bool write = false;
-        bool delete = false;
     }
 
+    public class ScopePermissions
+    {
+        public string AccessLevel { get; set; }
+        public bool read { get; set; }
+        public bool write { get; set; }
+        public bool delete { get; set; }
+
+        public ScopePermissions(string al)
+        {
+            this.AccessLevel = al;
+            read = false;
+            write = false;
+            delete = false;
+        }
+    }
 }

@@ -1,5 +1,5 @@
-﻿@page "/usuarios/agregar"
-@page "/usuarios/editar/{id}"
+﻿@page "/usuarios/crear"
+@page "/usuarios/editar/{username}"
 @attribute [Authorize(Policy = "UserWrite")]
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
@@ -7,6 +7,7 @@
 @inject SharedData _data
 @inject UserService _userService
 @inject ScopeService _scopeService
+@inject ISnackbar Snackbar
 
 <MudPaper Class="mx-2" Style="height:100%; overflow-y:auto; overflow-x: hidden; background-color:white;">
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius:24px; position: sticky; top: 0;" Class="pa-0 ma-0" Dense="true">
@@ -26,20 +27,28 @@
         </MudButton>
     </MudAppBar>
     <MudGrid Class="pa-5" Justify="Justify.SpaceAround">
-        <MudItem lg="5" md="5" sm="12" xs="12">
+        <MudItem lg="5" md="5" sm="6" xs="12">
             <MudTextField T="string" @bind-Value="username" Label="Nombre de usuario" Class="my-6" Variant="Variant.Outlined" Placeholder="Usuario"/>
             <MudTextField T="string" @bind-Value="email" Label="Correo" Class="my-6" Variant="Variant.Outlined" Placeholder="correo@gmail.com"/>
+            <MudTextField T="int?" @bind-Value="phone" Label="Teléfono" Class="my-6" Variant="Variant.Outlined" Placeholder="Número telefónico" />
+            
+            @if (!IsEditMode)
+            {
+                <MudTextField T="string" @bind-Value="password" Label="Contraseña" Class="my-6" Variant="Variant.Outlined" Placeholder="contraseña"
+                    InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+            }
 
             <MudSelect T="string" @bind-Value="permissions" Label="Permisos" AnchorOrigin="Origin.BottomCenter" Class="my-6"
                     Variant="Variant.Outlined" Placeholder="Selecciona un permiso">
                 
                 <MudSelectItem Value="@("Admin")" />
+                <MudSelectItem Value="@("Developer")" />
                 <MudSelectItem Value="@("Dependiente")" />
                 <MudSelectItem Value="@("Personalizado")" />
             </MudSelect>
         </MudItem>
 
-        <MudItem lg="5" md="5" sm="12" xs="12">
+        <MudItem lg="5" md="5" sm="6" xs="12">
             <MudCard Class="pa-3">
                 <MudCardMedia Image="@photoUrl" Style="background-size: contain; background-color: gray;" />
 
@@ -74,6 +83,10 @@
 
     </MudGrid>
 
+    @if (permissions == "Personalizado")
+    {
+        
+    
     <MudGrid Justify="Justify.SpaceAround">
 
         <MudBreakpointProvider>
@@ -106,7 +119,7 @@
             <MudText Typo="Typo.body1" Style="font-weight:bolder;">Eliminación</MudText>
         </MudItem>
 
-        @foreach (var (scope, index) in _scopeService.GetScopes().Select((s, i) => (s, i)))
+        @foreach (var (scope, index) in scope_list.Select((s, i) => (s, i)))
         {
             var toggleBackground = index % 2 == 0;
 
@@ -117,7 +130,18 @@
                         <MudBreakpointProvider>
                             <MudHidden Breakpoint="Breakpoint.SmAndDown">
                                 <MudItem lg="1" md="2">
-                                    <MudChip Variant="Variant.Text" Color="Color.Primary" Size="Size.Small">TuMamá</MudChip>
+                                    @if (permission_list[index].read && permission_list[index].write && permission_list[index].delete)
+                                    {
+                                        <MudChip Variant="Variant.Text" Color="Color.Primary" Size="Size.Small">Total</MudChip>
+                                    }
+                                    else if(permission_list[index].read || permission_list[index].write || permission_list[index].delete)
+                                    {
+                                        <MudChip Variant="Variant.Text" Color="Color.Dark" Size="Size.Small">Parcial</MudChip>
+                                    }
+                                    else
+                                    {
+                                        <MudChip Variant="Variant.Text" Color="Color.Error" Size="Size.Small">Nulo</MudChip>
+                                    }
                                 </MudItem>
                             </MudHidden>
                         </MudBreakpointProvider>
@@ -135,15 +159,15 @@
                         </MudBreakpointProvider>
                     
                     <MudItem lg="1" md="2" xs="2">
-                        <MudSwitch @bind-Checked="@read_switch" Color="Color.Primary" />
+                        <MudSwitch @bind-Checked="@permission_list[index].read" Color="Color.Primary" />
                     </MudItem>
 
                     <MudItem lg="1" md="2" xs="2">
-                        <MudSwitch @bind-Checked="@write_switch" Color="Color.Primary" />
+                            <MudSwitch @bind-Checked="@permission_list[index].write" Color="Color.Primary" />
                     </MudItem>
 
                     <MudItem lg="1" md="2" xs="2">
-                        <MudSwitch @bind-Checked="@delete_switch" Color="Color.Primary" />
+                            <MudSwitch @bind-Checked="@permission_list[index].delete" Color="Color.Primary" />
                     </MudItem>
 
                 </MudGrid>
@@ -153,31 +177,42 @@
         }
         
     </MudGrid>
-
+    }
 </MudPaper>
 
 @code {
+    List<Scope> scope_list = new List<Scope>();
+    List<ScopePermissions> permission_list = new List<ScopePermissions>();
+    List<RoleDTO> role_list = new List<RoleDTO>();
+
     string username;
     string email;
+    int? phone;
     string permissions;
+    string password;
 
-    bool read_switch = false;
-    bool write_switch = false;
-    bool delete_switch = false;
+    bool PasswordVisibility;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
     private IBrowserFile? photo;
     private string photoUrl = string.Empty;
     private string photoB64 = string.Empty;
 
     [Parameter]
-    public string Id { get; set; }
-    bool IsEditMode => !string.IsNullOrEmpty(Id);
-    string SubmitButtonLabel => IsEditMode ? "Editar" : "Guardar";
+    public string Username { get; set; }
+    bool IsEditMode => !string.IsNullOrEmpty(Username);
+    string SubmitButtonLabel => IsEditMode ? "Editar" : "Crear";
     string SubmitPhotoLabel => IsEditMode ? "Al no subir foto se dejará la anterior" : "Sin foto";
     string SubmitBreadCrumbLabel => IsEditMode ? "Editar usuario" : "Nuevo usuario";
 
     protected override async Task OnInitializedAsync()
     {
+        scope_list = _scopeService.GetScopes();
+        InitializePermissions();
+
+        role_list = await _userService.RoleList();
+
         _data.Items = new List<BreadcrumbItem>
         {
             new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
@@ -187,13 +222,20 @@
 
         if (IsEditMode)
         {
-            UserDTO user_data = await _userService.GetUser(Id);
+            UserDTO user_data = await _userService.GetUser(Username);
             username = user_data.username;
             email = user_data.email;
-            permissions = "Personalizado";
+            phone = user_data.phone;
+            if (user_data.role.roleName == "dependant")
+                permissions = "Dependiente";
+            else if (user_data.role.roleName == "admin")
+                permissions = "Admin";
+            else if (user_data.role.roleName == "developer")
+                permissions = "Developer";
+            else permissions = "Personalizado";
         }
 
-        //Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
     }
 
     private void OnCancelClicked()
@@ -203,7 +245,39 @@
 
     private async Task OnSubmitClicked()
     {
-        
+        if (!IsEditMode)
+        {
+            var user = await CreateUser();
+
+            if (user.id != null && user.id > 0)
+            {
+                if (!string.IsNullOrEmpty(photoB64)) await AddPhoto(user.username, photoB64);
+
+                Snackbar.Add("Usuario creado correctamente", Severity.Success);
+                _navigationManager.NavigateTo("/usuarios");
+            }
+            else Snackbar.Add("Error al crear usuario", Severity.Error);
+        }
+        else
+        {
+            var user = await EditUser();
+
+            if (user.id != null && user.id > 0)
+            {
+                Snackbar.Add("Usuario actualizado correctamente", Severity.Success);
+                _navigationManager.NavigateTo($"/usuarios");
+
+                bool photo_update = false;
+                if (!string.IsNullOrEmpty(photoB64))
+                {
+                    photo_update = await AddPhoto(user.username, photoB64);
+                }
+
+                if (photo_update) Snackbar.Add("Foto actualizada correctamente", Severity.Success);
+            }
+            else Snackbar.Add("Error al actualizar usuario", Severity.Error);
+        }
+
     }
 
     private async Task OnInputFileChanged(InputFileChangeEventArgs e)
@@ -228,11 +302,74 @@
         return Convert.ToBase64String(memoryStream.ToArray());
     }
 
+    public UserDTO SetUser()
+    {
+        UserDTO user = new UserDTO();
+
+        user.username = username;
+        user.password = password;
+        user.email = email;
+        user.phone = phone;
+        user.pharmacistCode = "PH3";
+        if (permissions == "Personalizado" || permissions == "Dependiente")
+            user.role = role_list.FirstOrDefault(role => role.roleName == "dependant");
+        else
+            user.role = role_list.FirstOrDefault(role => role.roleName == permissions.ToLower());
+
+        return user;
+    }
+
+    private async Task<UserDTO> CreateUser()
+    {
+        UserDTO new_user = SetUser();
+
+        var result = await _userService.CreateUser(new_user);
+        return result;
+    }
+
+    private async Task<UserDTO> EditUser()
+    {
+        UserDTO updated_user = SetUser();
+
+        var result = await _userService.EditUser(updated_user);
+        return result;
+    }
+
+    private async Task<bool> AddPhoto(string username, string photo64)
+    {
+        var result = await _userService.AddPhoto(username, photo.Name, photo.ContentType, photoB64);
+        return result;
+    }
+
     private void ClearFile()
     {
         photo = null;
         photoB64 = string.Empty;
         photoUrl = string.Empty;
+    }
+
+    public void InitializePermissions()
+    {
+        foreach (var s in scope_list)
+        {
+            permission_list.Add(new ScopePermissions(s.AccessLevel));
+        }
+    }
+
+    void TogglePasswordVisibility()
+    {
+        @if (PasswordVisibility)
+        {
+            PasswordVisibility = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            PasswordVisibility = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
     }
 
 }

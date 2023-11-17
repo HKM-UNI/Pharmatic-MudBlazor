@@ -4,7 +4,6 @@
 @inject SharedData _data
 @inject ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider _authState
-@inject UserService _userService
 @using static CustomIcons
 @using Pharmatic.Services
 
@@ -122,18 +121,6 @@
         {
             new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home, disabled:true)
         };
-
-        var authenticationState = await _authState.GetAuthenticationStateAsync();
-        authenticated = authenticationState.User.Identity.IsAuthenticated;
-        
-        if(authenticated)
-            await UpdateUserData();
-    }
-
-    async Task UpdateUserData()
-    {
-        var result = await _userService.CurrentUser();
-        _data.User = result!;
     }
 
     private async void CerrarSesion()

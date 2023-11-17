@@ -2,6 +2,7 @@
 using Pharmatic.DTOs;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 
 namespace Pharmatic.Services
 {
@@ -46,46 +47,73 @@ namespace Pharmatic.Services
             return result!;
         }
 
-        //    public async Task<ProductDTO> CreateProduct(ProductDTO new_product)
-        //    {
-        //        await SetTokenAsync();
-        //        var result = await _http.PostAsJsonAsync($"http://localhost:{port}/api/products/create", new_product);
-        //        var response = await result.Content.ReadFromJsonAsync<ProductDTO>();
-        //        return response!;
-        //    }
+        public async Task<List<ScopeDTO>> GetUserPermissions(string username)
+        {
+            var url = $"http://localhost:{port}/api/users/permissions?username={username}";
+            await SetTokenAsync();
+            var result = await _http.GetFromJsonAsync<List<ScopeDTO>>(url);
+            return result!;
+        }
 
-        //    public async Task<ProductDTO> EditProduct(int id, ProductDTO product)
-        //    {
-        //        await SetTokenAsync();
-        //        var result = await _http.PatchAsJsonAsync($"http://localhost:{port}/api/products/{id}", product);
-        //        var response = await result.Content.ReadFromJsonAsync<ProductDTO>();
-        //        return response!;
-        //    }
+        public async Task<UserDTO> CreateUser(UserDTO new_user)
+        {
+            await SetTokenAsync();
 
-        //    public async Task<bool> AddPhoto(string id, string fileName, string fileType, string base64Image)
-        //    {
-        //        await SetTokenAsync();
-        //        var imageBytes = Convert.FromBase64String(base64Image);
+            string jsonRequestBody = System.Text.Json.JsonSerializer.Serialize(new_user);
+            Console.WriteLine($"JSON enviado: {jsonRequestBody}");
 
-        //        using (var content = new MultipartFormDataContent())
-        //        {
-        //            var fileContent = new ByteArrayContent(imageBytes);
-        //            fileContent.Headers.ContentType = new MediaTypeHeaderValue(fileType);
+            var result = await _http.PostAsJsonAsync($"http://localhost:{port}/api/users/create", new_user);
+            var response = await result.Content.ReadFromJsonAsync<UserDTO>();
+            return response!;
+        }
 
-        //            content.Add(fileContent, "image", fileName);
+        public async Task<UserDTO> EditUser(UserDTO user)
+        {
+            await SetTokenAsync();
+            var result = await _http.PatchAsJsonAsync($"http://localhost:{port}/api/users/{user.username}", user);
+            var response = await result.Content.ReadFromJsonAsync<UserDTO>();
+            return response!;
+        }
 
-        //            var result = await _http.PutAsync($"http://localhost:{port}/api/products/{id}/image", content);
+        public async Task<bool> SetUserPermissions(string username, List<ScopeDTO> scopes)
+        {
+            await SetTokenAsync();
+            var result = await _http.PatchAsJsonAsync($"http://localhost:{port}/api/users/{username}/permissions", scopes);
+            return result.IsSuccessStatusCode;
+        }
 
-        //            return result.IsSuccessStatusCode;
-        //        }
-        //    }
+        public async Task<bool> AddPhoto(string username, string fileName, string fileType, string base64Image)
+        {
+            await SetTokenAsync();
+            var imageBytes = Convert.FromBase64String(base64Image);
 
-        //    public async Task<bool> DeleteProduct(int id)
-        //    {
-        //        await SetTokenAsync();
-        //        var url = $"http://localhost:{port}/api/products/{id}";
-        //        var response = await _http.DeleteAsync(url);
-        //        return response.IsSuccessStatusCode;
-        //    }
+            using (var content = new MultipartFormDataContent())
+            {
+                var fileContent = new ByteArrayContent(imageBytes);
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(fileType);
+
+                content.Add(fileContent, "image", fileName);
+
+                var result = await _http.PutAsync($"http://localhost:{port}/api/users/{username}/image", content);
+
+                return result.IsSuccessStatusCode;
+            }
+        }
+
+        public async Task<bool> DeleteUser(string username)
+        {
+            await SetTokenAsync();
+            var url = $"http://localhost:{port}/api/users/{username}";
+            var response = await _http.DeleteAsync(url);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<RoleDTO>> RoleList()
+        {
+            var url = $"http://localhost:{port}/api/users/roles";
+            await SetTokenAsync();
+            var result = await _http.GetFromJsonAsync<List<RoleDTO>>(url);
+            return result!;
+        }
     }
 }

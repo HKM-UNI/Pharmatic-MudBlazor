@@ -16,8 +16,8 @@
         <AuthorizeView Policy="UserWrite">
             <Authorized>
                 <MudButton Class="rounded-pill" Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Medium"
-                           Color="Color.Primary" OnClick="AgregarClicked" Style="text-transform:none">
-                    Agregar
+                           Color="Color.Primary" OnClick="CrearClicked" Style="text-transform:none">
+                    Crear
                 </MudButton>
             </Authorized>
         </AuthorizeView>
@@ -111,6 +111,6 @@
         user_list = result!;
     }
 
-    private void AgregarClicked() => _navigationManager.NavigateTo("/usuarios/agregar");
+    private void CrearClicked() => _navigationManager.NavigateTo("/usuarios/crear");
 
 }
