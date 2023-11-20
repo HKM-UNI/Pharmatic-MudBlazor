@@ -1,68 +1,73 @@
-﻿namespace Pharmatic.Services
+﻿using Blazored.LocalStorage;
+using Pharmatic.DTOs;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+
+namespace Pharmatic.Services
 {
-    public class ScopeService
+    public class ScopeService : Global
     {
-        private static List<Scope> predefinedScopes = new List<Scope>
-    {
-        new Scope { Category = "Providers", 
-                    Notes = "Manejo de proveedores en las facturas de compra de manera opcional y de manera requerida en facturas de devolución.", 
-                    AccessLevel = "provider" },
-
-        new Scope { Category = "Customers", 
-                    Notes = "Manejo de clientes regulares en las facturas de venta de manera opcional." ,
-                    AccessLevel = "customer" },
-
-        new Scope { Category = "Products", 
-                    Notes = "Manejo de los productos y sus propiedades." ,
-                    AccessLevel = "product" },
-
-        new Scope { Category = "Lots", 
-                    Notes = "Manejo del inventario." ,
-                    AccessLevel = "inventory" },
-
-        new Scope { Category = "Sales Invoice", 
-                    Notes = "Factura de venta." ,
-                    AccessLevel = "sales" },
-
-        new Scope { Category = "Purchase Invoice", 
-                    Notes = "Factura de compra." ,
-                    AccessLevel = "purchase" },
-
-        new Scope { Category = "Return Invoice", 
-                    Notes = "Factura de devolución." ,
-                    AccessLevel = "returns" },
-
-        new Scope { Category = "Users",
-                    Notes = "Administración de usuarios." ,
-                    AccessLevel = "user" },
-    };
-
-        public List<Scope> GetScopes()
+        private readonly HttpClient _http;
+        private readonly ILocalStorageService _localStorage;
+        public ScopeService(HttpClient http, ILocalStorageService localStorage)
         {
-            return predefinedScopes;
+            _http = http;
+            _localStorage = localStorage;
         }
-    }
 
-    public class Scope
-    {
-        public string Category { get; set; }
-        public string Notes { get; set; }
-        public string AccessLevel {  get; set; }
-    }
-
-    public class ScopePermissions
-    {
-        public string AccessLevel { get; set; }
-        public bool read { get; set; }
-        public bool write { get; set; }
-        public bool delete { get; set; }
-
-        public ScopePermissions(string al)
+        private async Task SetTokenAsync()
         {
-            this.AccessLevel = al;
-            read = false;
-            write = false;
-            delete = false;
+            string token = await _localStorage.GetItemAsStringAsync("token");
+            if (token != null)
+                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Trim('"'));
+        }
+
+        public async Task<List<PermissionCategoryDTO>> GetPermissionCategories()
+        {
+            var url = $"http://localhost:{port}/api/users/permission_categories";
+            await SetTokenAsync();
+            var result = await _http.GetFromJsonAsync<List<PermissionCategoryDTO>>(url);
+            return result!;
+        }
+
+        public async Task<List<ScopeDTO>> GetScopes()
+        {
+            var url = $"http://localhost:{port}/api/users/permissions";
+            await SetTokenAsync();
+            var result = await _http.GetFromJsonAsync<List<ScopeDTO>>(url);
+            return result!;
+        }
+
+        public async Task<List<ScopeDTO>> GetUserScopes(string username)
+        {
+            var url = $"http://localhost:{port}/api/users/permissions?username={username}";
+            await SetTokenAsync();
+            var result = await _http.GetFromJsonAsync<List<ScopeDTO>>(url);
+            return result!;
+        }
+
+        public async Task<List<ScopeDTO>> GetRoleScopes(string role)
+        {
+            var url = $"http://localhost:{port}/api/users/permissions?role_name={role}";
+            await SetTokenAsync();
+            var result = await _http.GetFromJsonAsync<List<ScopeDTO>>(url);
+            return result!;
+        }
+
+        public async Task<List<ScopeDTO>> GetUserPermissions(string username)
+        {
+            var url = $"http://localhost:{port}/api/users/permissions?username={username}";
+            await SetTokenAsync();
+            var result = await _http.GetFromJsonAsync<List<ScopeDTO>>(url);
+            return result!;
+        }
+
+        public async Task<bool> SetUserScopes(string username, List<ScopeDTO> scopes)
+        {
+            await SetTokenAsync();
+
+            var result = await _http.PatchAsJsonAsync($"http://localhost:{port}/api/users/{username}/permissions", scopes);
+            return result.IsSuccessStatusCode;
         }
     }
 }

@@ -1,7 +1,10 @@
 ﻿using Blazored.LocalStorage;
 using Pharmatic.DTOs;
+using Pharmatic.Pages;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Pharmatic.Services
@@ -47,32 +50,36 @@ namespace Pharmatic.Services
             return result!;
         }
 
-        public async Task<List<ScopeDTO>> GetUserPermissions(string username)
-        {
-            var url = $"http://localhost:{port}/api/users/permissions?username={username}";
-            await SetTokenAsync();
-            var result = await _http.GetFromJsonAsync<List<ScopeDTO>>(url);
-            return result!;
-        }
-
         public async Task<UserDTO> CreateUser(UserDTO new_user)
         {
             await SetTokenAsync();
-
-            string jsonRequestBody = System.Text.Json.JsonSerializer.Serialize(new_user);
-            Console.WriteLine($"JSON enviado: {jsonRequestBody}");
 
             var result = await _http.PostAsJsonAsync($"http://localhost:{port}/api/users/create", new_user);
             var response = await result.Content.ReadFromJsonAsync<UserDTO>();
             return response!;
         }
 
-        public async Task<UserDTO> EditUser(UserDTO user)
+        public async Task<UserDTO> EditUser(string username, UserDTO user)
         {
             await SetTokenAsync();
-            var result = await _http.PatchAsJsonAsync($"http://localhost:{port}/api/users/{user.username}", user);
+
+            var result = await _http.PatchAsJsonAsync($"http://localhost:{port}/api/users/{username}", user);
             var response = await result.Content.ReadFromJsonAsync<UserDTO>();
             return response!;
+        }
+
+        public async Task<bool> NewPassword(string username, string password)
+        {
+            await SetTokenAsync();
+            var passwordData = new Dictionary<string, string>
+            {
+                { "newPassword", password }
+            };
+
+            var json = new StringContent(JsonSerializer.Serialize(passwordData), Encoding.UTF8, "application/json");
+
+            var result = await _http.PutAsync($"http://localhost:{port}/api/users/{username}/update_password", json);
+            return result.IsSuccessStatusCode;
         }
 
         public async Task<bool> SetUserPermissions(string username, List<ScopeDTO> scopes)

@@ -2,7 +2,8 @@
 {
     public class ScopeDTO
     {
-        int id;
-        string scope;
+        public int id {  get; set; }
+        public string scope { get; set; }
+        public int categoryId { get; set; }
     }
 }

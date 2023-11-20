@@ -16,6 +16,14 @@
 
         <MudSpacer />
 
+        @if (IsEditMode)
+        {
+            <MudButton Class="rounded-pill mx-2" ButtonType="ButtonType.Submit" Size="Size.Medium" Variant="Variant.Filled"
+                       Color="Color.Info" OnClick="OpenEditDialog" Style="text-transform:none">
+                Cambiar contraseña
+            </MudButton>
+        }
+
         <MudButton Class="rounded-pill mx-2" ButtonType="ButtonType.Submit" Size="Size.Medium" Variant="Variant.Filled"
                    Color="Color.Error" OnClick="OnCancelClicked" Style="text-transform:none">
             Cancelar
@@ -34,13 +42,12 @@
             
             @if (!IsEditMode)
             {
-                <MudTextField T="string" @bind-Value="password" Label="Contraseña" Class="my-6" Variant="Variant.Outlined" Placeholder="contraseña"
+                <MudTextField T="string" @bind-Value="password" Label="Contraseña" Class="my-6" Variant="Variant.Outlined" Placeholder="********"
                     InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
             }
 
-            <MudSelect T="string" @bind-Value="permissions" Label="Permisos" AnchorOrigin="Origin.BottomCenter" Class="my-6"
-                    Variant="Variant.Outlined" Placeholder="Selecciona un permiso">
-                
+            <MudSelect T="string" Label="Permisos" AnchorOrigin="Origin.BottomCenter" Class="my-6" @bind-Value="selectedRole"
+                    Variant="Variant.Outlined" Placeholder="Selecciona un permiso"  @bind-Value:after="SelectChanged">
                 <MudSelectItem Value="@("Admin")" />
                 <MudSelectItem Value="@("Developer")" />
                 <MudSelectItem Value="@("Dependiente")" />
@@ -82,11 +89,7 @@
         </MudItem>
 
     </MudGrid>
-
-    @if (permissions == "Personalizado")
-    {
         
-    
     <MudGrid Justify="Justify.SpaceAround">
 
         <MudBreakpointProvider>
@@ -119,55 +122,58 @@
             <MudText Typo="Typo.body1" Style="font-weight:bolder;">Eliminación</MudText>
         </MudItem>
 
-        @foreach (var (scope, index) in scope_list.Select((s, i) => (s, i)))
+        @foreach (var perm in permission_list)
         {
-            var toggleBackground = index % 2 == 0;
+            var toggleBackground = perm.id % 2 == 0;
 
             <MudItem xs="12">
-                <div style="background-color:@(toggleBackground ? "lavender" : "white");">
+                <div style="background-color:@(toggleBackground ? "white" : "lavender");">
                 <MudGrid Justify="Justify.SpaceAround">
 
                         <MudBreakpointProvider>
                             <MudHidden Breakpoint="Breakpoint.SmAndDown">
                                 <MudItem lg="1" md="2">
-                                    @if (permission_list[index].read && permission_list[index].write && permission_list[index].delete)
+                                    @switch (MudChipStatus(perm.id))
                                     {
-                                        <MudChip Variant="Variant.Text" Color="Color.Primary" Size="Size.Small">Total</MudChip>
-                                    }
-                                    else if(permission_list[index].read || permission_list[index].write || permission_list[index].delete)
-                                    {
-                                        <MudChip Variant="Variant.Text" Color="Color.Dark" Size="Size.Small">Parcial</MudChip>
-                                    }
-                                    else
-                                    {
-                                        <MudChip Variant="Variant.Text" Color="Color.Error" Size="Size.Small">Nulo</MudChip>
+                                        case 3:
+                                            <MudChip Variant="Variant.Text" Color="Color.Primary" Size="Size.Small">Total</MudChip>
+                                            break;
+
+                                        case 0:
+                                            <MudChip Variant="Variant.Text" Color="Color.Error" Size="Size.Small">Nulo</MudChip>
+                                            break;
+                                            
+                                        default:
+                                            <MudChip Variant="Variant.Text" Color="Color.Dark" Size="Size.Small">Parcial</MudChip>
+                                            break;
+
                                     }
                                 </MudItem>
                             </MudHidden>
                         </MudBreakpointProvider>
 
                     <MudItem lg="1" md="3" xs="3">
-                            <MudText Typo="Typo.body2">@scope.Category</MudText>
+                            <MudText Typo="Typo.body2">@perm.categoryName</MudText>
                     </MudItem>
 
                         <MudBreakpointProvider>
                             <MudHidden Breakpoint="Breakpoint.MdAndDown">
                                 <MudItem lg="4">
-                                    <MudText Typo="Typo.body2">@scope.Notes</MudText>
+                                    <MudText Typo="Typo.body2">@perm.description</MudText>
                                 </MudItem>
                             </MudHidden>
                         </MudBreakpointProvider>
                     
                     <MudItem lg="1" md="2" xs="2">
-                        <MudSwitch @bind-Checked="@permission_list[index].read" Color="Color.Primary" />
+                            <MudSwitch T="bool" @bind-Checked="@switchesStatus[ScopeId(perm.id, "read")]" Color="Color.Primary" @bind-Checked:after="SwitchChanged"/>
                     </MudItem>
 
                     <MudItem lg="1" md="2" xs="2">
-                            <MudSwitch @bind-Checked="@permission_list[index].write" Color="Color.Primary" />
+                            <MudSwitch T="bool" @bind-Checked="@switchesStatus[ScopeId(perm.id, "write")]" Color="Color.Primary" @bind-Checked:after="SwitchChanged" />
                     </MudItem>
 
                     <MudItem lg="1" md="2" xs="2">
-                            <MudSwitch @bind-Checked="@permission_list[index].delete" Color="Color.Primary" />
+                            <MudSwitch T="bool" @bind-Checked="@switchesStatus[ScopeId(perm.id, "delete")]" Color="Color.Primary" @bind-Checked:after="SwitchChanged" />
                     </MudItem>
 
                 </MudGrid>
@@ -177,18 +183,40 @@
         }
         
     </MudGrid>
-    }
+    
 </MudPaper>
 
+<MudDialog @bind-IsVisible="edit_visible">
+    <TitleContent>
+        <MudText Typo="Typo.h4">
+            Cambiar contraseña 
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField T="string" @bind-Value="password" Label="Contraseña" Class="my-6" Variant="Variant.Outlined" Placeholder="********"
+                      InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => CloseEditDialog(true)" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => CloseEditDialog(false)" Class="px-10">Aceptar</MudButton>
+    </DialogActions>
+</MudDialog>
+
 @code {
-    List<Scope> scope_list = new List<Scope>();
-    List<ScopePermissions> permission_list = new List<ScopePermissions>();
+    List<ScopeDTO> scope_list = new List<ScopeDTO>();
+    List<PermissionCategoryDTO> permission_list = new List<PermissionCategoryDTO>();
     List<RoleDTO> role_list = new List<RoleDTO>();
+    Dictionary<int, bool> switchesStatus = new Dictionary<int, bool>();
+
+    List<ScopeDTO> dev_scopes = new List<ScopeDTO>();
+    List<ScopeDTO> admin_scopes = new List<ScopeDTO>();
+    List<ScopeDTO> dep_scopes = new List<ScopeDTO>();
+    List<ScopeDTO> user_scopes = new List<ScopeDTO>();
+    List<ScopeDTO> selected_scopes = new List<ScopeDTO>();
 
     string username;
     string email;
     int? phone;
-    string permissions;
     string password;
 
     bool PasswordVisibility;
@@ -206,12 +234,49 @@
     string SubmitPhotoLabel => IsEditMode ? "Al no subir foto se dejará la anterior" : "Sin foto";
     string SubmitBreadCrumbLabel => IsEditMode ? "Editar usuario" : "Nuevo usuario";
 
+    public void SwitchChanged() => selectedRole = "Personalizado"; 
+
+    public void GenerateSwitchesValues()
+    { 
+        foreach(var scope in scope_list) switchesStatus.Add(scope.id, false);  
+    }
+
+    public int MudChipStatus(int category)
+    {
+        int counter = 0;
+        var scopes = scope_list.Where(scope => scope.categoryId == category).ToList();
+        foreach(var s in scopes) if (switchesStatus[s.id]) counter++;
+        return counter;
+    }
+
+
+    public int ScopeId(int category, string perm)
+    {
+        int id = scope_list.Where(scope => scope.categoryId == category).ToList()
+        .FirstOrDefault(scope => scope.scope.Contains(perm)).id;
+
+        return id;
+    }
+
+    private bool edit_visible;
+    private void OpenEditDialog() => edit_visible = true;
+    private void CloseEditDialog(bool cancel)
+    {
+        edit_visible = false;
+        if(cancel) password = string.Empty;
+        else Snackbar.Add("La contraseña cambiará al finalizar", Severity.Warning);
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        scope_list = _scopeService.GetScopes();
-        InitializePermissions();
-
+        permission_list = await _scopeService.GetPermissionCategories();
         role_list = await _userService.RoleList();
+        scope_list = await _scopeService.GetScopes();
+        GenerateSwitchesValues();
+
+        dev_scopes = await _scopeService.GetRoleScopes("developer");
+        admin_scopes = await _scopeService.GetRoleScopes("admin");
+        dep_scopes = await _scopeService.GetRoleScopes("dependant");
 
         _data.Items = new List<BreadcrumbItem>
         {
@@ -222,18 +287,22 @@
 
         if (IsEditMode)
         {
+            user_scopes = await _scopeService.GetUserScopes(Username);
             UserDTO user_data = await _userService.GetUser(Username);
             username = user_data.username;
             email = user_data.email;
             phone = user_data.phone;
             if (user_data.role.roleName == "dependant")
-                permissions = "Dependiente";
+                selectedRole = "Dependiente";
             else if (user_data.role.roleName == "admin")
-                permissions = "Admin";
+                selectedRole = "Admin";
             else if (user_data.role.roleName == "developer")
-                permissions = "Developer";
-            else permissions = "Personalizado";
+                selectedRole = "Developer";
+            else selectedRole = "Personalizado";
+
+            foreach (var s in user_scopes) switchesStatus[s.id] = true;
         }
+        else selectedRole = "Personalizado";
 
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
     }
@@ -253,6 +322,9 @@
             {
                 if (!string.IsNullOrEmpty(photoB64)) await AddPhoto(user.username, photoB64);
 
+                LoadSelectedScopes();
+                var result = await _scopeService.SetUserScopes(user.username, selected_scopes);
+
                 Snackbar.Add("Usuario creado correctamente", Severity.Success);
                 _navigationManager.NavigateTo("/usuarios");
             }
@@ -264,8 +336,8 @@
 
             if (user.id != null && user.id > 0)
             {
-                Snackbar.Add("Usuario actualizado correctamente", Severity.Success);
-                _navigationManager.NavigateTo($"/usuarios");
+                LoadSelectedScopes();
+                var result = await _scopeService.SetUserScopes(user.username, selected_scopes);
 
                 bool photo_update = false;
                 if (!string.IsNullOrEmpty(photoB64))
@@ -274,6 +346,9 @@
                 }
 
                 if (photo_update) Snackbar.Add("Foto actualizada correctamente", Severity.Success);
+
+                Snackbar.Add("Usuario actualizado correctamente", Severity.Success);
+                _navigationManager.NavigateTo($"/usuarios");
             }
             else Snackbar.Add("Error al actualizar usuario", Severity.Error);
         }
@@ -307,14 +382,21 @@
         UserDTO user = new UserDTO();
 
         user.username = username;
-        user.password = password;
         user.email = email;
         user.phone = phone;
-        user.pharmacistCode = "PH3";
-        if (permissions == "Personalizado" || permissions == "Dependiente")
+        user.password = password;
+
+        // Semilla para el generador de números aleatorios
+        Random random = new Random();
+        // Generar un número aleatorio de 6 dígitos
+        int numeroAleatorio = GenerarNumeroAleatorio(random, 100000, 999999);
+        static int GenerarNumeroAleatorio(Random random, int min, int max) => random.Next(min, max + 1);
+
+        user.pharmacistCode = Convert.ToString(numeroAleatorio);
+        if (selectedRole == "Personalizado" || selectedRole == "Dependiente")
             user.role = role_list.FirstOrDefault(role => role.roleName == "dependant");
         else
-            user.role = role_list.FirstOrDefault(role => role.roleName == permissions.ToLower());
+            user.role = role_list.FirstOrDefault(role => role.roleName == selectedRole.ToLower());
 
         return user;
     }
@@ -331,7 +413,10 @@
     {
         UserDTO updated_user = SetUser();
 
-        var result = await _userService.EditUser(updated_user);
+        if (string.IsNullOrEmpty(password)) updated_user.password = null;
+        else await _userService.NewPassword(Username, password);
+
+        var result = await _userService.EditUser(Username, updated_user);
         return result;
     }
 
@@ -348,14 +433,6 @@
         photoUrl = string.Empty;
     }
 
-    public void InitializePermissions()
-    {
-        foreach (var s in scope_list)
-        {
-            permission_list.Add(new ScopePermissions(s.AccessLevel));
-        }
-    }
-
     void TogglePasswordVisibility()
     {
         @if (PasswordVisibility)
@@ -369,6 +446,40 @@
             PasswordVisibility = true;
             PasswordInputIcon = Icons.Material.Filled.Visibility;
             PasswordInput = InputType.Text;
+        }
+    }
+
+    private string selectedRole { get; set; }
+
+    public void SelectChanged()
+    {
+        if (selectedRole == "Admin") foreach (var s in admin_scopes) switchesStatus[s.id] = true;
+
+        else if (selectedRole == "Developer") foreach (var s in dev_scopes) switchesStatus[s.id] = true;
+
+        else if (selectedRole == "Dependiente")
+        {
+            foreach (var key in switchesStatus.Keys.ToList()) switchesStatus[key] = false;
+            foreach (var s in dep_scopes) switchesStatus[s.id] = true;
+        }
+
+    }
+
+    private void LoadSelectedScopes()
+    {
+        selected_scopes.Clear();
+
+        foreach (var kvp in switchesStatus)
+        {
+            int id = kvp.Key;
+            bool status = kvp.Value;
+
+            ScopeDTO scope = scope_list.Find(s => s.id == id);
+
+            if (scope != null && status)
+            {
+                selected_scopes.Add(scope);
+            }
         }
     }
 
