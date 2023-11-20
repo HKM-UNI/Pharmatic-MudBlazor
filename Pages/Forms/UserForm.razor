@@ -19,7 +19,7 @@
         @if (IsEditMode)
         {
             <MudButton Class="rounded-pill mx-2" ButtonType="ButtonType.Submit" Size="Size.Medium" Variant="Variant.Filled"
-                       Color="Color.Info" OnClick="OpenEditDialog" Style="text-transform:none">
+                       Color="Color.Info" OnClick="OpenPasswordDialog" Style="text-transform:none">
                 Cambiar contraseña
             </MudButton>
         }
@@ -197,8 +197,8 @@
                       InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => CloseEditDialog(true)" Class="px-10">Cancelar</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => CloseEditDialog(false)" Class="px-10">Aceptar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => ClosePasswordDialog(true)" Class="px-10">Cancelar</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => ClosePasswordDialog(false)" Class="px-10">Aceptar</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -259,12 +259,34 @@
     }
 
     private bool edit_visible;
-    private void OpenEditDialog() => edit_visible = true;
-    private void CloseEditDialog(bool cancel)
+    private void OpenPasswordDialog() => edit_visible = true;
+    private async Task ClosePasswordDialog(bool cancel)
     {
-        edit_visible = false;
-        if(cancel) password = string.Empty;
-        else Snackbar.Add("La contraseña cambiará al finalizar", Severity.Warning);
+        if(cancel)
+        {
+            password = string.Empty;
+
+        }
+        else
+        {
+            if (!String.IsNullOrEmpty(password))
+            {
+                var success = await _userService.NewPassword(Username, password);
+                if (success)
+                {
+                    edit_visible = false;
+                    Snackbar.Add("Contraseña cambiada correctamente", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Error al cambiar contraseña", Severity.Error);
+                    edit_visible = false;
+                }
+            }
+            else Snackbar.Add("Escribe una contraseña!", Severity.Error);
+            
+        }
+        
     }
 
     protected override async Task OnInitializedAsync()
@@ -393,8 +415,10 @@
         static int GenerarNumeroAleatorio(Random random, int min, int max) => random.Next(min, max + 1);
 
         user.pharmacistCode = Convert.ToString(numeroAleatorio);
-        if (selectedRole == "Personalizado" || selectedRole == "Dependiente")
+        if (selectedRole == "Dependiente")
             user.role = role_list.FirstOrDefault(role => role.roleName == "dependant");
+        else if (selectedRole == "Personalizado")
+            user.role = role_list.FirstOrDefault(role => role.roleName == "custom");
         else
             user.role = role_list.FirstOrDefault(role => role.roleName == selectedRole.ToLower());
 
@@ -412,9 +436,6 @@
     private async Task<UserDTO> EditUser()
     {
         UserDTO updated_user = SetUser();
-
-        if (string.IsNullOrEmpty(password)) updated_user.password = null;
-        else await _userService.NewPassword(Username, password);
 
         var result = await _userService.EditUser(Username, updated_user);
         return result;
