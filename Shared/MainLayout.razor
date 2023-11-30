@@ -4,7 +4,9 @@
 @inject SharedData _data
 @inject ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider _authState
+@inject UserService _userService
 @using static CustomIcons
+@using Pharmatic.DTOs
 @using Pharmatic.Services
 
 <link rel="stylesheet" href="/css/background.css?version=6" />
@@ -61,14 +63,14 @@
 
                                         <MudCardHeader>
                                             <CardHeaderAvatar>
-                                                <MudAvatar Size="Size.Medium" Image="@_data.User.imageUrl"></MudAvatar>
+                                                <MudAvatar Size="Size.Medium" Image="@currentUser.imageUrl"></MudAvatar>
                                             </CardHeaderAvatar>
 
                                             <CardHeaderContent>
                                                 <MudBreakpointProvider>
                                                     <MudHidden Breakpoint="Breakpoint.MdAndDown">
-                                                        <MudText Typo="Typo.body2">@_data.User.username</MudText>
-                                                        <MudText Typo="Typo.body2">@_data.User.email</MudText>
+                                                        <MudText Typo="Typo.body2">@currentUser.username</MudText>
+                                                        <MudText Typo="Typo.body2">@currentUser.email</MudText>
                                                     </MudHidden>
                                                 </MudBreakpointProvider>
                                         
@@ -110,6 +112,7 @@
 
 @code {
     private MudTheme selectedTheme = CustomThemes.PharmaticThemeRounded;
+    static private UserDTO currentUser = new UserDTO();
     private bool authenticated = false;
     string search_text = string.Empty;
     bool open;
@@ -121,6 +124,9 @@
         {
             new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home, disabled:true)
         };
+
+        currentUser = await _userService.CurrentUser();
+        _data.User = currentUser;
     }
 
     private async void CerrarSesion()

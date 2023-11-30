@@ -284,40 +284,28 @@
             invoice.discount = discount_amount;
             invoice.salesDate = DateTime.Now;
 
-            var first_result = await _salesService.CreateInvoice(invoice);
-
-            if (first_result != null)
+            foreach (var prod in _data.product_cart)
             {
-                invoice = first_result;
+                SalesDetailsDTO temp = new SalesDetailsDTO();
 
-                foreach (var prod in _data.product_cart)
-                {
-                    SalesDetailsDTO temp = new SalesDetailsDTO();
+                temp.invoiceNo = invoice.invoiceNo;
+                temp.lotNo = prod.Key.lotNo;
+                temp.quantity = prod.Value;
 
-                    temp.invoiceNo = invoice.invoiceNo;
-                    temp.lotNo = prod.Key.lotNo;
-                    temp.quantity = prod.Value;
-
-                    invoice_details.Add(temp);
-                }
-
-
-                invoice.details = invoice_details;
-
-                var end_result = await _salesService.EditInvoice(invoice.invoiceNo, invoice);
-
-                if (end_result != null)
-                {
-                    Snackbar.Add("Venta realizada correctamente", Severity.Success);
-                    _data.product_cart = new Dictionary<LotDTO, int>();
-                    _navigationManager.NavigateTo($"/ventas/carrito/");
-                }
-                else Snackbar.Add("Error al generar factura", Severity.Error);
+                invoice_details.Add(temp);
             }
-            else
+
+            invoice.details = invoice_details;                
+
+            var result = await _salesService.CreateInvoice(invoice);
+
+            if (result != null)
             {
-                Snackbar.Add("Error al crear factura", Severity.Error);
+                Snackbar.Add("Venta realizada correctamente", Severity.Success);
+                _data.product_cart = new Dictionary<LotDTO, int>();
+                _navigationManager.NavigateTo($"/ventas/carrito/");
             }
+            else Snackbar.Add("Error al facturar", Severity.Error);
 
         }
         else Snackbar.Add("No hay productos en el carrito", Severity.Warning);

@@ -19,6 +19,14 @@ namespace Pharmatic.Services
             return result!;
         }
 
+        public async Task<List<SalesInvoiceDTO>> SalesThisYear()
+        {
+            var url = $"http://localhost:{port}/api/sales?from={DateTime.Now.Year}-01-01";
+            var result = await _http.GetFromJsonAsync<List<SalesInvoiceDTO>>(url);
+            
+            return result!;
+        }
+
         public async Task<SalesInvoiceDTO> CreateInvoice(SalesInvoiceDTO new_invoice)
         {
             var result = await _http.PostAsJsonAsync($"http://localhost:{port}/api/sales/create", new_invoice);

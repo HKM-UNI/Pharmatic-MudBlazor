@@ -10,7 +10,7 @@
 @inject ProductService _productService
 @inject CustomerService _customerService
 
-<MudPaper>
+<MudPaper Class="mx-2" Style="height:100%; overflow-y:auto; overflow-x: hidden; background-color:white;">
     <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px; position: sticky; top: 0;">
         <MudTextField @bind-Value="@search_text" Placeholder="Buscar" Variant="Variant.Outlined" Adornment="Adornment.Start"
                       AdornmentIcon="@CustomIcons.Search" Margin="Margin.Dense" />

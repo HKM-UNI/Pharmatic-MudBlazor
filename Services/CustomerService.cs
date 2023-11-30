@@ -19,6 +19,13 @@ namespace Pharmatic.Services
             return result!;
         }
 
+        public async Task<int> CustomersCount()
+        {
+            var url = $"http://localhost:{port}/api/customers";
+            var result = await _http.GetFromJsonAsync<List<CustomerDTO>>(url);
+            return result?.Count ?? 0;
+        }
+
         public async Task<CustomerDTO> SearchCustomer(string id)
         {
             var url = $"http://localhost:{port}/api/customers/" + id;

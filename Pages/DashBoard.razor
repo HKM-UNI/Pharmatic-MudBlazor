@@ -5,12 +5,82 @@
 @layout MainLayout
 @inject SharedData _data
 @inject SalesService _salesService
+@inject LotService _lotService
+@inject CustomerService _customerService
+@inject ProviderService _providerService
 
-<MudGrid Class="px-2 pt-1" Style="height:100%; overflow-y:auto; overflow-x: hidden;">
-    <MudItem md="6" sm="12">
-        <MudPaper Class="mb-5">
+<div style="height:100%; overflow-y:auto; overflow-x: hidden; background-color:transparent; border-color:transparent;">
 
-			<MudChart ChartType="ChartType.Line" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="300px" ChartOptions="options">
+    <MudGrid Class="px-2" Spacing="2" Justify="Justify.SpaceBetween">
+    
+    <MudItem md="3" sm="6" xs="12">
+        <MudCard>
+                <MudCardHeader>
+                <CardHeaderAvatar>
+                        <MudAvatar Color="Color.Info" Variant="Variant.Outlined" Size="Size.Large">
+                            <MudIcon Icon="@Icons.TwoTone.AccountCircle" Size="Size.Large" Color="Color.Info"></MudIcon>
+                    </MudAvatar>
+                </CardHeaderAvatar>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">@customersCount</MudText>
+                    <MudText Typo="Typo.body2">Clientes</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+        </MudCard>
+    </MudItem>
+
+    <MudItem md="3" sm="6" xs="12">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderAvatar>
+                        <MudAvatar Size="Size.Large" Variant="Variant.Outlined" Color="Color.Error">
+                            <MudIcon Icon="@Icons.TwoTone.SupervisedUserCircle" Size="Size.Large" Color="Color.Error"></MudIcon>
+                        </MudAvatar>
+                </CardHeaderAvatar>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">@providersCount</MudText>
+                    <MudText Typo="Typo.body2">Proveedores</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+        </MudCard>
+    </MudItem>
+
+    <MudItem md="3" sm="6" xs="12">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderAvatar>
+                        <MudAvatar Color="Color.Warning" Variant="Variant.Outlined" Size="Size.Large">
+                            <MudIcon Icon="@Icons.TwoTone.AccountBalanceWallet" Size="Size.Large" Color="Color.Warning"></MudIcon>
+                        </MudAvatar>
+                </CardHeaderAvatar>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">$@todaysSales</MudText>
+                    <MudText Typo="Typo.body2">Ventas de hoy</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+        </MudCard>
+    </MudItem>
+
+    <MudItem md="3" sm="6" xs="12">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderAvatar>
+                        <MudAvatar Color="Color.Success" Variant="Variant.Outlined" Size="Size.Large">
+                            <MudIcon Icon="@Icons.TwoTone.BusinessCenter" Size="Size.Large" Color="Color.Success"></MudIcon>
+                        </MudAvatar>
+                </CardHeaderAvatar>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">$@monthSales</MudText>
+                    <MudText Typo="Typo.body2">Ventas del mes</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem md="6" sm="12" xs="12">
+        <MudPaper>
+
+			<MudChart ChartType="ChartType.Line" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="310px" ChartOptions="options">
 				<CustomGraphics>
 					<style>
                         .mud-chart-bar {
@@ -25,22 +95,57 @@
 
     </MudItem>
 
-</MudGrid>
+    <MudItem md="6" sm="12" xs="12">
+            <MudDataGrid Items="@recent_list" Dense="true">
 
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Productos agregados recientemente</MudText>
+                </ToolBarContent>
+
+                <Columns>
+                    <TemplateColumn CellClass="d-flex justify-end">
+                        <CellTemplate>
+                                <MudImage Src="@context.Item.productImage" Width="38" Height="38" Elevation="25"/>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <PropertyColumn Property="x => x.productName" Title="Nombre" />
+                    <PropertyColumn Property="x => x.price" Title="Precio"/>
+                    <PropertyColumn Property="x => x.stock" Title="Stock" />
+                </Columns>
+            </MudDataGrid>
+    </MudItem>
+
+        <MudItem md="12">
+            
+            <MudDataGrid T="ExpiredDTO" Items="@expired_list.Take(4)" >
+
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Productos vencidos</MudText>
+                </ToolBarContent>
+
+                <Columns>
+                    <PropertyColumn Property="x => x.consign" Title="Consigna" />
+                    <PropertyColumn Property="x => x.productName" Title="Nombre" />
+                    <PropertyColumn Property="x => x.dosageForm" Title="Tipo de dósis" />
+                    <PropertyColumn Property="x => x.expirationDate" Title="Fecha de vencimiento" CellStyleFunc="@_cellStyleFunc">
+                    </PropertyColumn>
+                    <PropertyColumn Property="x => x.purchasePrice" Title="Precio compra" />
+                    <PropertyColumn Property="x => x.stock" Title="Stock" />
+                </Columns>
+            </MudDataGrid>
+        </MudItem>
+
+</MudGrid>
+</div>
 @code {
     private List<SalesInvoiceDTO> sales_list = new List<SalesInvoiceDTO>();
-
-    ChartOptions options = new ChartOptions()
-        {
-            LineStrokeWidth = 8,
-        };
-
-    public List<ChartSeries> Series = new List<ChartSeries>();
-
-    public string[] XAxisLabels = Enumerable.Range(0, 8)
-            .Select(i => DateTime.Now.AddMonths(-i).ToString("MMM", CultureInfo.InvariantCulture))
-            .Reverse()
-            .ToArray();
+    private IEnumerable<ExpiredDTO> expired_list = new List<ExpiredDTO>();
+    private IEnumerable<RecentLotDTO> recent_list = new List<RecentLotDTO>();
+    private int customersCount = 0;
+    private int providersCount = 0;
+    private double todaysSales = 0;
+    private double monthSales = 0;
+    static string[] colors = { "#008000" };
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,24 +155,79 @@
         };
 
         await GetSales();
+        await GetGridData();
+        await UpdateStats();
         UpdateChart();
+    }
+
+    private async Task UpdateStats()
+    {
+        customersCount = await _customerService.CustomersCount();
+        providersCount = await _providerService.ProvidersCount();
+
+        DateTime today = DateTime.Now.Date;
+        DateTime firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
+        DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+        // Filtrar facturas para obtener las de hoy y del mes actual
+        var todaySalesL = sales_list.Where(s => s.salesDate.Date == today);
+        var monthSalesL = sales_list.Where(s => s.salesDate.Date >= firstDayOfMonth && s.salesDate.Date <= lastDayOfMonth);
+
+        // Calcular el total de las ventas de hoy
+        todaysSales = todaySalesL.Sum(s => s.total);
+
+        // Calcular el total de las ventas del mes actual
+        monthSales = monthSalesL.Sum(s => s.total);
     }
 
     private async Task GetSales()
     {
-        var result = await _salesService.SalesList();
+        var result = await _salesService.SalesThisYear();
         sales_list = result!;
     }
 
+    private async Task GetGridData()
+    {
+        var result = await _lotService.ExpirationReport();
+        expired_list = result!;
+
+        var result2 = await _lotService.RecentlyAdded();
+        recent_list = result2!;
+    }
+
+    private Func<ExpiredDTO, string> _cellStyleFunc => x =>
+    {
+        string style = "";
+
+        if (x.expirationDate < DateTime.Now)
+            style += "background-color:rgba(255, 0, 0, 0.4);";
+        else style += "background-color:rgba(255, 255, 0, 0.4);";
+
+        return style;
+    };
+
+    ChartOptions options = new ChartOptions()
+        {
+            LineStrokeWidth = 12,
+            ChartPalette = colors,
+        };
+
+    public List<ChartSeries> Series = new List<ChartSeries>();
+
+    public string[] XAxisLabels = Enumerable.Range(0, 9)
+            .Select(i => DateTime.Now.AddMonths(-i).ToString("MMM", CultureInfo.InvariantCulture))
+            .Reverse()
+            .ToArray();
+
     private void UpdateChart()
     {
-        // Obtiene los últimos 8 meses
-        var last8Months = Enumerable.Range(0, 8)
+        // Obtiene los últimos n meses
+        var lastnMonths = Enumerable.Range(0, 9)
             .Select(i => DateTime.Now.AddMonths(-i).Month)
             .ToList();
 
-        // Filtra las ventas de los últimos 8 meses
-        var MonthsSales = last8Months
+        // Filtra las ventas de los últimos n meses
+        var MonthsSales = lastnMonths
             .GroupJoin(
                 sales_list,
                 month => month,
@@ -82,7 +242,7 @@
             .ToList();
 
         // Rellena con ceros para los meses sin ventas
-        foreach (var month in last8Months.Except(MonthsSales.Select(data => data.Month)))
+        foreach (var month in lastnMonths.Except(MonthsSales.Select(data => data.Month)))
         {
             MonthsSales.Add(new
             {
@@ -96,7 +256,7 @@
         {
             new ChartSeries
             {
-                Name = "Ventas",
+                Name = "Ventas " + DateTime.Now.Year.ToString(),
                 Data = MonthsSales.OrderBy(data => data.Month).Select(data => data.TotalSales).ToArray()
             }
         };

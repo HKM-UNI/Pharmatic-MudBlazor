@@ -65,5 +65,27 @@ namespace Pharmatic.Services
             return (lot, statusCode);
         }
 
+        public async Task<List<ExpiredDTO>> ExpirationReport()
+        {
+            var url = $"http://localhost:{port}/api/lots/expiration_report";
+            await SetTokenAsync();
+            var jsonResponse = await _http.GetStringAsync(url);
+            Console.WriteLine($"Expiration Report JSON Response: {jsonResponse}");
+
+            // Deserializar el JSON a la lista de ExpiredDTO
+            var result = JsonSerializer.Deserialize<List<ExpiredDTO>>(jsonResponse);
+
+            return result ?? new List<ExpiredDTO>();
+        }
+
+        public async Task<List<RecentLotDTO>> RecentlyAdded()
+        {
+            var url = $"http://localhost:{port}/api/lots/recent_updates";
+            await SetTokenAsync();
+            var result = await _http.GetFromJsonAsync<List<RecentLotDTO>>(url);
+
+            return result!;
+        }
+
     }
 }

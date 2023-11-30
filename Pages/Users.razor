@@ -27,22 +27,46 @@
         @foreach (var u in user_list)
         {
             <MudItem xl="4" lg="6" sm="6" xs="12">
-                <a href="/usuarios/editar/@u.username">
-                    <MudGrid Style="outline: 1px solid #E6E6E6; border-radius:24px;" Class="hover-card">
+
+                    <MudCard Class="hover-card">
+                        <MudCardHeader>
+                            <CardHeaderAvatar>
+                                
+                                <MudImage Src="@u.imageUrl" Width="90" Height="90" Elevation="25" Class="rounded-lg ma-2" />
+                                
+                            </CardHeaderAvatar>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body1" Style="font-weight:bolder;">@u.username</MudText>
+                                    <MudText Typo="Typo.body2">@u.email</MudText>
+                                    <MudText Typo="Typo.body2">@u.role.roleName</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                    <AuthorizeView Policy="UserDelete">
+                                        <Authorized>
+                                            <div @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                                            <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                                           Color="Color.Error" OnClick="() => OpenDeleteDialog(u.username)" 
+                                                           Icon="@Icons.Material.Filled.Delete" Class="my-1">
+                                                Eliminar
+                                                </MudIconButton>
+                                            </div>
+                                        </Authorized>
+
+                                    </AuthorizeView>
+
+                                    <AuthorizeView Policy="UserWrite">
+                                        <Authorized>
 
 
-                        <MudItem xs="4">
-                            <MudImage Src="@u.imageUrl" Width="90" Height="90" Elevation="25" Class="rounded-lg ma-2" />
-                        </MudItem>
-
-                        <MudItem xs="8">
-                            <MudText Typo="Typo.body1" Style="font-weight:bolder;">@u.username</MudText>
-                            <MudText Typo="Typo.body2">@u.email</MudText>
-                            <MudText Typo="Typo.body2">@u.role.roleName</MudText>
-                        </MudItem>
-
-                    </MudGrid>
-                </a>
+                                            <MudIconButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Size="Size.Small"
+                                                           Color="Color.Primary" OnClick="() => EditSubmit(u.username)" Icon="@Icons.Material.Filled.Edit" Class="my-1">
+                                                Editar
+                                            </MudIconButton>
+                                        </Authorized>
+                                    </AuthorizeView>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                    </MudCard>
 
             </MudItem>
         }
@@ -70,27 +94,28 @@
     private List<UserDTO> user_list = new List<UserDTO>();
     private bool delete_visible = false;
     private string current_user = string.Empty;
-    private int id_user_delete = -1;
 
-    private void OpenDeleteDialog(string n, int id)
+    private void OpenDeleteDialog(string n)
     {
         delete_visible = true;
         current_user = n;
-        id_user_delete = id;
     }
 
     private void CancelDelete() => delete_visible = false;
 
     private async Task DeleteSubmit()
     {
-        //var response = await _providerService.DeleteProvider(id_provider_delete);
+        var response = await _userService.DeleteUser(current_user);
         delete_visible = false;
 
-        //await GetProviders();
+        if (response) Snackbar.Add("Usuario eliminado", Severity.Info);
+        else Snackbar.Add("Error al eliminar usuario", Severity.Warning);
 
-       // if (response) Snackbar.Add("Proveedor eliminado", Severity.Info);
-       // else Snackbar.Add("No se pudo eliminar al proveedor", Severity.Warning);
+        await GetUsers();
+
     }
+
+    private void EditSubmit(string u) => _navigationManager.NavigateTo("/usuarios/editar/" + u);
 
     protected override async Task OnInitializedAsync()
     {
