@@ -1,111 +1,46 @@
 ﻿@page "/dashboard"
+@using Pharmatic.DTOs;
 @using Pharmatic.Services;
+@using System.Globalization;
 @layout MainLayout
 @inject SharedData _data
+@inject SalesService _salesService
 
 <MudGrid Class="px-2 pt-1" Style="height:100%; overflow-y:auto; overflow-x: hidden;">
-    <MudItem md="7" sm="12">
+    <MudItem md="6" sm="12">
         <MudPaper Class="mb-5">
-			<MudChart ChartType="ChartType.Bar" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="300px">
+
+			<MudChart ChartType="ChartType.Line" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="300px" ChartOptions="options">
 				<CustomGraphics>
 					<style>
-						.heavy {
-							font: bold 30px Helvetica;
-						}
-
-						.Rrrrr {
-							font: italic 40px Helvetica;
-							fill: rgb(62,44,221);
-						}
+                        .mud-chart-bar {
+                            stroke-width: 20px;
+                        }
 					</style>
-					<text x="80" y="35" class="heavy">I Love</text>
-					<text x="105" y="70" class="Rrrrr">MudBlazor!</text>
 				</CustomGraphics>
 
 			</MudChart>
+
         </MudPaper>
 
-        <MudPaper>
-			<MudChart ChartType="ChartType.Bar" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="300px">
-				<CustomGraphics>
-					<style>
-						.heavy {
-							font: bold 30px Helvetica;
-						}
-
-						.Rrrrr {
-							font: italic 40px Helvetica;
-							fill: rgb(62,44,221);
-						}
-					</style>
-					<text x="80" y="35" class="heavy">I Love</text>
-					<text x="105" y="70" class="Rrrrr">MudBlazor!</text>
-				</CustomGraphics>
-
-			</MudChart>
-        </MudPaper>
-    </MudItem>
-
-    <MudItem md="5" sm="12">
-		<MudPaper Class="pa-4">
-			<MudChart ChartType="ChartType.Donut" Width="300px" Height="300px" @bind-SelectedIndex="Index" InputData="@data" InputLabels="@labels"></MudChart>
-		</MudPaper>
-		<MudPaper Class="pa-4 mt-2 d-flex justify-center">
-			<MudButton OnClick="AddDataSize" Variant="Variant.Filled" Color="Color.Primary">Add</MudButton>
-			<MudButton @onclick="RandomizeData" Variant="Variant.Filled" Class="mx-4">Randomize</MudButton>
-			<MudButton OnClick="RemoveDataSize" Variant="Variant.Filled" Color="Color.Secondary">Remove</MudButton>
-		</MudPaper>
-		<MudText Typo="Typo.h6">Selected portion of the chart: @Index</MudText>
     </MudItem>
 
 </MudGrid>
 
 @code {
+    private List<SalesInvoiceDTO> sales_list = new List<SalesInvoiceDTO>();
 
-
-	public List<ChartSeries> Series = new List<ChartSeries>()
-	{
-		new ChartSeries() { Name = "United States", Data = new double[] { 40, 20, 25, 27, 46, 60, 48, 80, 15 } },
-		new ChartSeries() { Name = "Germany", Data = new double[] { 19, 24, 35, 13, 28, 15, 13, 16, 31 } },
-		new ChartSeries() { Name = "Sweden", Data = new double[] { 8, 6, 11, 13, 4, 16, 10, 16, 18 } },
-	};
-	public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep" };
-
-
-    private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
-    int dataSize = 4;
-    public double[] data = { 50, 25, 20, 5 };
-    public string[] labels = { "Fossile", "Nuclear", "Solar", "Wind", "Oil", "Coal", "Gas", "Biomass",
-                                "Hydro", "Geothermal", "Fossil", "Nuclear", "Solar", "Wind", "Oil",
-                                "Coal", "Gas", "Biomass", "Hydro", "Geothermal" };
-
-    Random random = new Random();
-
-    void RandomizeData()
-    {
-        var new_data = new double[dataSize];
-        for (int i = 0; i < new_data.Length; i++)
-            new_data[i] = random.NextDouble() * 100;
-        data = new_data;
-        StateHasChanged();
-    }
-
-    void AddDataSize()
-    {
-        if (dataSize < 20)
+    ChartOptions options = new ChartOptions()
         {
-            dataSize = dataSize + 1;
-            RandomizeData();
-        }
-    }
-    void RemoveDataSize()
-    {
-        if (dataSize > 0)
-        {
-            dataSize = dataSize - 1;
-            RandomizeData();
-        }
-    }
+            LineStrokeWidth = 8,
+        };
+
+    public List<ChartSeries> Series = new List<ChartSeries>();
+
+    public string[] XAxisLabels = Enumerable.Range(0, 8)
+            .Select(i => DateTime.Now.AddMonths(-i).ToString("MMM", CultureInfo.InvariantCulture))
+            .Reverse()
+            .ToArray();
 
     protected override async Task OnInitializedAsync()
     {
@@ -113,6 +48,59 @@
         {
             new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home, disabled:true),
         };
+
+        await GetSales();
+        UpdateChart();
     }
 
+    private async Task GetSales()
+    {
+        var result = await _salesService.SalesList();
+        sales_list = result!;
+    }
+
+    private void UpdateChart()
+    {
+        // Obtiene los últimos 8 meses
+        var last8Months = Enumerable.Range(0, 8)
+            .Select(i => DateTime.Now.AddMonths(-i).Month)
+            .ToList();
+
+        // Filtra las ventas de los últimos 8 meses
+        var MonthsSales = last8Months
+            .GroupJoin(
+                sales_list,
+                month => month,
+                sale => sale.salesDate.Month,
+                (month, sales) => new
+                {
+                    Month = month,
+                    TotalSales = sales.Sum(s => s.total)
+                }
+            )
+            .OrderBy(data => data.Month)
+            .ToList();
+
+        // Rellena con ceros para los meses sin ventas
+        foreach (var month in last8Months.Except(MonthsSales.Select(data => data.Month)))
+        {
+            MonthsSales.Add(new
+            {
+                Month = month,
+                TotalSales = 0.0
+            });
+        }
+
+        // Actualiza las series del gráfico
+        Series = new List<ChartSeries>
+        {
+            new ChartSeries
+            {
+                Name = "Ventas",
+                Data = MonthsSales.OrderBy(data => data.Month).Select(data => data.TotalSales).ToArray()
+            }
+        };
+    }
+
+    
 }

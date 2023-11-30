@@ -291,6 +291,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
+            new BreadcrumbItem("Usuarios", href: "/usuarios"),
+            new BreadcrumbItem(SubmitBreadCrumbLabel, href: null, disabled:true),
+        };
+        
         permission_list = await _scopeService.GetPermissionCategories();
         role_list = await _userService.RoleList();
         scope_list = await _scopeService.GetScopes();
@@ -299,13 +306,6 @@
         dev_scopes = await _scopeService.GetRoleScopes("developer");
         admin_scopes = await _scopeService.GetRoleScopes("admin");
         dep_scopes = await _scopeService.GetRoleScopes("dependant");
-
-        _data.Items = new List<BreadcrumbItem>
-        {
-            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
-            new BreadcrumbItem("Usuarios", href: "/usuarios"),
-            new BreadcrumbItem(SubmitBreadCrumbLabel, href: null, disabled:true),
-        };
 
         if (IsEditMode)
         {
