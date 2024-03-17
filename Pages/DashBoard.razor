@@ -8,6 +8,7 @@
 @inject LotService _lotService
 @inject CustomerService _customerService
 @inject ProviderService _providerService
+@inject MetricsService _metricsService
 
 <div style="height:100%; overflow-y:auto; overflow-x: hidden; background-color:transparent; border-color:transparent;">
 
@@ -162,22 +163,12 @@
 
     private async Task UpdateStats()
     {
-        customersCount = await _customerService.CustomersCount();
-        providersCount = await _providerService.ProvidersCount();
+        var summary = await _metricsService.GetSummary();
 
-        DateTime today = DateTime.Now.Date;
-        DateTime firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
-        DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
-
-        // Filtrar facturas para obtener las de hoy y del mes actual
-        var todaySalesL = sales_list.Where(s => s.salesDate.Date == today);
-        var monthSalesL = sales_list.Where(s => s.salesDate.Date >= firstDayOfMonth && s.salesDate.Date <= lastDayOfMonth);
-
-        // Calcular el total de las ventas de hoy
-        todaysSales = todaySalesL.Sum(s => s.total);
-
-        // Calcular el total de las ventas del mes actual
-        monthSales = monthSalesL.Sum(s => s.total);
+        customersCount = summary.customers;
+        providersCount = summary.providers;
+        todaysSales = summary.salesAmountToday;
+        monthSales = summary.salesAmountMonth;
     }
 
     private async Task GetSales()
