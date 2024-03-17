@@ -1,7 +1,7 @@
 ﻿@page "/dashboard"
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
-@using System.Globalization;
+@using Pharmatic.Extensions;
 @layout MainLayout
 @inject SharedData _data
 @inject SalesService _salesService
@@ -139,7 +139,8 @@
 </MudGrid>
 </div>
 @code {
-    private List<SalesInvoiceDTO> sales_list = new List<SalesInvoiceDTO>();
+    // Meses de diferencia en el grafico
+    private const int ChartDateDeltaMonths = -9;
     private IEnumerable<ExpiredDTO> expired_list = new List<ExpiredDTO>();
     private IEnumerable<RecentLotDTO> recent_list = new List<RecentLotDTO>();
     private int customersCount = 0;
@@ -155,10 +156,9 @@
             new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home, disabled:true),
         };
 
-        await GetSales();
         await GetGridData();
         await UpdateStats();
-        UpdateChart();
+        UpdateChart(await GetInvoicingMetrics());
     }
 
     private async Task UpdateStats()
@@ -171,10 +171,25 @@
         monthSales = summary.salesAmountMonth;
     }
 
-    private async Task GetSales()
+    private async Task<List<InvoicingSummaryDTO>> GetInvoicingMetrics()
     {
-        var result = await _salesService.SalesThisYear();
-        sales_list = result!;
+        var now = DateTime.Now;
+        @* Obtiene la fecha final de este mes
+            Este es un truco de desarrollo para incluir la data simulada
+              que esta por delante de la fecha actual.
+            No se debe usar en produccion *@
+        var endDate = new DateOnly(now.Year, now.Month, 1)
+            .AddMonths(1)
+            .AddDays(-1);
+
+        @* Offset para coincidir "n" meses desde la fecha final de este mes *@
+        var startDate = endDate
+            .AddMonths(ChartDateDeltaMonths - 1)
+            .AddDays(1);
+        
+        return await _metricsService.GetInvoicingSummary(
+            startDate.ToIsoString(), endDate.ToIsoString()
+        );
     }
 
     private async Task GetGridData()
@@ -205,42 +220,15 @@
 
     public List<ChartSeries> Series = new List<ChartSeries>();
 
-    public string[] XAxisLabels = Enumerable.Range(0, 9)
-            .Select(i => DateTime.Now.AddMonths(-i).ToString("MMM", CultureInfo.InvariantCulture))
-            .Reverse()
-            .ToArray();
+    public string[] XAxisLabels = Array.Empty<string>();
 
-    private void UpdateChart()
+    private void UpdateChart(List<InvoicingSummaryDTO> metrics)
     {
-        // Obtiene los últimos n meses
-        var lastnMonths = Enumerable.Range(0, 9)
-            .Select(i => DateTime.Now.AddMonths(-i).Month)
-            .ToList();
+        // Extrae los nombres de los meses
+        XAxisLabels = metrics.Select(m => m.MonthName).ToArray();
 
-        // Filtra las ventas de los últimos n meses
-        var MonthsSales = lastnMonths
-            .GroupJoin(
-                sales_list,
-                month => month,
-                sale => sale.salesDate.Month,
-                (month, sales) => new
-                {
-                    Month = month,
-                    TotalSales = sales.Sum(s => s.total)
-                }
-            )
-            .OrderBy(data => data.Month)
-            .ToList();
-
-        // Rellena con ceros para los meses sin ventas
-        foreach (var month in lastnMonths.Except(MonthsSales.Select(data => data.Month)))
-        {
-            MonthsSales.Add(new
-            {
-                Month = month,
-                TotalSales = 0.0
-            });
-        }
+        // Extrae los totales de venta
+        var monthSales = metrics.Select(m => m.salesAmount).ToArray();
 
         // Actualiza las series del gráfico
         Series = new List<ChartSeries>
@@ -248,7 +236,7 @@
             new ChartSeries
             {
                 Name = "Ventas " + DateTime.Now.Year.ToString(),
-                Data = MonthsSales.OrderBy(data => data.Month).Select(data => data.TotalSales).ToArray()
+                Data = monthSales
             }
         };
     }
