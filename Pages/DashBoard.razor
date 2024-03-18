@@ -23,7 +23,7 @@
                     </MudAvatar>
                 </CardHeaderAvatar>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">@customersCount</MudText>
+                    <MudText Typo="Typo.h6">@stats.customers</MudText>
                     <MudText Typo="Typo.body2">Clientes</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
@@ -39,7 +39,7 @@
                         </MudAvatar>
                 </CardHeaderAvatar>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">@providersCount</MudText>
+                    <MudText Typo="Typo.h6">@stats.providers</MudText>
                     <MudText Typo="Typo.body2">Proveedores</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
@@ -55,7 +55,7 @@
                         </MudAvatar>
                 </CardHeaderAvatar>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">$@todaysSales</MudText>
+                    <MudText Typo="Typo.h6">$@stats.salesAmountToday</MudText>
                     <MudText Typo="Typo.body2">Ventas de hoy</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
@@ -71,7 +71,7 @@
                         </MudAvatar>
                 </CardHeaderAvatar>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">$@monthSales</MudText>
+                    <MudText Typo="Typo.h6">$@stats.salesAmountMonth</MudText>
                     <MudText Typo="Typo.body2">Ventas del mes</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
@@ -143,10 +143,7 @@
     private const int ChartDateDeltaMonths = -9;
     private IEnumerable<ExpiredDTO> expired_list = new List<ExpiredDTO>();
     private IEnumerable<RecentLotDTO> recent_list = new List<RecentLotDTO>();
-    private int customersCount = 0;
-    private int providersCount = 0;
-    private double todaysSales = 0;
-    private double monthSales = 0;
+    private SummaryDTO stats = new();
     static string[] colors = { "#008000" };
 
     protected override async Task OnInitializedAsync()
@@ -156,19 +153,30 @@
             new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home, disabled:true),
         };
 
-        await GetGridData();
+        await InitUI();
+    }
+
+    private async Task InitUI()
+    {
+        await GetExpirationReport();
+        await GetRecentlyAddedProducts();
         await UpdateStats();
         UpdateChart(await GetInvoicingMetrics());
     }
 
+    private async Task GetExpirationReport()
+    {
+        expired_list = await _lotService.ExpirationReport();
+    }
+
+    private async Task GetRecentlyAddedProducts()
+    {
+        recent_list = await _lotService.RecentlyAdded();
+    }
+
     private async Task UpdateStats()
     {
-        var summary = await _metricsService.GetSummary();
-
-        customersCount = summary.customers;
-        providersCount = summary.providers;
-        todaysSales = summary.salesAmountToday;
-        monthSales = summary.salesAmountMonth;
+        stats = await _metricsService.GetSummary();
     }
 
     private async Task<List<InvoicingSummaryDTO>> GetInvoicingMetrics()
@@ -190,15 +198,6 @@
         return await _metricsService.GetInvoicingSummary(
             startDate.ToIsoString(), endDate.ToIsoString()
         );
-    }
-
-    private async Task GetGridData()
-    {
-        var result = await _lotService.ExpirationReport();
-        expired_list = result!;
-
-        var result2 = await _lotService.RecentlyAdded();
-        recent_list = result2!;
     }
 
     private Func<ExpiredDTO, string> _cellStyleFunc => x =>
