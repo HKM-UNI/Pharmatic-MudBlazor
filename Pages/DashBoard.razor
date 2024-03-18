@@ -140,7 +140,7 @@
 </div>
 @code {
     // Meses de diferencia en el grafico
-    private const int ChartDateDeltaMonths = -9;
+    private const int ChartDateDeltaMonths = -8;
     private IEnumerable<ExpiredDTO> expired_list = new List<ExpiredDTO>();
     private IEnumerable<RecentLotDTO> recent_list = new List<RecentLotDTO>();
     private SummaryDTO stats = new();
@@ -191,9 +191,9 @@
             .AddDays(-1);
 
         @* Offset para coincidir "n" meses desde la fecha final de este mes *@
-        var startDate = endDate
-            .AddMonths(ChartDateDeltaMonths - 1)
-            .AddDays(1);
+        var delta = now.AddMonths(ChartDateDeltaMonths);
+
+        var startDate = new DateOnly(delta.Year, delta.Month, 1);
         
         return await _metricsService.GetInvoicingSummary(
             startDate.ToIsoString(), endDate.ToIsoString()
