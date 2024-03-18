@@ -81,16 +81,16 @@
     <MudItem md="6" sm="12" xs="12">
         <MudPaper>
 
-			<MudChart ChartType="ChartType.Line" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="310px" ChartOptions="options">
-				<CustomGraphics>
+			<MudChart ChartType="ChartType.Bar" ChartSeries="@chartSeries" XAxisLabels="@XAxisLabels" Width="100%" Height="310px" ChartOptions="chartOptions">
+                <CustomGraphics>
 					<style>
                         .mud-chart-bar {
-                            stroke-width: 20px;
+                            @* Ajustar esto dependiendo de la extension del grafico *@
+                            stroke-width: 12px;
                         }
 					</style>
 				</CustomGraphics>
-
-			</MudChart>
+            </MudChart>
 
         </MudPaper>
 
@@ -140,11 +140,21 @@
 </div>
 @code {
     // Meses de diferencia en el grafico
-    private const int ChartDateDeltaMonths = -8;
+    private const int ChartDateDeltaMonths = -6;
     private IEnumerable<ExpiredDTO> expired_list = new List<ExpiredDTO>();
     private IEnumerable<RecentLotDTO> recent_list = new List<RecentLotDTO>();
     private SummaryDTO stats = new();
-    static string[] colors = { "#008000" };
+
+    private ChartOptions chartOptions = new ChartOptions {
+        ChartPalette = chartPalette
+    };
+
+    private List<ChartSeries> chartSeries = new List<ChartSeries>();
+
+    public string[] XAxisLabels = Array.Empty<string>();
+
+    @* La cantidad de los colores debe ser igual o superior a la cantidad de graficos *@
+    static string[] chartPalette = { "#2979FF", "#FFC400" };
 
     protected override async Task OnInitializedAsync()
     {
@@ -211,16 +221,6 @@
         return style;
     };
 
-    ChartOptions options = new ChartOptions()
-        {
-            LineStrokeWidth = 12,
-            ChartPalette = colors,
-        };
-
-    public List<ChartSeries> Series = new List<ChartSeries>();
-
-    public string[] XAxisLabels = Array.Empty<string>();
-
     private void UpdateChart(List<InvoicingSummaryDTO> metrics)
     {
         // Extrae los nombres de los meses
@@ -229,14 +229,16 @@
         // Extrae los totales de venta
         var monthSales = metrics.Select(m => m.salesAmount).ToArray();
 
+        // Extrae los totales de compra
+        var monthPurchases = metrics.Select(m => m.purchaseAmount).ToArray();
+
+        var currentYear = DateTime.Now.Year.ToString();
+
         // Actualiza las series del gráfico
-        Series = new List<ChartSeries>
+        chartSeries = new List<ChartSeries>()
         {
-            new ChartSeries
-            {
-                Name = "Ventas " + DateTime.Now.Year.ToString(),
-                Data = monthSales
-            }
+            new ChartSeries() { Name = $"Ventas {currentYear}", Data = monthSales },
+            new ChartSeries() { Name = $"Compras {currentYear}", Data = monthPurchases }
         };
     }
 
