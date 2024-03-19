@@ -1,13 +1,14 @@
 ﻿@page "/dashboard"
 @using Pharmatic.DTOs;
 @using Pharmatic.Services;
-@using System.Globalization;
+@using Pharmatic.Extensions;
 @layout MainLayout
 @inject SharedData _data
 @inject SalesService _salesService
 @inject LotService _lotService
 @inject CustomerService _customerService
 @inject ProviderService _providerService
+@inject MetricsService _metricsService
 
 <div style="height:100%; overflow-y:auto; overflow-x: hidden; background-color:transparent; border-color:transparent;">
 
@@ -22,7 +23,7 @@
                     </MudAvatar>
                 </CardHeaderAvatar>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">@customersCount</MudText>
+                    <MudText Typo="Typo.h6">@stats.customers</MudText>
                     <MudText Typo="Typo.body2">Clientes</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
@@ -38,7 +39,7 @@
                         </MudAvatar>
                 </CardHeaderAvatar>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">@providersCount</MudText>
+                    <MudText Typo="Typo.h6">@stats.providers</MudText>
                     <MudText Typo="Typo.body2">Proveedores</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
@@ -54,7 +55,7 @@
                         </MudAvatar>
                 </CardHeaderAvatar>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">$@todaysSales</MudText>
+                    <MudText Typo="Typo.h6">$@stats.salesAmountToday</MudText>
                     <MudText Typo="Typo.body2">Ventas de hoy</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
@@ -70,7 +71,7 @@
                         </MudAvatar>
                 </CardHeaderAvatar>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">$@monthSales</MudText>
+                    <MudText Typo="Typo.h6">$@stats.salesAmountMonth</MudText>
                     <MudText Typo="Typo.body2">Ventas del mes</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
@@ -80,16 +81,16 @@
     <MudItem md="6" sm="12" xs="12">
         <MudPaper>
 
-			<MudChart ChartType="ChartType.Line" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="310px" ChartOptions="options">
-				<CustomGraphics>
+			<MudChart ChartType="ChartType.Bar" ChartSeries="@chartSeries" XAxisLabels="@XAxisLabels" Width="100%" Height="310px" ChartOptions="chartOptions">
+                <CustomGraphics>
 					<style>
                         .mud-chart-bar {
-                            stroke-width: 20px;
+                            @* Ajustar esto dependiendo de la extension del grafico *@
+                            stroke-width: 12px;
                         }
 					</style>
 				</CustomGraphics>
-
-			</MudChart>
+            </MudChart>
 
         </MudPaper>
 
@@ -138,14 +139,22 @@
 </MudGrid>
 </div>
 @code {
-    private List<SalesInvoiceDTO> sales_list = new List<SalesInvoiceDTO>();
+    // Meses de diferencia en el grafico
+    private const int ChartDateDeltaMonths = -6;
     private IEnumerable<ExpiredDTO> expired_list = new List<ExpiredDTO>();
     private IEnumerable<RecentLotDTO> recent_list = new List<RecentLotDTO>();
-    private int customersCount = 0;
-    private int providersCount = 0;
-    private double todaysSales = 0;
-    private double monthSales = 0;
-    static string[] colors = { "#008000" };
+    private SummaryDTO stats = new();
+
+    private ChartOptions chartOptions = new ChartOptions {
+        ChartPalette = chartPalette
+    };
+
+    private List<ChartSeries> chartSeries = new List<ChartSeries>();
+
+    public string[] XAxisLabels = Array.Empty<string>();
+
+    @* La cantidad de los colores debe ser igual o superior a la cantidad de graficos *@
+    static string[] chartPalette = { "#2979FF", "#FFC400" };
 
     protected override async Task OnInitializedAsync()
     {
@@ -154,45 +163,51 @@
             new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home, disabled:true),
         };
 
-        await GetSales();
-        await GetGridData();
+        await InitUI();
+    }
+
+    private async Task InitUI()
+    {
+        await GetExpirationReport();
+        await GetRecentlyAddedProducts();
         await UpdateStats();
-        UpdateChart();
+        UpdateChart(await GetInvoicingMetrics());
+    }
+
+    private async Task GetExpirationReport()
+    {
+        expired_list = await _lotService.ExpirationReport();
+    }
+
+    private async Task GetRecentlyAddedProducts()
+    {
+        recent_list = await _lotService.RecentlyAdded();
     }
 
     private async Task UpdateStats()
     {
-        customersCount = await _customerService.CustomersCount();
-        providersCount = await _providerService.ProvidersCount();
-
-        DateTime today = DateTime.Now.Date;
-        DateTime firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
-        DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
-
-        // Filtrar facturas para obtener las de hoy y del mes actual
-        var todaySalesL = sales_list.Where(s => s.salesDate.Date == today);
-        var monthSalesL = sales_list.Where(s => s.salesDate.Date >= firstDayOfMonth && s.salesDate.Date <= lastDayOfMonth);
-
-        // Calcular el total de las ventas de hoy
-        todaysSales = todaySalesL.Sum(s => s.total);
-
-        // Calcular el total de las ventas del mes actual
-        monthSales = monthSalesL.Sum(s => s.total);
+        stats = await _metricsService.GetSummary();
     }
 
-    private async Task GetSales()
+    private async Task<List<InvoicingSummaryDTO>> GetInvoicingMetrics()
     {
-        var result = await _salesService.SalesThisYear();
-        sales_list = result!;
-    }
+        var now = DateTime.Now;
+        @* Obtiene la fecha final de este mes
+            Este es un truco de desarrollo para incluir la data simulada
+              que esta por delante de la fecha actual.
+            No se debe usar en produccion *@
+        var endDate = new DateOnly(now.Year, now.Month, 1)
+            .AddMonths(1)
+            .AddDays(-1);
 
-    private async Task GetGridData()
-    {
-        var result = await _lotService.ExpirationReport();
-        expired_list = result!;
+        @* Offset para coincidir "n" meses desde la fecha final de este mes *@
+        var delta = now.AddMonths(ChartDateDeltaMonths);
 
-        var result2 = await _lotService.RecentlyAdded();
-        recent_list = result2!;
+        var startDate = new DateOnly(delta.Year, delta.Month, 1);
+        
+        return await _metricsService.GetInvoicingSummary(
+            startDate.ToIsoString(), endDate.ToIsoString()
+        );
     }
 
     private Func<ExpiredDTO, string> _cellStyleFunc => x =>
@@ -206,59 +221,24 @@
         return style;
     };
 
-    ChartOptions options = new ChartOptions()
-        {
-            LineStrokeWidth = 12,
-            ChartPalette = colors,
-        };
-
-    public List<ChartSeries> Series = new List<ChartSeries>();
-
-    public string[] XAxisLabels = Enumerable.Range(0, 9)
-            .Select(i => DateTime.Now.AddMonths(-i).ToString("MMM", CultureInfo.InvariantCulture))
-            .Reverse()
-            .ToArray();
-
-    private void UpdateChart()
+    private void UpdateChart(List<InvoicingSummaryDTO> metrics)
     {
-        // Obtiene los últimos n meses
-        var lastnMonths = Enumerable.Range(0, 9)
-            .Select(i => DateTime.Now.AddMonths(-i).Month)
-            .ToList();
+        // Extrae los nombres de los meses
+        XAxisLabels = metrics.Select(m => m.MonthName).ToArray();
 
-        // Filtra las ventas de los últimos n meses
-        var MonthsSales = lastnMonths
-            .GroupJoin(
-                sales_list,
-                month => month,
-                sale => sale.salesDate.Month,
-                (month, sales) => new
-                {
-                    Month = month,
-                    TotalSales = sales.Sum(s => s.total)
-                }
-            )
-            .OrderBy(data => data.Month)
-            .ToList();
+        // Extrae los totales de venta
+        var monthSales = metrics.Select(m => m.salesAmount).ToArray();
 
-        // Rellena con ceros para los meses sin ventas
-        foreach (var month in lastnMonths.Except(MonthsSales.Select(data => data.Month)))
-        {
-            MonthsSales.Add(new
-            {
-                Month = month,
-                TotalSales = 0.0
-            });
-        }
+        // Extrae los totales de compra
+        var monthPurchases = metrics.Select(m => m.purchaseAmount).ToArray();
+
+        var currentYear = DateTime.Now.Year.ToString();
 
         // Actualiza las series del gráfico
-        Series = new List<ChartSeries>
+        chartSeries = new List<ChartSeries>()
         {
-            new ChartSeries
-            {
-                Name = "Ventas " + DateTime.Now.Year.ToString(),
-                Data = MonthsSales.OrderBy(data => data.Month).Select(data => data.TotalSales).ToArray()
-            }
+            new ChartSeries() { Name = $"Ventas {currentYear}", Data = monthSales },
+            new ChartSeries() { Name = $"Compras {currentYear}", Data = monthPurchases }
         };
     }
 
