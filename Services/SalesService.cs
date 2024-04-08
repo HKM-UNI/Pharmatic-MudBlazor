@@ -19,11 +19,19 @@ namespace Pharmatic.Services
             return result!;
         }
 
+        public async Task<List<SalesHistoryDto>> SalesHistory()
+        {
+            var url = $"http://localhost:{port}/api/sales/history";
+            var result = await _http.GetFromJsonAsync<List<SalesHistoryDto>>(url);
+
+            return result!;
+        }
+
         public async Task<List<SalesInvoiceDTO>> SalesThisYear()
         {
             var url = $"http://localhost:{port}/api/sales?from={DateTime.Now.Year}-01-01";
             var result = await _http.GetFromJsonAsync<List<SalesInvoiceDTO>>(url);
-            
+
             return result!;
         }
 

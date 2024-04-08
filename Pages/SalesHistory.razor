@@ -32,21 +32,21 @@
 
                         <MudCardContent>
 
-                            <MudText Typo="Typo.body1" Align="Align.End"><b>Número de productos: @sale.details?.Sum(detail => detail.quantity)</b></MudText>
+                            <MudText Typo="Typo.body1" Align="Align.End"><b>Número de productos: @sale.TotalProducts</b></MudText>
                             <MudText Typo="Typo.h6" Inline="true">Total venta: </MudText>
-                            <MudText Typo="Typo.h6" Color="Color.Success" Inline="true"> C$ @sale.total</MudText>
+                            <MudText Typo="Typo.h6" Color="Color.Success" Inline="true"> C$ @sale.SalesAmount</MudText>
                             <MudText Typo="Typo.body1">
-                                Venta realizada el <b>@sale.salesDate.ToString("dd/MM/yyyy")</b> a las <b>@sale.salesDate.ToString("hh:mm tt")</b>
+                                Venta realizada el <b>@sale.SalesDate.ToString("dd/MM/yyyy")</b> a las <b>@sale.SalesDate.ToString("hh:mm tt")</b>
                             </MudText>
 
                         <MudContainer Class="my-2 rounded py-2" Style="height: 100px; overflow: auto; background-color: white;">
-                            @foreach (var detail in sale.details)
+                            @foreach (var product_details in sale.Products)
                             {
-                                <MudText Typo="Typo.body2"> @GetLotDetails(detail.lotNo) : @detail.quantity</MudText>
+                                <MudText Typo="Typo.body2">@product_details</MudText>
                             }
                         </MudContainer>
 
-                            <MudText Typo="Typo.body1" Align="Align.End"><b>Cliente: @GetCustomerName(sale.customerNo ?? -1)</b></MudText>
+                            <MudText Typo="Typo.body1" Align="Align.End"><b>Cliente: @sale.CustomerName</b></MudText>
                             
                         </MudCardContent>
 
@@ -59,9 +59,7 @@
 </MudPaper>
 
 @code {
-    private List<SalesInvoiceDTO> sales_list = new List<SalesInvoiceDTO>();
-    private List<LotDTO> lot_list = new List<LotDTO>();
-    private List<CustomerDTO> customer_list = new List<CustomerDTO>();
+    private List<SalesHistoryDto> sales_list = new();
     private string search_text = string.Empty;
     private bool loading = true;
 
@@ -74,42 +72,13 @@
         };
 
         await GetSales();
-        await GetCustomers();
-        await GetLots();
 
         loading = false;
     }
 
-    private string GetLotDetails(int lot_no)
-    {
-        var lot = lot_list.FirstOrDefault(l => l.lotNo == lot_no);
-
-        return $"{lot?.product.name} ({lot?.composition?.Composition()})";
-    }
-
-    private string GetCustomerName(int customer_no)
-    {
-        if (customer_no == -1) return string.Empty;
-        var customer = customer_list.FirstOrDefault(c => c.customerNo == customer_no);
-
-        return customer?.name ?? string.Empty;
-    }
-
     private async Task GetSales()
     {
-        var result = await _salesService.SalesList();
+        var result = await _salesService.SalesHistory();
         sales_list = result!;
-    }
-
-    private async Task GetLots()
-    {
-        var result = await _lotService.LotList();
-        lot_list = result!;
-    }
-
-    private async Task GetCustomers()
-    {
-        var result = await _customerService.CustomerList();
-        customer_list = result!;
     }
 }
