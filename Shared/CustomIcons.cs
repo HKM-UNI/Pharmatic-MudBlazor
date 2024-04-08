@@ -94,6 +94,15 @@ namespace Pharmatic.Shared
             }
         }
 
+        public static string Payment
+        {
+            get
+            {
+                var svgFile = GetEmbeddedResource("Pharmatic.wwwroot.icons.payment.svg");
+                return svgFile;
+            }
+        }
+
         public static string Providers
         {
             get

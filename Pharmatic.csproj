@@ -52,6 +52,7 @@
 	  <EmbeddedResource Include="wwwroot\icons\milk.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\notepad.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\notification.svg" />
+	  <EmbeddedResource Include="wwwroot\icons\payment.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\providers.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\search.svg" />
 	  <EmbeddedResource Include="wwwroot\icons\setting3.svg" />
