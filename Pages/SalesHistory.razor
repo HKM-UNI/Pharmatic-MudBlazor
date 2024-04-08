@@ -59,7 +59,8 @@
 
                             <div class="d-flex align-center justify-end gap-1">
                                 <MudText Typo="Typo.body1">@sale.CustomerName</MudText>
-                                <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Medium"/>
+                                <MudIcon Icon="@(string.IsNullOrEmpty(sale.CustomerName) ? @Icons.Material.Filled.PersonOff : Icons.Material.Filled.Person)"
+                                         Size="Size.Medium"/>
                             </div>
                         </MudCardContent>
 
