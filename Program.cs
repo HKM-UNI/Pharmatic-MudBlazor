@@ -11,7 +11,12 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-var baseUrl = builder.Configuration.GetValue<string>("BaseUrl")!;
+var baseUrl = builder.Configuration.GetValue<string>("BaseUrl");
+
+if (string.IsNullOrEmpty(baseUrl)) {
+    throw new Exception("Unable to set the base URL");
+}
+
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseUrl) });
 builder.Services.AddMudServices();
 
