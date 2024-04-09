@@ -29,32 +29,26 @@
         @foreach (var prod in product_list)
         {
             <MudItem xl="4" lg="6" sm="6" xs="12">
-                <a href="/productos/detalle/@prod.productNo">
+                <a href="/productos/detalle/@prod.ProductNo">
                     <MudGrid Style="outline: 1px solid #E6E6E6; border-radius:24px;" Class="hover-card">
-                    
-
-                        <MudItem xs="4">
-                            <MudImage Src="@prod.imageUrl" Width="80" Height="80" Elevation="25" Class="rounded-lg ma-2" />
+                        <MudItem xs="3">
+                            <MudImage Fluid="true" ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" Src="@prod.ImageUrl" Elevation="25" Class="rounded-lg ma-2" />
                         </MudItem>
                         
-                        <MudItem xs="8">
-                            <MudText Typo="Typo.body1" Style="font-weight:bolder;">@prod.name</MudText>
-                            <MudText Typo="Typo.body2">@prod.category?.name - # de lotes @prod.lotCount</MudText>
-                            @if (prod.tags?.Count > 0)
+                        <MudItem xs="7" Class="justify-center">
+                            <MudText Typo="Typo.body1" Style="font-weight:bolder;">@prod.ProductName</MudText>
+                            <MudText Typo="Typo.body2">@prod.CategoryName</MudText>
+                            @foreach (var tag in prod.ProductTags)
                             {
-                                @foreach (var tag in prod.tags)
-                                {
-                                    <MudChip Color="Color.Primary" Size="Size.Small">@tag.name</MudChip>
-                                }
-                            }
-                            else
-                            {
-                                <MudChip Color="Color.Error" Size="Size.Small">Sin etiquetas</MudChip>
-
+                                <MudChip Color="Color.Primary" Size="Size.Small">@tag</MudChip>
                             }
                         </MudItem>
-                    
-                </MudGrid>
+
+                        <MudItem xs="2" Class="d-flex align-start gap-1">
+                            <MudText Typo="Typo.body1" Style="font-weight:bolder;">@prod.LotCount</MudText>
+                            <MudIcon Icon="@Icons.Material.Filled.Inventory" Color=@(prod.LotCount > 0 ? Color.Inherit : Color.Warning) Size="Size.Medium"/>
+                        </MudItem>
+                    </MudGrid>
                 </a>
 
             </MudItem>
@@ -65,7 +59,7 @@
 
 @code {
     private string search_text = string.Empty;
-    private List<ProductDTO> product_list = new List<ProductDTO>();
+    private List<ProductOverviewDto> product_list = new ();
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,7 +78,7 @@
 
     private async Task GetProducts()
     {
-        var result = await _productService.ProductList();
+        var result = await _productService.ProductsOverview();
         product_list = result!;
     }
 

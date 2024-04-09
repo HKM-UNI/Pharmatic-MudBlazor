@@ -32,6 +32,14 @@ namespace Pharmatic.Services
             return result!;
         }
 
+        public async Task<List<ProductOverviewDto>> ProductsOverview()
+        {
+            var url = $"http://localhost:{port}/api/products/overview";
+            await SetTokenAsync();
+            var result = await _http.GetFromJsonAsync<List<ProductOverviewDto>>(url);
+            return result!;
+        }
+
         public async Task<ProductDTO> SearchProduct(string id)
         {
             var url = $"http://localhost:{port}/api/products/" + id;
