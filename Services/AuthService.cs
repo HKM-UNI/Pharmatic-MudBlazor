@@ -1,11 +1,9 @@
-﻿using Pharmatic.Authorization;
-using Pharmatic.Services;
-using System;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
+﻿using System.Net.Http.Json;
+using Pharmatic.Authorization;
 
-public class AuthService : Global
+namespace Pharmatic.Services;
+
+public class AuthService
 {
     private readonly HttpClient _httpClient;
 
@@ -16,28 +14,23 @@ public class AuthService : Global
 
     public async Task<string> LoginAsync(LoginRequest loginRequest)
     {
-        var url = $"http://127.0.0.1:{port}/api/users/login";
-
         try
         {
-            var response = await _httpClient.PostAsJsonAsync(url, loginRequest);
+            var response = await _httpClient.PostAsJsonAsync("users/login", loginRequest);
 
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<AuthResult>();
-                if (result != null && !string.IsNullOrEmpty(result.Token))
-                {
-                    return result.Token;
-                }
+                if (result != null && !string.IsNullOrEmpty(result.Token)) return result.Token;
             }
 
             // Maneja el caso de error de autenticación aquí si es necesario.
-            return null;
+            return "";
         }
         catch (Exception ex)
         {
             // Maneja las excepciones aquí si es necesario.
-            return null;
+            return "";
         }
     }
 }

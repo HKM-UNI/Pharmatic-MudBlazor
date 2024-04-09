@@ -1,21 +1,20 @@
 ﻿using MudBlazor;
 using Pharmatic.DTOs;
 
-namespace Pharmatic.Services
+namespace Pharmatic.Services;
+
+public class SharedData
 {
-    public class SharedData
+    public Dictionary<LotDTO, int> ProductCart = new();
+
+    public List<BreadcrumbItem> Items { get; set; } = new()
     {
-        public List<BreadcrumbItem> Items { get; set; } = new List<BreadcrumbItem>
-        {
-            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home),
-            new BreadcrumbItem("Metadata", href: "/metadata"),
-            new BreadcrumbItem("Tags", href: null, disabled: true)
-        };
+        new BreadcrumbItem("Home", "/dashboard", icon: Icons.Material.Filled.Home),
+        new BreadcrumbItem("Metadata", "/metadata"),
+        new BreadcrumbItem("Tags", null, true)
+    };
 
-        public Dictionary<LotDTO, int> product_cart = new Dictionary<LotDTO, int>();
+    public ProductDTO LastProduct { get; set; } = new();
 
-        public ProductDTO LastProduct { get; set; } = new ProductDTO();
-
-        public UserDTO User { get; set; } = new UserDTO();
-    }
+    public UserDTO User { get; set; } = new();
 }
