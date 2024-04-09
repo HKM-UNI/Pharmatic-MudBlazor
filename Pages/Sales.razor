@@ -47,12 +47,12 @@
         </MudButton>
 
         <MudIconButton Icon="@CustomIcons.Bag" Color="Color.Primary" Size="Size.Large" Class="ml-10"/>
-        <MudText Typo="Typo.h5" Color="Color.Dark">@_data.product_cart.Sum(pair => pair.Value)</MudText>
+        <MudText Typo="Typo.h5" Color="Color.Dark">@_data.ProductCart.Sum(pair => pair.Value)</MudText>
 
     </MudAppBar>
     <MudGrid Class="pa-3" Spacing="1">
 
-        @foreach(var p in _data.product_cart)
+        @foreach(var p in _data.ProductCart)
         {
             <MudItem xs="11">
 
@@ -134,20 +134,20 @@
     void CancelDelete() => remove_visible = false;
     void DeleteSubmit()
     {
-        _data.product_cart.Remove(current_lot);
+        _data.ProductCart.Remove(current_lot);
         remove_visible = false;
         Snackbar.Add("Producto removido", Severity.Info);
-        if (_data.product_cart.Count < 1) CancelCleanMode();
+        if (_data.ProductCart.Count < 1) CancelCleanMode();
     }
 
-    private void Increase(LotDTO lot) { _data.product_cart[lot]++; }
+    private void Increase(LotDTO lot) { _data.ProductCart[lot]++; }
     private void Decrease(LotDTO lot)
     {
         if (!clean_mode)
         {
-            if (_data.product_cart[lot] <= 1)
+            if (_data.ProductCart[lot] <= 1)
                 OpenRemoveDialog(lot);
-            else _data.product_cart[lot]--;
+            else _data.ProductCart[lot]--;
         }
         else OpenRemoveDialog(lot);
     }
@@ -172,7 +172,7 @@
     private void ClearCart() 
     {
 
-        if (!clean_mode && _data.product_cart.Count > 0)
+        if (!clean_mode && _data.ProductCart.Count > 0)
         {
             clean_mode = true;
             btnCleanVariant = Variant.Filled;
@@ -181,7 +181,7 @@
         }
         else if (clean_mode && clean_visible)
         {
-            _data.product_cart = new Dictionary<LotDTO, int>();
+            _data.ProductCart = new Dictionary<LotDTO, int>();
             clean_visible = false;
             CancelCleanMode();
         }
@@ -223,7 +223,7 @@
                 {
                     bool isLotAlreadyAdded = false;
 
-                    foreach (var kvp in _data.product_cart)
+                    foreach (var kvp in _data.ProductCart)
                     {
                         if (kvp.Key.lotNo == lot.lotNo)
                         {
@@ -238,7 +238,7 @@
                 }
 
                 foreach (var lotToAdd in lotsToAdd)
-                    _data.product_cart.Add(lotToAdd, 1);
+                    _data.ProductCart.Add(lotToAdd, 1);
             }
             else Snackbar.Add("Producto sin existencias", Severity.Error);
 

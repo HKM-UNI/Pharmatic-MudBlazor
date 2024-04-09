@@ -20,5 +20,4 @@ namespace Pharmatic.Authorization
                 .Build();
         }
     }
-
 }

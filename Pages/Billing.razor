@@ -29,7 +29,7 @@
         </MudButton>
 
         <MudIconButton Icon="@CustomIcons.Bag" Color="Color.Primary" Size="Size.Large" Class="ml-10" />
-        <MudText Typo="Typo.h5" Color="Color.Dark">@_data.product_cart.Sum(pair => pair.Value)</MudText>
+        <MudText Typo="Typo.h5" Color="Color.Dark">@_data.ProductCart.Sum(pair => pair.Value)</MudText>
 
     </MudAppBar>
     <MudGrid Class="px-10 pb-5 mt-5" Spacing="1" Style="height: 350px; overflow: auto;">
@@ -50,7 +50,7 @@
                 <MudText Typo="Typo.h4">Sub total</MudText>
             </MudItem>
 
-        @foreach (var p in _data.product_cart)
+        @foreach (var p in _data.ProductCart)
         {
             <MudItem xs="5" Class="grid-border pl-3" Style="border-left: 1px solid transparent;">
                 <MudText Typo="Typo.h5" Inline="true">@p.Key.product?.name</MudText>
@@ -194,7 +194,7 @@
 
     private double SubTotal()
     {
-        double subTotal = _data.product_cart.Sum(kvp => kvp.Key.sellingPrice * kvp.Value);
+        double subTotal = _data.ProductCart.Sum(kvp => kvp.Key.sellingPrice * kvp.Value);
 
         if (discount_enabled) subTotal -= subTotal * discount_amount / 100;
 
@@ -218,17 +218,17 @@
     void CancelDelete() => remove_visible = false;
     void DeleteSubmit()
     {
-        _data.product_cart.Remove(current_lot);
+        _data.ProductCart.Remove(current_lot);
         remove_visible = false;
         Snackbar.Add("Producto removido", Severity.Info);
     }
 
-    private void Increase(LotDTO lot) { _data.product_cart[lot]++; }
+    private void Increase(LotDTO lot) { _data.ProductCart[lot]++; }
     private void Decrease(LotDTO lot)
     {
-        if (_data.product_cart[lot] <= 1)
+        if (_data.ProductCart[lot] <= 1)
             OpenRemoveDialog(lot);
-        else _data.product_cart[lot]--;
+        else _data.ProductCart[lot]--;
     }
 
     protected override async Task OnInitializedAsync()
@@ -276,7 +276,7 @@
 
     private async Task CheckOut()
     {
-        if (_data.product_cart.Count > 0)
+        if (_data.ProductCart.Count > 0)
         {
             int customer_id = GetCustomerId();
             if (customer_id >= 0) invoice.customerNo = customer_id;
@@ -284,7 +284,7 @@
             invoice.discount = discount_amount;
             invoice.salesDate = DateTime.Now;
 
-            foreach (var prod in _data.product_cart)
+            foreach (var prod in _data.ProductCart)
             {
                 SalesDetailsDTO temp = new SalesDetailsDTO();
 
@@ -302,7 +302,7 @@
             if (result != null)
             {
                 Snackbar.Add("Venta realizada correctamente", Severity.Success);
-                _data.product_cart = new Dictionary<LotDTO, int>();
+                _data.ProductCart = new Dictionary<LotDTO, int>();
                 _navigationManager.NavigateTo($"/ventas/carrito/");
             }
             else Snackbar.Add("Error al facturar", Severity.Error);
