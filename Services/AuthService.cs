@@ -12,25 +12,25 @@ public class AuthService
         _httpClient = httpClient;
     }
 
-    public async Task<string> LoginAsync(LoginRequest loginRequest)
+    public async Task<string?> LoginAsync(LoginRequest loginRequest)
     {
         try
         {
             var response = await _httpClient.PostAsJsonAsync("users/login", loginRequest);
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode) return null;
+
+            var result = await response.Content.ReadFromJsonAsync<AuthResult>();
+            if (result != null && !string.IsNullOrEmpty(result.Token))
             {
-                var result = await response.Content.ReadFromJsonAsync<AuthResult>();
-                if (result != null && !string.IsNullOrEmpty(result.Token)) return result.Token;
+                return result.Token;
             }
 
-            // Maneja el caso de error de autenticación aquí si es necesario.
-            return "";
+            return null;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            // Maneja las excepciones aquí si es necesario.
-            return "";
+            return null;
         }
     }
 }

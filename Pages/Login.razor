@@ -116,20 +116,19 @@
         loading = true;
 
         var jwt = await _authService.LoginAsync(loginRequest);
-
         loading = false;
-        if (jwt != null)
+
+        if (string.IsNullOrEmpty((jwt)))
         {
-            await LocalStorage.SetItemAsync("token", jwt);
-            await _authState.GetAuthenticationStateAsync();
-            await SaveUserData();
-            Snackbar.Add($"Bienvenido {loginRequest.username}!", Severity.Success);
-            _navigationManager.NavigateTo("/dashboard");
-        }
-        else
-        {
-            Snackbar.Add("No se encontraron coincidencias", Severity.Error);
+            Snackbar.Add("Nombre de usuario o contraseña incorrectos", Severity.Error);
             disableButton = false;
+            return;
         }
+
+        await LocalStorage.SetItemAsync("token", jwt);
+        await _authState.GetAuthenticationStateAsync();
+        await SaveUserData();
+        Snackbar.Add($"Bienvenido {loginRequest.username}!", Severity.Success);
+        _navigationManager.NavigateTo("/dashboard");
     }
 }
