@@ -40,7 +40,7 @@
 
                 <MudItem lg="10" md="12" sm="12" xs="12" Style="height:100%; width:100%;">
 
-                    <MudPaper Class="d-flex flex-column gap-4" Elevation="0" 
+                    <MudPaper Class="d-flex flex-column gap-4" Elevation="0"
                             Style="background-color: rgba(231, 255, 255, 0.4); height:100%;">
                         <MudAppBar Elevation="0" Fixed="false" Style="border-radius: 15px;" Dense="true">
 
@@ -73,7 +73,7 @@
                                                         <MudText Typo="Typo.body2">@currentUser.email</MudText>
                                                     </MudHidden>
                                                 </MudBreakpointProvider>
-                                        
+
                                             </CardHeaderContent>
 
                                         </MudCardHeader>
@@ -96,7 +96,7 @@
 
                 </MudItem>
 
-            </MudGrid>  
+            </MudGrid>
         </MudContainer>
 
         <MudDrawer @bind-Open="@open" Elevation="1" Variant="@DrawerVariant.Temporary">
@@ -104,7 +104,7 @@
         </MudDrawer>
 
     </Authorized>
-    
+
     <NotAuthorized>
         <RedirectToLogin/>
     </NotAuthorized>
@@ -112,28 +112,43 @@
 
 @code {
     private MudTheme selectedTheme = CustomThemes.PharmaticThemeRounded;
-    static private UserDTO currentUser = new UserDTO();
+    private static UserDTO currentUser = new();
     private bool authenticated = false;
     string search_text = string.Empty;
     bool open;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-
-        var authenticationState = await _authState.GetAuthenticationStateAsync();
-        var user = authenticationState.User;
-
-        if (user.Identity.IsAuthenticated)
+        _authState.GetAuthenticationStateAsync().ContinueWith(task =>
         {
-            _data.Items = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home, disabled:true)
-            };
+            if (CheckAuthState(task.Result))
+                RedirectUserToDashboard();
+            else
+                RedirectUserToLoginPage();
+        });
+    }
 
-            currentUser = await _userService.CurrentUser();
+    private static bool CheckAuthState(AuthenticationState state)
+     {
+        return state.User.Identity?.IsAuthenticated ?? false;
+    }
+
+    private void RedirectUserToDashboard()
+    {
+        _data.Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Home", href: "/dashboard", icon: Icons.Material.Filled.Home, disabled:true)
+        };
+        _userService.CurrentUser().ContinueWith(task =>
+        {
+            currentUser = task.Result;
             _data.User = currentUser;
-        }
-        else _navigationManager.NavigateTo("/");
+        });
+    }
+
+    private void RedirectUserToLoginPage()
+    {
+        _navigationManager.NavigateTo("/");
     }
 
     private async void CerrarSesion()
@@ -144,5 +159,5 @@
     }
 
     void OpenDrawer() => open = true;
-    
+
 }
