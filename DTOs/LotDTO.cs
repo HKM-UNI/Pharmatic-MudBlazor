@@ -16,10 +16,10 @@ namespace Pharmatic.DTOs
         public ProviderDTO? provider { get; set; }
 
         [Required(ErrorMessage = "El precio de compra es requerido.")]
-        public double purchasePrice { get; set; }
+        public decimal purchasePrice { get; set; }
 
         [Required(ErrorMessage = "El precio de venta es requerido.")]
-        public double sellingPrice { get; set; }
+        public decimal sellingPrice { get; set; }
 
         [Required(ErrorMessage = "El stock es requerido.")]
         public int stock { get; set; }

@@ -55,7 +55,7 @@
                         </MudAvatar>
                 </CardHeaderAvatar>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">$@stats.salesAmountToday</MudText>
+                    <MudText Typo="Typo.h6">@stats.salesAmountToday.ToCurrency()</MudText>
                     <MudText Typo="Typo.body2">Ventas de hoy</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
@@ -71,7 +71,7 @@
                         </MudAvatar>
                 </CardHeaderAvatar>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">$@stats.salesAmountMonth</MudText>
+                    <MudText Typo="Typo.h6">@stats.salesAmountMonth.ToCurrency()</MudText>
                     <MudText Typo="Typo.body2">Ventas del mes</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
@@ -110,7 +110,7 @@
                         </CellTemplate>
                     </TemplateColumn>
                     <PropertyColumn Property="x => x.productName" Title="Nombre" />
-                    <PropertyColumn Property="x => x.price" Title="Precio"/>
+                    <PropertyColumn Property="x => x.price.ToCurrency()" Title="Precio"/>
                     <PropertyColumn Property="x => x.stock" Title="Stock" />
                 </Columns>
             </MudDataGrid>
@@ -130,7 +130,7 @@
                     <PropertyColumn Property="x => x.dosageForm" Title="Tipo de dósis" />
                     <PropertyColumn Property="x => x.expirationDate" Title="Fecha de vencimiento" CellStyleFunc="@_cellStyleFunc">
                     </PropertyColumn>
-                    <PropertyColumn Property="x => x.purchasePrice" Title="Precio compra" />
+                    <PropertyColumn Property="p => p.purchasePrice.ToCurrency()" Title="Precio compra" />
                     <PropertyColumn Property="x => x.stock" Title="Stock" />
                 </Columns>
             </MudDataGrid>
@@ -227,10 +227,10 @@
         XAxisLabels = metrics.Select(m => m.MonthName).ToArray();
 
         // Extrae los totales de venta
-        var monthSales = metrics.Select(m => m.salesAmount).ToArray();
+        var monthSales = metrics.Select(m => Convert.ToDouble(m.salesAmount)).ToArray();
 
         // Extrae los totales de compra
-        var monthPurchases = metrics.Select(m => m.purchaseAmount).ToArray();
+        var monthPurchases = metrics.Select(m => Convert.ToDouble(m.purchaseAmount)).ToArray();
 
         var currentYear = DateTime.Now.Year.ToString();
 

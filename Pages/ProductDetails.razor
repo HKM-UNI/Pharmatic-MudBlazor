@@ -1,6 +1,7 @@
 ﻿@page "/productos/detalle/{id}"
 @attribute [Authorize (Policy = "ProductRead")]
 @using Pharmatic.DTOs;
+@using Pharmatic.Extensions
 @using Pharmatic.Services;
 @layout MainLayout
 @inject ProductService _productService
@@ -86,8 +87,8 @@
                                     <MudText Typo="Typo.h6" Color="Color.Info" Inline="true">@lot.provider?.name</MudText>
                                     <MudText Typo="Typo.body1"><b>Composicion:</b> @lot.composition?.Composition()</MudText>
                                     <MudText Typo="Typo.body1"><b>Stock:</b> @lot.stock</MudText>
-                                    <MudText Typo="Typo.body1"><b>Venta:</b> @lot.sellingPrice C$</MudText>
-                                    <MudText Typo="Typo.body1"><b>Compra:</b> @lot.purchasePrice C$</MudText>
+                                    <MudText Typo="Typo.body1"><b>Venta:</b> @lot.sellingPrice.ToCurrency()</MudText>
+                                    <MudText Typo="Typo.body1"><b>Compra:</b> @lot.purchasePrice.ToCurrency()</MudText>
 
                                     <MudText Typo="Typo.body1"> <b>Fecha Vencimiento:</b> </MudText>
                                     <MudText Typo="Typo.body1" Color="Color.Success">

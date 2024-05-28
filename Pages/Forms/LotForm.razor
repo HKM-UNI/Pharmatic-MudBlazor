@@ -89,11 +89,15 @@
         </MudItem>
 
         <MudItem xs="4">
-            <MudTextField T="int"  @bind-Value="txt_purchaseprice" Label="Precio compra (unidad)" Variant="Variant.Outlined"></MudTextField>
+            <MudTextField T="int"  @bind-Value="txt_purchaseprice" Label="Precio compra (unidad)" Variant="Variant.Outlined"
+                          Adornment="Adornment.Start" AdornmentText="C$"
+                          />
         </MudItem>
 
         <MudItem xs="4">
-            <MudTextField T="int" @bind-Value="txt_sellingprice" Label="Precio de venta (unidad)" Variant="Variant.Outlined"></MudTextField>
+            <MudTextField T="int" @bind-Value="txt_sellingprice" Label="Precio de venta (unidad)" Variant="Variant.Outlined"
+                          Adornment="Adornment.Start" AdornmentText="C$"
+                          />
         </MudItem>
 
     </MudGrid>

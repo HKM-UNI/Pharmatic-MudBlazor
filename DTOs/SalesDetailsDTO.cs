@@ -8,6 +8,6 @@
 
         public int quantity { get; set; }
 
-        public double amount { get; set; }
+        public decimal amount { get; set; }
     }
 }

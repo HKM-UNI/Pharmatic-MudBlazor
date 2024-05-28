@@ -49,13 +49,9 @@ public class LotService
     public async Task<List<ExpiredDTO>> ExpirationReport()
     {
         await SetTokenAsync();
-        var jsonResponse = await _http.GetStringAsync("lots/expiration_report");
-        Console.WriteLine($"Expiration Report JSON Response: {jsonResponse}");
+        var result = await _http.GetFromJsonAsync<List<ExpiredDTO>>("lots/expiration_report");
 
-        // Deserializar el JSON a la lista de ExpiredDTO
-        var result = JsonSerializer.Deserialize<List<ExpiredDTO>>(jsonResponse);
-
-        return result ?? new List<ExpiredDTO>();
+        return result!;
     }
 
     public async Task<List<RecentLotDTO>> RecentlyAdded()

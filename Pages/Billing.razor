@@ -1,6 +1,7 @@
 ﻿@page "/ventas/facturacion"
 @attribute [Authorize(Policy = "SalesWrite")]
 @using Pharmatic.DTOs;
+@using Pharmatic.Extensions
 @using Pharmatic.Services;
 @layout MainLayout
 @inject NavigationManager _navigationManager
@@ -68,18 +69,18 @@
             </MudItem>
 
             <MudItem xs="2" Class="bill-item grid-border">
-                <MudText Typo="Typo.body1">C$ @p.Key.sellingPrice</MudText>
+                <MudText Typo="Typo.body1">@p.Key.sellingPrice.ToCurrency()</MudText>
             </MudItem>
 
             <MudItem xs="2" Class="bill-item grid-border">
-                <MudText Typo="Typo.body1">C$ @(p.Key.sellingPrice*p.Value)</MudText>
+                <MudText Typo="Typo.body1">@((p.Key.sellingPrice*p.Value).ToCurrency())</MudText>
             </MudItem>
         }
     </MudGrid>
 
     <MudGrid Justify="Justify.SpaceAround" Class="px-5 mt-1 pb-5">
 
-        <MudItem xs="5" Class="mt-5">
+        <MudItem xs="4" Class="mt-5">
             <MudAutocomplete Placeholder="Nombre del cliente" @bind-Value="txtCustomer" Variant="Variant.Outlined" AdornmentIcon="@CustomIcons.Search"
                              Adornment="Adornment.Start" Margin="Margin.Dense" SearchFunc="SearchCustomers" T="string" ShowProgressIndicator="true"
                              ProgressIndicatorColor="@Color.Primary" HelperText="Cliente de factura">
@@ -91,8 +92,8 @@
             </MudAutocomplete>
         </MudItem>
 
-        <MudItem xs="4" Class="mt-5">
-            <MudGrid Class="px-5">
+        <MudItem md="5" Class="mt-5">
+            <MudGrid Class="px-3">
 
                 <MudItem xs="8" Class="bill-detail py-1">
                         <MudSwitch @bind-Checked="@discount_enabled" Color="Color.Primary" />
@@ -101,7 +102,9 @@
 
                 <MudItem xs="4" Class="py-1">
                     <MudTextField @bind-Value="discount_amount" Margin="Margin.Dense"
-                                  Adornment="Adornment.End" AdornmentText="%" Variant="Variant.Outlined" />
+                                  Adornment="Adornment.Start" AdornmentText="%" Variant="Variant.Outlined"
+                                  Disabled="@(!discount_enabled)"
+                                  />
                 </MudItem>
 
                 <MudItem xs="8" Class="bill-detail py-1">
@@ -109,8 +112,8 @@
                 </MudItem>
 
                 <MudItem xs="4" Class="py-1">
-                    <MudTextField Value="@SubTotal()" Margin="Margin.Dense" ReadOnly="true" Disabled="true"
-                                  Adornment="Adornment.End" AdornmentText="C$" Variant="Variant.Outlined" />
+                    <MudTextField Value="@SubTotal()" Margin="Margin.Dense" ReadOnly="true"
+                                  Adornment="Adornment.Start" AdornmentText="C$" Variant="Variant.Outlined" />
                 </MudItem>
                 
                 <MudItem xs="8" Class="bill-detail py-1">
@@ -119,8 +122,8 @@
                 </MudItem>
 
                 <MudItem xs="4" Class="py-1">
-                    <MudTextField Value="@IVA(SubTotal())" Margin="Margin.Dense" ReadOnly="true" Disabled="true"
-                                  Adornment="Adornment.End" AdornmentText="C$" Variant="Variant.Outlined"/>
+                    <MudTextField Value="@IVA(SubTotal())" Margin="Margin.Dense" ReadOnly="true"
+                                  Adornment="Adornment.Start" AdornmentText="C$" Variant="Variant.Outlined"/>
                 </MudItem>
                 
                 <MudItem xs="8" Class="bill-detail py-1">
@@ -128,8 +131,8 @@
                 </MudItem>
 
                 <MudItem xs="4" Class="py-1">
-                    <MudTextField Value="@Total()" Margin="Margin.Dense" ReadOnly="true" Disabled="true"
-                                  Adornment="Adornment.End" AdornmentText="C$" Variant="Variant.Outlined" />
+                    <MudTextField Value="@Total()" Margin="Margin.Dense" ReadOnly="true"
+                                  Adornment="Adornment.Start" AdornmentText="C$" Variant="Variant.Outlined" />
                 </MudItem>
 
             </MudGrid>
@@ -190,19 +193,19 @@
     private bool iva_enabled = true;
 
     private int discount_amount = 0;
-    private const float iva = 0.15f;
+    private static readonly decimal Iva = Convert.ToDecimal(0.15);
 
-    private double SubTotal()
+    private decimal SubTotal()
     {
-        double subTotal = _data.ProductCart.Sum(kvp => kvp.Key.sellingPrice * kvp.Value);
+        var subTotal = _data.ProductCart.Sum(kvp => kvp.Key.sellingPrice * kvp.Value);
 
         if (discount_enabled) subTotal -= subTotal * discount_amount / 100;
 
         return subTotal;
     }
 
-    private double IVA(double amount) => amount * iva;
-    private double Total() => iva_enabled ? SubTotal() + IVA(SubTotal()) : SubTotal();
+    private decimal IVA(decimal amount) => amount * Iva;
+    private decimal Total() => iva_enabled ? SubTotal() + IVA(SubTotal()) : SubTotal();
 
     private List<CustomerDTO> customer_list = new List<CustomerDTO>();
     private TaskCompletionSource<bool> customersLoadedTask = new TaskCompletionSource<bool>();
