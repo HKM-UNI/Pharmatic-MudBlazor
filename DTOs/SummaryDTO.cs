@@ -8,7 +8,7 @@ namespace Pharmatic.DTOs
         public int products  { get; set; }
         public int salesNumberToday  { get; set; }
         public int salesNumberMonth  { get; set; }
-        public double salesAmountToday { get; set; }
-        public double salesAmountMonth { get; set; }
+        public decimal salesAmountToday { get; set; }
+        public decimal salesAmountMonth { get; set; }
     }
 }

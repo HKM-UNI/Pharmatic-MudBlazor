@@ -1,6 +1,7 @@
 ﻿@page "/ventas/carrito"
 @attribute [Authorize (Policy = "SalesWrite")]
 @using Pharmatic.DTOs;
+@using Pharmatic.Extensions
 @using Pharmatic.Services;
 @layout MainLayout
 @inject NavigationManager _navigationManager
@@ -75,7 +76,7 @@
                                 <MudIcon Icon="@Icons.Material.Filled.DateRange" Size="Size.Medium" /> @p.Key.expirationDate.ToString("dd/MM/yyyy")
                             </MudText>
                             <MudText Typo="Typo.h5" Inline="true">@p.Key.product?.category?.name</MudText>
-                            <MudText Typo="Typo.h6" Align="Align.End">Precio cliente: C$ @p.Key.sellingPrice</MudText>
+                            <MudText Typo="Typo.h6" Align="Align.End">Precio cliente: @p.Key.sellingPrice.ToCurrency()</MudText>
                         </CardHeaderContent>
 
                     </MudCardHeader>

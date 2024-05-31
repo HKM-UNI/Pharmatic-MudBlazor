@@ -35,8 +35,12 @@ public class UserService
     public async Task<UserDTO> CurrentUser()
     {
         await SetTokenAsync();
-        var result = await _http.GetFromJsonAsync<UserDTO>("users/me");
-        return result!;
+
+        var response = await _http.GetAsync("users/me");
+        if (!response.IsSuccessStatusCode) return new UserDTO();
+
+        var user = await response.Content.ReadFromJsonAsync<UserDTO>();
+        return user!;
     }
 
     public async Task<UserDTO> GetUser(string id)

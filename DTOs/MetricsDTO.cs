@@ -6,9 +6,9 @@ namespace Pharmatic.DTOs
     {
         public DateOnly monthCut { get; set; }
         public int salesCount { get; set; }
-        public double salesAmount { get; set; }
+        public decimal salesAmount { get; set; }
         public int purchaseCount { get; set; }
-        public double purchaseAmount { get; set; }
+        public decimal purchaseAmount { get; set; }
 
         [JsonIgnore]
         public string MonthName {

@@ -12,11 +12,11 @@ namespace Pharmatic.DTOs
 
         public DateTime salesDate { get; set; }
 
-        public double subtotal { get; set; }
+        public decimal subtotal { get; set; }
 
-        public double tax { get; set; }
+        public decimal tax { get; set; }
 
-        public double total { get; set; }
+        public decimal total { get; set; }
 
         public List<SalesDetailsDTO>? details { get; set; }
 

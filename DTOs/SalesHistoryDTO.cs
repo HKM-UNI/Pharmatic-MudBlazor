@@ -8,7 +8,7 @@ namespace Pharmatic.DTOs
 
         public DateTime SalesDate { get; set; }
 
-        public double SalesAmount { get; set; }
+        public decimal SalesAmount { get; set; }
 
         public int TotalProducts { get; set; }
 
